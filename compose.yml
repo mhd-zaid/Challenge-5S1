@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-InstantStudio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-InstantStudio1234}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+    volumes:
+      - db_data:/var/lib/postgresql/data:rw
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+  
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - 127.0.0.1:8080:8080
+volumes:
+  db_data:
