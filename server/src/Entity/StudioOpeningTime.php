@@ -1,0 +1,126 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\StudioOpeningTimeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
+#[ApiResource]
+class StudioOpeningTime
+{
+    use Traits\BlameableTrait;
+    use Traits\TimestampableTrait;
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $startTime = null;
+
+    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    private ?\DateTimeInterface $endTime = null;
+
+    #[ORM\Column]
+    private ?int $day = null;
+
+    #[ORM\ManyToOne(inversedBy: 'studioOpeningTimes')]
+    private ?Studio $studio = null;
+
+    #[ORM\OneToMany(mappedBy: 'studioOpeningTime', targetEntity: UnavailabilityHour::class)]
+    private Collection $unavailabilityHours;
+
+    public function __construct()
+    {
+        $this->unavailabilityHours = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getStartTime(): ?\DateTimeInterface
+    {
+        return $this->startTime;
+    }
+
+    public function setStartTime(\DateTimeInterface $startTime): static
+    {
+        $this->startTime = $startTime;
+
+        return $this;
+    }
+
+    public function getEndTime(): ?\DateTimeInterface
+    {
+        return $this->endTime;
+    }
+
+    public function setEndTime(\DateTimeInterface $endTime): static
+    {
+        $this->endTime = $endTime;
+
+        return $this;
+    }
+
+    public function getDay(): ?int
+    {
+        return $this->day;
+    }
+
+    public function setDay(int $day): static
+    {
+        $this->day = $day;
+
+        return $this;
+    }
+
+    public function getStudio(): ?Studio
+    {
+        return $this->studio;
+    }
+
+    public function setStudio(?Studio $studio): static
+    {
+        $this->studio = $studio;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UnavailabilityHour>
+     */
+    public function getUnavailabilityHours(): Collection
+    {
+        return $this->unavailabilityHours;
+    }
+
+    public function addUnavailabilityHour(UnavailabilityHour $unavailabilityHour): static
+    {
+        if (!$this->unavailabilityHours->contains($unavailabilityHour)) {
+            $this->unavailabilityHours->add($unavailabilityHour);
+            $unavailabilityHour->setStudioOpeningTime($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUnavailabilityHour(UnavailabilityHour $unavailabilityHour): static
+    {
+        if ($this->unavailabilityHours->removeElement($unavailabilityHour)) {
+            // set the owning side to null (unless already changed)
+            if ($unavailabilityHour->getStudioOpeningTime() === $this) {
+                $unavailabilityHour->setStudioOpeningTime(null);
+            }
+        }
+
+        return $this;
+    }
+}
