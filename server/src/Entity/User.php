@@ -14,6 +14,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Traits\TimestampableTrait;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -27,11 +30,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection()
     ],
 )]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
     use Traits\BlameableTrait;
-    use Traits\TimestampableTrait;
+    use TimestampableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
