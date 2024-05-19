@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import extend_theme from './utils/chakra-theme.js';
+import './utils/i18n.js';
 import './index.css';
 import { ProtectedRoute } from './layouts/ProtectedRoute.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
