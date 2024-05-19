@@ -1,0 +1,12 @@
+App\Entity\Company:
+    company_{1..20}:
+        name: '<company()>'
+        email: '<email()>'
+        kbis: '<randomNumber(9)>'
+        phone: '<phoneNumber()>'
+        country: '<country()>'
+        city: '<city()>'
+        address: '<streetAddress()>'
+        zipCode: '<postcode()>'
+        createdAt: '<dateTimeBetween("-1 year", "now")>'
+        updatedAt: '<dateTimeBetween("now", "now")>'
