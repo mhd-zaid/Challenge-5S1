@@ -104,6 +104,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.6",
         "fakerphp/faker": "^1.23",
         "hautelook/alice-bundle": "2.12.2",
         "phpunit/phpunit": "^9.5",
