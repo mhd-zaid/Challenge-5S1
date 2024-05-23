@@ -11,12 +11,14 @@ use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableTrait;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+// use App\Controller\VerifyMailController;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -27,7 +29,14 @@ use Symfony\Component\Security\Core\User\UserInterface;
         new Post(),
         new Patch(),
         new Delete(),
-        new GetCollection()
+        new GetCollection(),
+        // new Post(
+        //     uriTemplate: '/users/verify-email/{token}', 
+        //     controller: VerifyMailController::class,
+        //     write: true,
+        //     // serializer: true,
+        //     read: false,
+        // )
     ],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -120,6 +129,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Reservation::class)]
     private Collection $reservations;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ApiProperty(identifier: true, description: "Token unique de l'utilisateur")] // Définir que 'token' est l'identifiant pour une opération spécifique
+    private ?string $token = null;
 
     public function __construct()
     {
@@ -505,6 +518,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $reservation->setUtilisateur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    public function setToken(?string $token): static
+    {
+        $this->token = $token;
 
         return $this;
     }
