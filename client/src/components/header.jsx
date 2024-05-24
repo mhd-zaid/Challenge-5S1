@@ -1,8 +1,8 @@
+import AppNavbar from '@/lib/components/Navbar';
 import useToken from '../utils/useToken.js';
-import { useContext } from 'react';
-import { AuthContext } from '@/Context/AuthContext.jsx';
-
-const Header = () => {
+import {useContext} from "react";
+import {AuthContext} from "@/Context/AuthContext.jsx";
+const Header = ({ menus }) => {
   const { setToken } = useToken();
   const { setIsLoggedIn } = useContext(AuthContext);
 
@@ -11,7 +11,7 @@ const Header = () => {
     setIsLoggedIn(false);
   };
 
-  return <></>;
+  return <AppNavbar onLogout={handleLogout} menus={menus} />;
 };
 
 export default Header;
