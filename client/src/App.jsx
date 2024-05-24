@@ -1,21 +1,43 @@
-import { AuthProvider } from './context/AuthContext';
-import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/header';
+import { Outlet } from 'react-router-dom';
 import Footer from './components/footer';
-import { useTranslation } from 'react-i18next';
+import '@/App.css';
+import { AuthProvider } from '@/Context/AuthContext.jsx';
 
-function App() {
-  const { t } = useTranslation();
+const menus = [
+  { title: 'Contact', url: '/contact', requireAuth: false },
+  { title: 'A propos', url: '/about', requireAuth: false },
+];
 
+const App = () => {
   return (
     <AuthProvider>
-      <h1>{t('homepage.main-title')}</h1>
-      <p>{t('description')}</p>
-      <Header />
-      <Outlet />
-      <Footer />
+      <div>
+        <Header menus={menus} />
+        <div>
+          <Outlet />
+        </div>
+        {/*<SearchComponent />*/}
+        <Footer />
+      </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss={false}
+        draggable={false}
+        pauseOnHover={false}
+        theme={'colored'}
+        transition:Bounce
+      />
+      <ToastContainer />
     </AuthProvider>
   );
-}
+};
 
 export default App;
