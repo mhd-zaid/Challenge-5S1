@@ -17,7 +17,8 @@ const Navbar = ({ onLogout, menus }) => {
         justifyContent: 'space-between',
         height: '60px',
         width: '100vw',
-        position: 'absolute',
+        position: 'fixed',
+        zIndex: '100'
       };
     
       const buttonStyle = {
