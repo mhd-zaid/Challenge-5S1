@@ -6,6 +6,7 @@ import slider2 from '../assets/slider/slider-2.jpg';
 import slider3 from '../assets/slider/slider-3.jpg';
 import slider4 from '../assets/slider/slider-4.jpg';
 import slider5 from '../assets/slider/slider-5.jpg';
+import Searchbar from '../components/searchBar';
 const HomePage = () => {
   const style = {
     height: '100vh',
@@ -44,12 +45,15 @@ const HomePage = () => {
     <>
       {/* Section 1 */}
       <Box style={style} bgImage={`url(${backgroundImage})`} bgSize="cover"
-      bgPosition="center"
-      bgRepeat="no-repeat"
-      display="flex"
-      justifyContent="center"
-      alignItems="center">
+        bgPosition="center"
+        bgRepeat="no-repeat"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+      >
         <Text fontSize="5xl" fontWeight="bold" color="white" fontFamily="Poppins, sans-serif">Réserver votre séance de shooting</Text>
+        <Searchbar />
       </Box>
       {/* Section 2 */}
       <Box display="flex" flexDirection="column" bg="black" color="white" >
