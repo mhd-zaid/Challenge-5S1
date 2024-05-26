@@ -48,5 +48,5 @@ ehthumbs_vista.db
 .idea_modules/
 ###< IDE gitignore ###
 ###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
+/config/jwt/
 ###< lexik/jwt-authentication-bundle ###
