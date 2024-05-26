@@ -38,8 +38,11 @@ class UserController extends AbstractController
     }
 
     $user->setIsValidated(true);
-    $entityManager->flush();
 
+    //generate new tokne
+    $token = $this->tokenService->generateToken();
+    $user->setToken($token);
+    $entityManager->flush();
     return new Response('Email verified!', Response::HTTP_OK);
 }
 
@@ -61,8 +64,11 @@ class UserController extends AbstractController
     $token = $this->tokenService->generateToken();
     $user->setToken($token);
     $entityManager->flush();
-    $this->emailService->sendValidationEmail($user, $token);
-
+    $frontendUrl = $_ENV['FRONTEND_URL']; 
+    $this->emailService->sendEmail($user, 'Vérifiez votre mail', 'verify_email.html.twig', [
+        'verificationUrl' => $frontendUrl . '/auth/verify/' . $token,
+        'user' => $user 
+    ]);
     return new Response('Email send back!', Response::HTTP_OK);
 }
 
@@ -80,12 +86,15 @@ class UserController extends AbstractController
     $token = $this->tokenService->generateToken();
     $user->setToken($token);
     $entityManager->flush();
-    $this->emailService->forgetPassword($user, $token);
-
+    $frontendUrl = $_ENV['FRONTEND_URL']; 
+    $this->emailService->sendEmail($user, 'Réinitialiser votre mot de passe', 'reset_password.html.twig', [
+        'resetLink' => $frontendUrl . '/auth/resetpassword/' . $token,
+        'user' => $user 
+    ]);
     return new Response('Email send back!', Response::HTTP_OK);
 }
 
-#[Route('/api/users/check-token/{token}', name: 'forget_password', methods: ['GET'])]
+#[Route('/api/users/check-token/{token}', name: 'check_token', methods: ['GET'])]
     public function checkToken(Request $request, EntityManagerInterface $entityManager): Response
 {
     $token = $request->attributes->get('token');
@@ -103,10 +112,7 @@ class UserController extends AbstractController
     public function resetPassword(Request $request, UserRepository $userRepository): Response
 {
     $token = $request->attributes->get('token');
-    $this->logger->info('TOEKn ' . $token);
     $payload = json_decode($request->getContent(), true);
-
-    $this->logger->info('PAYLOAD ' . $payload['password']);
 
     $user = $userRepository->findOneBy(['token' => $token]);
 
@@ -116,20 +122,13 @@ class UserController extends AbstractController
 
     $newPassword = $request->request->get('password');
 
-    // Mettre à jour le mot de passe de l'utilisateur
     $user->setPlainPassword($payload['password']);
 
-    $this->logger->info('lalalalapass ' . $payload['password']);
-    $this->logger->info('email ' . $user->getEmail());
-
-    // $this->logger->error('Error sending validation email: ' . $e->getMessage());
-
-    // Persist and flush changes to trigger preUpdate event
-    // $userRepository->persist($user);
-    // $userRepository->flush();
+    $token = $this->tokenService->generateToken();
+    $user->setToken($token);
     $userRepository->save($user, true);
 
-
+    $this->emailService->sendEmail($user, 'Mot de passe modifié', 'password_reset_success.html.twig', []);
     return new Response('Password updated!', Response::HTTP_OK);
 }
 

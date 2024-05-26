@@ -10,6 +10,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Psr\Log\LoggerInterface;
 use App\Service\TokenService;
 use App\Service\MailService;
+// use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class UserCreationSubscriber implements EventSubscriberInterface
 {
@@ -37,9 +38,12 @@ class UserCreationSubscriber implements EventSubscriberInterface
         if ($object instanceof User) {
             $this->updatePassword($object);
             $token = $this->tokenService->generateToken();
-            $this->logger->info('Token generated: ' . $token);
             $object->setToken($token);
-            $this->emailService->sendValidationEmail($object, $token);
+            $frontendUrl = $_ENV['FRONTEND_URL']; 
+            $this->emailService->sendEmail($object, 'Vérifiez votre mail', 'verify_email.html.twig', [
+                'verificationUrl' => $frontendUrl . '/auth/verify/' . $token,
+                'user' => $object 
+            ]);
         }
     }
 
@@ -57,7 +61,7 @@ class UserCreationSubscriber implements EventSubscriberInterface
     }
 
     private function updatePassword(User $object): void
-    {   
+    {
         if ($object->getPlainPassword()) {
             $object->setPassword($this->passwordHasher->hashPassword($object, $object->getPlainPassword()));
         }

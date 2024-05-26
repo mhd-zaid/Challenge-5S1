@@ -4,53 +4,36 @@ use App\Entity\User;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Psr\Log\LoggerInterface;
+use Twig\Environment;
 
 class MailService
 {
     private $mailer;
 
-    public function __construct(MailerInterface $mailer, LoggerInterface $logger)
+    public function __construct(MailerInterface $mailer, LoggerInterface $logger, Environment $twig )
     {
         $this->mailer = $mailer;
         $this->logger = $logger;
+        $this->twig = $twig;
     }
 
-    public function sendValidationEmail(User $user, string $token): void
+    public function sendEmail(User $user, string $subject, string $template, array $context): void
     {
-        $this->logger->info('Sending validation email to ' . $user->getEmail());
+        $this->logger->info('Sending email to ' . $user->getEmail() . ' with subject: ' . $subject);
+        $htmlContent = $this->twig->render($template, $context);
+
         $message = (new Email())
             ->from('instantstudioesgi@gmail.com')
             ->to($user->getEmail())
-            ->subject('Validation de compte')
-            ->html('<p>Bonjour ' . $user->getFirstName() . ',</p>' .
-                   '<p>Veuillez cliquer sur le lien ci-dessous pour valider votre compte :</p>' .
-                   '<a href="https://example.com/validation?token=' . $token . '">Valider mon compte</a>' .
-                   '<p>Merci !</p>');
-            try {
-                $this->mailer->send($message);
-            } catch (\Throwable $e) {
-                $this->logger->error('Error sending validation email: ' . $e->getMessage());
-                throw $e;
-            }
-    }
+            ->subject($subject)
+            ->html($htmlContent);
 
-    public function forgetPassword(User $user, string $token): void
-    {
-        $this->logger->info('Sending validation email to ' . $user->getEmail());
-        $message = (new Email())
-            ->from('instantstudioesgi@gmail.com')
-            ->to($user->getEmail())
-            ->subject('Mot de passe oublié')
-            ->html('<p>Bonjour ' . $user->getFirstName() . ',</p>' .
-                   '<p>Veuillez cliquer sur le lien ci-dessous pour réinitialiser votre mot de passe :</p>' .
-                   '<a href="https://example.com/forget-password?token=' . $token . '">Réinitialiser mon mot de passe</a>' .
-                   '<p>Merci !</p>');
-            try {
-                $this->mailer->send($message);
-            } catch (\Throwable $e) {
-                $this->logger->error('Error sending validation email: ' . $e->getMessage());
-                throw $e;
-            }
+        try {
+            $this->mailer->send($message);
+        } catch (\Throwable $e) {
+            $this->logger->error('Error sending email: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }
 ?>
