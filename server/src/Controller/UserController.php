@@ -11,6 +11,8 @@ use App\Service\TokenService;
 use App\Service\MailService;
 use App\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends AbstractController
 {
@@ -132,4 +134,25 @@ class UserController extends AbstractController
     return new Response('Password updated!', Response::HTTP_OK);
 }
 
+
+#[Route('/api/me', name: 'me', methods: ['GET'])]
+public function me(Security $security): Response
+{
+    $user = $security->getUser();
+
+    if (!$user) {
+        return new Response('Utilisateur non authentifié', Response::HTTP_UNAUTHORIZED);
+    }
+
+    $responseData = [
+        'id' => $user->getId(),
+        'email' => $user->getEmail(),
+    ];
+
+    $response = new Response(json_encode($responseData));
+
+    $response->headers->set('Content-Type', 'application/json');
+
+    return $response;
+}
 }
