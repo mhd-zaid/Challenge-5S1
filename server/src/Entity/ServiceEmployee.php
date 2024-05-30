@@ -6,6 +6,7 @@ use App\Repository\ServiceEmployeeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServiceEmployeeRepository::class)]
 class ServiceEmployee
@@ -16,6 +17,7 @@ class ServiceEmployee
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'serviceEmployees')]
+    #[Groups(['service:create'])]
     private ?User $employee = null;
 
     #[ORM\ManyToOne(inversedBy: 'serviceEmployees')]

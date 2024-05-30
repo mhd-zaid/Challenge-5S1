@@ -1,7 +1,7 @@
 import Button from '@/lib/components/Button';
 import { useNavigate } from 'react-router-dom';
 import {useContext, useEffect, useState} from 'react';
-import { AuthContext } from '@/Context/AuthContext.jsx';
+import { AuthContext } from '@/context/AuthContext.jsx';
 import React from 'react';
 import { position } from '@chakra-ui/react';
 const Navbar = ({ onLogout, menus }) => {

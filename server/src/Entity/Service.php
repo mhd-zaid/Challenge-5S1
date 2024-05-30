@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -18,19 +17,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['service:read']],
     operations: [
-       new Post(),
-       new GetCollection(),
-       new GetCollection(
-            name: 'get_services_distinct_by_column',
+        new Post(),
+        new GetCollection(),
+        new GetCollection(
             uriTemplate: '/api/services/distinct/{column}',
-            controller: ServiceController::class,
             requirements: [
                 'column' => '\w+',
             ],
-            description: 'Get all services distinct by column',
-            paginationEnabled: false,
+            controller: ServiceController::class,
             openapiContext: [
                 'parameters' => [
                     [
@@ -46,16 +41,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
                                 'cost',
                                 'duration',
                                 'studio'
-                        ],
-                        'description' => 'The column to distinct. Allowed values: id, name, description, cost, duration, studio',
-                        'summary' => 'Retrieve distinct services by column'
+                            ],
+                            'description' => 'The column to distinct. Allowed values: id, name, description, cost, duration, studio',
+                            'summary' => 'Retrieve distinct services by column'
                         ],
                     ],
                 ],
             ],
-       ),
-       new Delete(),
-    ]
+            paginationEnabled: false,
+            description: 'Get all services distinct by column',
+            name: 'get_services_distinct_by_column',
+        ),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => ['service:read']]
 )
 ]
 class Service
@@ -67,30 +66,30 @@ class Service
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['service:read'])]
-    #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read', 'service:read:list', 'service:read:detail','service:create', 'service:update'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read', 'service:read:detail','service:create', 'service:update'])]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read', 'service:read:detail','service:create', 'service:update'])]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read', 'service:read:detail','service:create', 'service:update'])]
     private ?\DateTimeInterface $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read', 'service:read:detail', 'service:create'])]
     private ?Studio $studio = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: ServiceEmployee::class)]
+    #[Groups(['service:read:detail', 'service:create', 'service:update'])]
     private Collection $serviceEmployees;
 
     public function __construct()

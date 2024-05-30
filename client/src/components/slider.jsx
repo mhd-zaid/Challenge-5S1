@@ -28,35 +28,30 @@ const Slider = ({ sliders }) => {
       >
         <Image 
           src={sliders[currentIndex].image} 
-          alt={`Slide ${currentIndex}`} 
-          boxSize="md" 
+          alt={`Slide ${currentIndex}`}
+          boxSize="xl"
           objectFit='cover' 
-          marginBottom="2em" 
         />
-        <Stack> 
-          <CardBody maxW="38em" display="flex" flexDirection="column" justifyContent="space-around" alignItems="center">
-            <Heading size='md' fontFamily="Poppins, sans-serif">{sliders[currentIndex].title}</Heading>
-            <Text py='2' textAlign="justify" fontFamily="Poppins, sans-serif">
-              {sliders[currentIndex].description}
-            </Text>
+        <Stack>
+          <Card h={"full"} maxW="38em">
+          <CardBody display="flex" flexDirection="column" justifyContent="space-around" alignItems="center">
+            <Heading size='2xl'>{sliders[currentIndex].title}</Heading>
+            <Text>{sliders[currentIndex].description}</Text>
           </CardBody>
 
-          <CardFooter>
+          <CardFooter gap={4}>
             <IconButton
               icon={<FaArrowLeft />}
               onClick={handlePrev}
               aria-label="Previous Slide"
-              bgColor="transparent"
-              _hover={{ bgColor: 'gray.200' }}
             />
             <IconButton
               icon={<FaArrowRight />}
               onClick={handleNext}
               aria-label="Next Slide"
-              bgColor="transparent"
-              __hover={{ bgColor: 'gray.200' }}
             />
           </CardFooter>
+          </Card>
         </Stack>
       </Card>
     </Box>

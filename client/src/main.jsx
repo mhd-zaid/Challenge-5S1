@@ -15,6 +15,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import EmailVerifiedPage from './pages/auth/EmailVerifiedPage.jsx';
+import InfoPage from '@/pages/info/InfoPage.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -25,19 +26,28 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
+
             <Route element={<ProtectedRoute />}>
               <Route path="profile" element={<Profile />} />
+              <Route path="admin">
+                <Route path="*" element={<NotFoundPage />} />
+                <Route path="dashboard" element={<NotFoundPage />} />
+              </Route>
             </Route>
+
+
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="forgetpassword" element={<ForgetPasswordPage />} />
-              <Route
-                path="resetpassword/:token"
-                element={<ResetPasswordPage />}
-              />
+              <Route path="resetpassword/:token" element={<ResetPasswordPage />} />
               <Route path="verify" element={<EmailVerifiedPage />} />
             </Route>
+
+            <Route path="info">
+              <Route index element={<InfoPage/>}/>
+            </Route>
+
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

@@ -27,10 +27,11 @@ const SearchBar = () => {
   };
 
   return (
-    <Box bg="white" color="black" py="4" px="6" width="60%">
+    <Box bg="white" p="4" width="60%">
       <Flex justifyContent="center" alignItems="center">
         <Stack direction="row" spacing={4} width="100%" maxWidth="1000px">
             <Select
+              border={0}
               placeholder="Que cherchez-vous ?"
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
@@ -42,13 +43,12 @@ const SearchBar = () => {
               ))}
             </Select>
           <Input
+            border={0}
             placeholder='Choisissez une Ville'
             value={city}
             onChange={(e) => setCity(e.target.value)}
           />
           <Button
-            bg="black"
-            color="white"
             w='30%'
             onClick={handleSearch}
           >
