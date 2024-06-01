@@ -5,8 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use App\Controller\CompanyRequestController;
+use App\Controller\CompanyController;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,9 +22,10 @@ USE Symfony\Component\HttpFoundation\File\File;
 #[Vich\Uploadable()]
 #[ApiResource(
     operations: [
+        new GetCollection(),
         new Get(
-            uriTemplate: '/company/kbis/{siret}',
-            controller: KbisController::class,
+            uriTemplate: '/companies/kbis/{siret}',
+            controller: CompanyController::class . '::getKbis',
             openapiContext: [
                 'summary' => 'Get the KBIS of a company',
                 'description' => 'Get the KBIS of a company',
@@ -33,8 +35,8 @@ USE Symfony\Component\HttpFoundation\File\File;
             read: false,
         ),
         new Post(
-            uriTemplate: '/company/request',
-            controller: CompanyRequestController::class,
+            uriTemplate: '/companies',
+            controller: CompanyController::class,
             openapiContext: [
                 'summary' => 'Create a company request',
                 'description' => 'Create a company request',
@@ -102,8 +104,8 @@ class Company
     private ?string $filePath = null;
 
     #[Vich\UploadableField(mapping: 'kbis_upload', fileNameProperty: 'filePath')]
-    #[Assert\File(mimeTypes: ['application/pdf'])]
-    private File $file;
+//    #[Assert\File(mimeTypes: ['application/pdf'])]
+    private ?File $file = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['company:info:create', 'company:info:read'])]
@@ -121,10 +123,10 @@ class Company
     private ?string $ownerFirstname = null;
 
     #[ORM\Column]
-    private ?bool $isVerified = null;
+    private ?bool $isVerified = false;
 
     #[ORM\Column]
-    private ?bool $isActive = null;
+    private ?bool $isActive = false;
 
     public function __construct()
     {

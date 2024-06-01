@@ -5,6 +5,8 @@ import { Outlet } from 'react-router-dom';
 import Footer from './components/footer';
 import '@/App.css';
 import { AuthProvider } from '@/context/AuthContext.jsx';
+import { Box } from '@chakra-ui/react';
+import { HydraAdmin, ResourceGuesser } from '@api-platform/admin';
 
 
 const menus = [
@@ -17,9 +19,9 @@ const App = () => {
     <AuthProvider>
       <div>
         <Header menus={menus} />
-        <div>
+        <Box>
           <Outlet />
-        </div>
+        </Box>
         {/*<SearchComponent />*/}
         <Footer />
       </div>

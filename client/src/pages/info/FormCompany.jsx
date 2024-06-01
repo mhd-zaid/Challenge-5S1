@@ -5,16 +5,14 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage,
+  FormErrorMessage, FormHelperText,
   FormLabel,
   Input,
   InputGroup, InputLeftElement,
   Select,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { apiService } from '@/services/apiService.js';
-import z from 'zod';
 
 const FormCompany = () => {
   const [listIxServices, setListIxServices] = useState([]);
@@ -23,10 +21,35 @@ const FormCompany = () => {
     register,
     formState: { errors, isSubmitting }
   } = useForm({});
+  const createCompany = async (data) => {
+    const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/ld+json',
+      },
+      // mode: 'no-cors',
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    console.log("result", result);
+  }
 
 
   function onSubmit(values) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      const data = new FormData();
+      data.append('ownerName', values.ownerName);
+      data.append('ownerFirstname', values.ownerFirstname);
+      data.append('zipCode', values.zipCode);
+      data.append('phone', values.phone);
+      data.append('email', values.email);
+      data.append('name', values.name);
+      data.append('siret', values.siret);
+      data.append('kbis', values.kbis[0]);
+      console.log("Data", [...data.entries()]);
+      console.log("values", values);
+      await createCompany(data);
+
       setTimeout(() => {
         console.log(JSON.stringify(values, null, 2))
         resolve()
@@ -34,22 +57,19 @@ const FormCompany = () => {
     })
   }
 
-  const getIxServices = async () => {
-    const data = await apiService.getAll("services").then((data) => data['hydra:member']);
-    // const companyVerify = fetch("https://localhost/api/companyVerify", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ siret: "12345678945612" }),
-    // })
-    // console.log('companyVerify', companyVerify);
-    setListIxServices(data);
-  }
-
   useEffect(() => {
-    getIxServices();
-    console.log('listIxServices', listIxServices);
+    const fetchServices = async () => {
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/services', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setListIxServices(data['hydra:member']);
+    };
+
+    fetchServices();
   }, []);
 
   return (
@@ -68,42 +88,42 @@ const FormCompany = () => {
       <Text fontSize='xl' mb={10} textAlign={"center"}>
         Vous êtes un professionnel de l'image et vous souhaitez rejoindre notre réseau de photographes et vidéastes ?
       </Text>
-      <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"}>
+      <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
         <Flex>
           <Box w='50%' pr={2}>
             {/* Champ Nom */}
-            <FormControl isInvalid={errors.name} isRequired>
+            <FormControl isInvalid={errors.ownerName} isRequired>
               <FormLabel htmlFor='nom'>Nom</FormLabel>
               <Input
-                id='nom'
+                id='ownerName'
                 autoFocus={true}
-                autoComplete={"name"}
+                autoComplete={"ownerName"}
                 placeholder='Entrer votre nom'
-                {...register('name', {
+                {...register('ownerName', {
                   required: 'Ce champ est requis',
                   minLength: { value: 2, message: 'La longueur minimale est de 2 caractères' },
                 })}
               />
               <FormErrorMessage>
-                {errors.name && errors.name.message}
+                {errors.ownerName && errors.ownerName.message}
               </FormErrorMessage>
             </FormControl>
           </Box>
           <Box w='50%' pl={2}>
             {/* Champ Prénom */}
-            <FormControl isInvalid={errors.firstname} isRequired>
-              <FormLabel htmlFor='name'>Prénom</FormLabel>
+            <FormControl isInvalid={errors.ownerFirstname} isRequired>
+              <FormLabel htmlFor='ownerFirstname'>Prénom</FormLabel>
               <Input
-                id='firstname'
+                id='ownerFirstname'
                 placeholder='Entrer votre prénom'
                 autoComplete={"given-name"}
-                {...register('firstname', {
+                {...register('ownerFirstname', {
                   required: 'Ce champ est requis',
                   minLength: { value: 4, message: 'La longueur minimale est de 4 caractères' },
                 })}
               />
               <FormErrorMessage>
-                {errors.firstname && errors.firstname.message}
+                {errors.ownerFirstname && errors.ownerFirstname.message}
               </FormErrorMessage>
             </FormControl>
           </Box>
@@ -112,13 +132,13 @@ const FormCompany = () => {
         <Flex>
           <Box w='50%' pr={2}>
             {/* Champ Code Postal */}
-            <FormControl isInvalid={errors.codePostal} mt={4} isRequired>
-              <FormLabel htmlFor='codePostal'>Code Postal</FormLabel>
+            <FormControl isInvalid={errors.zipCode} mt={4} isRequired>
+              <FormLabel htmlFor='zipCode'>Code Postal</FormLabel>
               <Input
-                id='codePostal'
+                id='zipCode'
                 placeholder='XXXXX'
                 autoComplete={"postal-code"}
-                {...register('codePostal', {
+                {...register('zipCode', {
                   required: 'Ce champ est requis',
                   pattern: {
                     value: /^[0-9]{5}$/,
@@ -127,23 +147,23 @@ const FormCompany = () => {
                 })}
               />
               <FormErrorMessage>
-                {errors.codePostal && errors.codePostal.message}
+                {errors.zipCode && errors.zipCode.message}
               </FormErrorMessage>
             </FormControl>
           </Box>
           <Box w='50%' pl={2}>
             {/* Champ Téléphone Portable */}
-            <FormControl isInvalid={errors.telephone} mt={4} isRequired>
-              <FormLabel htmlFor='telephone'>Téléphone Portable</FormLabel>
+            <FormControl isInvalid={errors.phone} mt={4} isRequired>
+              <FormLabel htmlFor='phone'>Téléphone Portable</FormLabel>
               <InputGroup>
                 <InputLeftElement>
                   <Icon icon="twemoji:flag-for-flag-france" />
                 </InputLeftElement>
                 <Input
-                  id='telephone'
+                  id='phone'
                   placeholder='06XXXXXXXX'
                   autoComplete={"tel"}
-                  {...register('telephone', {
+                  {...register('phone', {
                     required: 'Ce champ est requis',
                     pattern: {
                       value: /^[0-9]{10}$/,
@@ -153,36 +173,17 @@ const FormCompany = () => {
                 />
               </InputGroup>
               <FormErrorMessage>
-                {errors.telephone && errors.telephone.message}
+                {errors.phone && errors.phone.message}
               </FormErrorMessage>
             </FormControl>
           </Box>
         </Flex>
 
-        {/* Champ Votre Spécialité */}
-        <FormControl isInvalid={errors.specialite} mt={4} isRequired>
-          <FormLabel htmlFor='specialite'>Votre spécialité</FormLabel>
-          <Select
-            id='specialite'
-            placeholder='- Selectionner -'
-            {...register('specialite', {
-              required: 'Ce champ est requis',
-            })}
-          >
-            {listIxServices.map((service) => (
-              <option key={service.id} value={service.id}>
-                {service.name}
-              </option>
-            ))}
-          </Select>
-          <FormErrorMessage>
-            {errors.specialite && errors.specialite.message}
-          </FormErrorMessage>
-        </FormControl>
-
         {/* Champ Email */}
         <FormControl isInvalid={errors.email} mt={4} isRequired>
-          <FormLabel htmlFor='email'>Email</FormLabel>
+          <Flex alignContent={"center"}>
+            <FormLabel htmlFor='email'>Email</FormLabel>
+          </Flex>
           <Input
             id='email'
             type='email'
@@ -198,6 +199,22 @@ const FormCompany = () => {
           />
           <FormErrorMessage>
             {errors.email && errors.email.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        {/* Champ Nom de l'entreprise */}
+        <FormControl isInvalid={errors.name} mt={4} isRequired>
+          <FormLabel htmlFor='name'>Nom de l'entreprise</FormLabel>
+          <Input
+            id='name'
+            placeholder='Entrer le nom de votre entreprise'
+            {...register('name', {
+              required: 'Ce champ est requis',
+              minLength: { value: 4, message: 'La longueur minimale est de 4 caractères' },
+            })}
+          />
+          <FormErrorMessage>
+            {errors.name && errors.name.message}
           </FormErrorMessage>
         </FormControl>
 

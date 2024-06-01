@@ -1,13 +1,3 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
-
-kbis_get:
-    path: /api/companies/{siret}/kbis  # Include {siret} parameter in the path
-    methods: GET
-    controller: App\Controller\KbisController::__invoke__
-
-kbis_upload:
-    path: /api/company/request  # Include {siret} parameter in the path
-    methods: POST
-    controller: App\Controller\KbisController::upload
