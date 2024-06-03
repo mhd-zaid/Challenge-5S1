@@ -108,16 +108,10 @@ jobs:
       - name: Run tests
         run: php bin/phpunit
         working-directory: ./server
-  build:
+  frontend_ci:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Include Frontend CI Workflow
         uses: actions/checkout@v2
-        
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./client
-
-      - name: Build
-        run: npm run build
-        working-directory: ./client
+        with:
+          path: .github/workflows/frontend_ci.yml
