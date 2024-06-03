@@ -75,7 +75,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./server/vendor
-          key: packages-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+          key: packages-${{ runner.os }}-${{ hashFiles('**/composer.json') }}
 
       - name: Use Lexik keys cache
         uses: actions/cache@v2
