@@ -51,7 +51,7 @@ jobs:
           path: /tmp/jwt-keys.tar.gz
 
   test_backend:
-    needs: install-dependencies
+    needs: install-back-dependencies
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://user:password@localhost:5432/testdb?serverVersion=13&charset=utf8
