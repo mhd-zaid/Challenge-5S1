@@ -23,9 +23,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./server/vendor
-          key: ${{ runner.os }}-vendor
+          key: packages-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-vendor
+            packages-${{ runner.os }}-
 
       - name: Install Lexik keys
         run: php bin/console lexik:jwt:generate-keypair
@@ -35,9 +35,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./server/config/jwt
-          key: ${{ runner.os }}-jwt
+          key: jwt-${{ runner.os }}-${{ hashFiles('**/config/jwt/private.pem') }}
           restore-keys: |
-            ${{ runner.os }}-jwt
+            jwt-${{ runner.os }}-
 
   test_backend:
     needs: install-back-dependencies
@@ -75,15 +75,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ./server/vendor
-          key: ${{ runner.os }}-vendor
+          key: packages-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
 
       - name: Use Lexik keys cache
         uses: actions/cache@v2
         with:
           path: ./server/config/jwt
-          key: ${{ runner.os }}-jwt
-
-      - name: Restore Vendor
+          key: jwt-${{ runner.os }}-${{ hashFiles('**/config/jwt/private.pem') }}
 
       - name: Run migrations
         run: php bin/console d:m:m --no-interaction
