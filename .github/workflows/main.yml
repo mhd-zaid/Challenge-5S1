@@ -109,4 +109,4 @@ jobs:
         working-directory: ./server
 
   frontend-tests:
-    uses: ./.github/workflows/frontend-tests.yml
+    uses: ./.github/workflows/frontend.yml
