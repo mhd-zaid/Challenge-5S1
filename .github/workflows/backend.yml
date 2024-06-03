@@ -15,21 +15,29 @@ jobs:
         with:
           php-version: "8.2.18"
 
-      - name: Cache Composer dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.composer/cache
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./server
 
+      - name: Cache vendor
+        uses: actions/cache@v2
+        with:
+          path: ./server/vendor
+          key: ${{ runner.os }}-vendor
+          restore-keys: |
+            ${{ runner.os }}-vendor
+
       - name: Install Lexik keys
         run: php bin/console lexik:jwt:generate-keypair
         working-directory: ./server
+
+      - name: Cache Lexik keys
+        uses: actions/cache@v2
+        with:
+          path: ./server/config/jwt
+          key: ${{ runner.os }}-jwt
+          restore-keys: |
+            ${{ runner.os }}-jwt
 
   test_backend:
     needs: install-back-dependencies
@@ -55,14 +63,6 @@ jobs:
         with:
           php-version: "8.2.18"
 
-      - name: Restore Composer cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.composer/cache
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
-
       - name: Install dockerize
         run: |
           curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar -xzC /usr/local/bin
@@ -70,6 +70,20 @@ jobs:
       - name: Wait for database
         run: |
           dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - name: Use vendor cache
+        uses: actions/cache@v2
+        with:
+          path: ./server/vendor
+          key: ${{ runner.os }}-vendor
+
+      - name: Use Lexik keys cache
+        uses: actions/cache@v2
+        with:
+          path: ./server/config/jwt
+          key: ${{ runner.os }}-jwt
+
+      - name: Restore Vendor
 
       - name: Run migrations
         run: php bin/console d:m:m --no-interaction
