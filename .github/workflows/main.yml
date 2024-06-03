@@ -5,7 +5,7 @@ on:
     branches:
       - "*"
 jobs:
-  install-dependencies:
+  install-back-dependencies:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -107,12 +107,12 @@ jobs:
       - name: Run tests
         run: php bin/phpunit
         working-directory: ./server
-  build:
+  install-front-dependencies:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Install dependencies
         run: npm install
         working-directory: ./client
@@ -120,15 +120,31 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: ./client
+
+      - name: Compress build
+        run: tar -czf /tmp/build.tar.gz -C build
+        working-directory: ./client
+
+      - name: Archive build
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: /tmp/build.tar.gz
   lint:
     runs-on: ubuntu-latest
+    needs: install-front-dependencies
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./client
+      - name: Download build directory
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: /tmp
+
+      - name: Uncompress build directory
+        run: tar -xzf /tmp/build.tar.gz -C ./client
 
       - name: Lint
         run: npm run lint
@@ -136,13 +152,19 @@ jobs:
         continue-on-error: true
   test_frontend:
     runs-on: ubuntu-latest
+    needs: install-front-dependencies
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: ./client
+      - name: Download build directory
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: /tmp
+
+      - name: Uncompress build directory
+        run: tar -xzf /tmp/build.tar.gz -C ./client
 
       - name: jest
         run: npm run test
