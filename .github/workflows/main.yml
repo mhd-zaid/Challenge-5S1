@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "*"
-
 jobs:
   install-dependencies:
     runs-on: ubuntu-latest
@@ -108,3 +107,43 @@ jobs:
       - name: Run tests
         run: php bin/phpunit
         working-directory: ./server
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./client
+
+      - name: Build
+        run: npm run build
+        working-directory: ./client
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./client
+
+      - name: Lint
+        run: npm run lint
+        working-directory: ./client
+        continue-on-error: true
+  test_frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./client
+
+      - name: jest
+        run: npm run test
+        working-directory: ./client

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -13,7 +13,7 @@ import {
   useToast,
   Spinner
 } from '@chakra-ui/react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BiShowAlt, BiHide  } from "react-icons/bi";
 
 
