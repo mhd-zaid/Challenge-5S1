@@ -123,7 +123,7 @@ jobs:
         working-directory: ./client
 
       - name: Compress build
-        run: tar -czf /tmp/build.tar.gz -C ./client build
+        run: tar -czf /tmp/build.tar.gz -C ${{ github.workspace }}/client/build .
 
       - name: Archive build
         uses: actions/upload-artifact@v3
@@ -145,7 +145,7 @@ jobs:
           path: /tmp
 
       - name: Uncompress build directory
-        run: tar -xzf /tmp/build.tar.gz -C ./client
+        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client
 
       - name: Lint
         run: npm run lint
@@ -166,7 +166,7 @@ jobs:
           path: /tmp
 
       - name: Uncompress build directory
-        run: tar -xzf /tmp/build.tar.gz -C ./client
+        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client
 
       - name: Run Jest
         run: npm run test
