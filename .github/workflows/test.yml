@@ -26,4 +26,4 @@ jobs:
         working-directory: ./server
 
       - name: Run PHPUnit
-        run: php bin/phpunit tests/.
+        run: php bin/phpunit ./server/tests/.
