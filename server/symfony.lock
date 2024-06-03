@@ -109,6 +109,7 @@
         },
         "files": [
             "public/.htaccess"
+        ],
     "stof/doctrine-extensions-bundle": {
         "version": "1.11",
         "recipe": {
@@ -348,4 +349,5 @@
     "twig/extra-bundle": {
         "version": "v3.4.0"
     }
+}
 }
