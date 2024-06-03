@@ -108,5 +108,6 @@ jobs:
       - name: Run tests
         run: php bin/phpunit
         working-directory: ./server
-extends:
-  - ./.github/workflows/frontend.yml
+
+include:
+  - path: .github/workflows/frontend.yml
