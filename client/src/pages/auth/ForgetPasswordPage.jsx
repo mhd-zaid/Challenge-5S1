@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -8,7 +8,6 @@ import {
   Stack,
   Heading,
   Text,
-  useToast,
   Spinner
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
@@ -19,7 +18,6 @@ const ForgetPasswordPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false); // Nouvel état pour suivre l'état de l'envoi de l'e-mail
-  const toast = useToast();
 
   const handleSendEmail = async (e) => {
     e.preventDefault();
