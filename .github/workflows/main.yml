@@ -51,7 +51,7 @@ jobs:
           name: jwt-keys
           path: /tmp/jwt-keys.tar.gz
 
-  test:
+  run-test:
     needs: install-dependencies
     runs-on: ubuntu-latest
     env:
