@@ -14,17 +14,25 @@ jobs:
         run: npm install
         working-directory: ./client
 
+      - name: Cache node_modules
+        uses: actions/cache@v2
+        with:
+          path: ./client/node_modules
+          key: node_modules-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
+          restore-keys: |
+            node_modules-${{ runner.os }}
+
       - name: Build
         run: npm run build
         working-directory: ./client
 
-      - name: Cache build directory
+      - name: Cache dist directory
         uses: actions/cache@v2
         with:
-          path: ./client/build
-          key: build-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
+          path: ./client/dist
+          key: dist-${{ runner.os }}-${{ hashFiles('**/client/dist/index.html') }}
           restore-keys: |
-            build-${{ runner.os }}
+            dist-${{ runner.os }}
 
   lint:
     runs-on: ubuntu-latest
@@ -33,11 +41,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Use cache build directory
+      - name: Use cache node_modules
         uses: actions/cache@v2
         with:
-          path: ./client/build
-          key: build-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
+          path: ./client/node_modules
+          key: node_modules-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
 
       - name: Lint
         run: npm run lint
@@ -51,11 +59,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Use cache build directory
+      - name: Use cache node_modules directory
         uses: actions/cache@v2
         with:
-          path: ./client/build
-          key: build-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
+          path: ./client/node_modules
+          key: node_modules-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
 
       - name: Run Jest
         run: npm run test
