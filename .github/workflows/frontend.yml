@@ -1,9 +1,7 @@
 name: Frontend tests
 
 on:
-  push:
-    branches:
-      - "*"
+  workflow_call:
 
 jobs:
   install-front-dependencies:
