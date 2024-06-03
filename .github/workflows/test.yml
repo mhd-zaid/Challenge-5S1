@@ -1,14 +1,12 @@
-name: Run PHPUnit on all branches
+name: Backend tests
 
 on:
   push:
     branches:
       - '*'
-
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -16,7 +14,7 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         with:
-          path: ./server
+          working-directory: ./server
 
       - name: Run PHPUnit
         run: php bin/phpunit tests/.
