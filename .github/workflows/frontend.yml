@@ -18,14 +18,13 @@ jobs:
         run: npm run build
         working-directory: ./client
 
-      - name: Compress build
-        run: tar -czf /tmp/build.tar.gz -C ${{ github.workspace }}/client .
-
-      - name: Archive build
-        uses: actions/upload-artifact@v3
+      - name: Cache build directory
+        uses: actions/cache@v2
         with:
-          name: build
-          path: /tmp/build.tar.gz
+          path: ./client/build
+          key: build-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
+          restore-keys: |
+            build-${{ runner.os }}
 
   lint:
     runs-on: ubuntu-latest
@@ -34,14 +33,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download build directory
-        uses: actions/download-artifact@v3
+      - name: Use cache build directory
+        uses: actions/cache@v2
         with:
-          name: build
-          path: /tmp
-
-      - name: Uncompress build directory
-        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client
+          path: ./client/build
+          key: build-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
 
       - name: Lint
         run: npm run lint
@@ -55,14 +51,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download build directory
-        uses: actions/download-artifact@v3
+      - name: Use cache build directory
+        uses: actions/cache@v2
         with:
-          name: build
-          path: /tmp
-
-      - name: Uncompress build directory
-        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client
+          path: ./client/build
+          key: build-${{ runner.os }}-${{ hashFiles('**/client/package-lock.json') }}
 
       - name: Run Jest
         run: npm run test
