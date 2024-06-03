@@ -4,8 +4,12 @@ on:
   push:
     branches:
       - "*"
-
 jobs:
+  bdd:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Docker
+        run: docker compose up -d
   test:
     runs-on: ubuntu-latest
 
