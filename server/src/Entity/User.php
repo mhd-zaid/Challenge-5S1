@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableTrait;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-// use App\Controller\VerifyMailController;
+use App\Controller\UserController;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -30,13 +30,36 @@ use Symfony\Component\Security\Core\User\UserInterface;
         new Patch(),
         new Delete(),
         new GetCollection(),
-        // new Post(
-        //     uriTemplate: '/users/verify-email/{token}', 
-        //     controller: VerifyMailController::class,
-        //     write: true,
-        //     // serializer: true,
-        //     read: false,
-        // )
+        new Get(
+            uriTemplate: '/users/verify-email/{token}', 
+            controller: UserController::class, 
+            read: false
+        ),
+        new Get(
+            uriTemplate: '/users/send-email-verification/{email}', 
+            controller: UserController::class . '::verify_email', 
+            read: false
+        ),
+        new Get(
+            uriTemplate: '/users/forget-password/{email}', 
+            controller: UserController::class . '::forgetPassword', 
+            read: false
+        ),
+        new Get(
+            uriTemplate: '/users/check-token/{token}', 
+            controller: UserController::class . '::checkToken', 
+            read: false
+        ),
+        new Get(
+            uriTemplate: '/me', 
+            controller: UserController::class . '::me', 
+            read: false
+        ),
+        new Post(
+            uriTemplate: '/users/reset-password/{token}', 
+            controller: UserController::class . '::resetPassword', 
+            read: false
+        )
     ],
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
