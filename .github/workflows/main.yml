@@ -7,43 +7,43 @@ on:
 
 jobs:
   install-dependencies:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: "8.2.18"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2.18"
 
-    - name: Cache Composer dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.composer/cache
-        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-composer-
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
-      working-directory: ./server
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ./server
 
-    - name: Install Lexik keys
-      run: php bin/console lexik:jwt:generate-keypair
-      working-directory: ./server
+      - name: Install Lexik keys
+        run: php bin/console lexik:jwt:generate-keypair
+        working-directory: ./server
 
-    - name: Archive vendor directory
-      uses: actions/upload-artifact@v3
-      with:
-        name: vendor
-        path: ./server/vendor
+      - name: Archive vendor directory
+        uses: actions/upload-artifact@v3
+        with:
+          name: vendor
+          path: ./server/vendor
 
-    - name: Archive JWT keys
-      uses: actions/upload-artifact@v3
-      with:
-        name: jwt-keys
-        path: ./server/config/jwt
+      - name: Archive JWT keys
+        uses: actions/upload-artifact@v3
+        with:
+          name: jwt-keys
+          path: ./server/config/jwt
 
   test:
     needs: install-dependencies
