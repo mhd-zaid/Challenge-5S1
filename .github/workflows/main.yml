@@ -33,17 +33,23 @@ jobs:
         run: php bin/console lexik:jwt:generate-keypair
         working-directory: ./server
 
+      - name: Compress vendor directory
+        run: tar -czf vendor.tar.gz -C ./server vendor
+
       - name: Archive vendor directory
         uses: actions/upload-artifact@v3
         with:
           name: vendor
-          path: ./server/vendor
+          path: ./server/vendor.tar.gz
+
+      - name: Compress JWT keys
+        run: tar -czf jwt-keys.tar.gz -C ./server/config jwt
 
       - name: Archive JWT keys
         uses: actions/upload-artifact@v3
         with:
           name: jwt-keys
-          path: ./server/config/jwt
+          path: ./server/config/jwt-keys.tar.gz
 
   test:
     needs: install-dependencies
@@ -77,13 +83,19 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: vendor
-          path: ./server/vendor
+          path: ./server
+
+      - name: Uncompress vendor directory
+        run: tar -xzf vendor.tar.gz -C ./server
 
       - name: Download JWT keys
         uses: actions/download-artifact@v3
         with:
           name: jwt-keys
-          path: ./server/config/jwt
+          path: ./server/config
+
+      - name: Uncompress JWT keys
+        run: tar -xzf jwt-keys.tar.gz -C ./server/config
 
       - name: Install dockerize
         run: |
