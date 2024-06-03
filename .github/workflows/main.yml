@@ -50,7 +50,7 @@ jobs:
           name: jwt-keys
           path: /tmp/jwt-keys.tar.gz
 
-  run-test:
+  test_backend:
     needs: install-dependencies
     runs-on: ubuntu-latest
     env:
@@ -107,6 +107,7 @@ jobs:
       - name: Run tests
         run: php bin/phpunit
         working-directory: ./server
+
   install-front-dependencies:
     runs-on: ubuntu-latest
     steps:
@@ -122,14 +123,14 @@ jobs:
         working-directory: ./client
 
       - name: Compress build
-        run: tar -czf /tmp/build.tar.gz -C build
-        working-directory: ./client
+        run: tar -czf /tmp/build.tar.gz -C ./client build
 
       - name: Archive build
         uses: actions/upload-artifact@v3
         with:
           name: build
           path: /tmp/build.tar.gz
+
   lint:
     runs-on: ubuntu-latest
     needs: install-front-dependencies
@@ -150,6 +151,7 @@ jobs:
         run: npm run lint
         working-directory: ./client
         continue-on-error: true
+
   test_frontend:
     runs-on: ubuntu-latest
     needs: install-front-dependencies
@@ -166,6 +168,6 @@ jobs:
       - name: Uncompress build directory
         run: tar -xzf /tmp/build.tar.gz -C ./client
 
-      - name: jest
+      - name: Run Jest
         run: npm run test
         working-directory: ./client
