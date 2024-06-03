@@ -130,3 +130,43 @@ jobs:
         with:
           name: build
           path: /tmp/build.tar.gz
+  lint:
+    runs-on: ubuntu-latest
+    needs: install-front-dependencies
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download build directory
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: /tmp
+
+      - name: Uncompress build directory
+        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client/build
+
+      - name: Lint
+        run: npm run lint
+        working-directory: ./client
+        continue-on-error: true
+
+  test_frontend:
+    runs-on: ubuntu-latest
+    needs: install-front-dependencies
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download build directory
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: /tmp
+
+      - name: Uncompress build directory
+        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client/build
+
+      - name: Run Jest
+        run: npm run test
+        working-directory: ./client
