@@ -108,10 +108,5 @@ jobs:
       - name: Run tests
         run: php bin/phpunit
         working-directory: ./server
-  frontend_ci:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Include Frontend CI Workflow
-        uses: actions/checkout@v2
-        with:
-          path: .github/workflows/frontend_ci.yml
+extends:
+  - ./.github/workflows/frontend.yml
