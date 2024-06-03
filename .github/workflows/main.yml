@@ -97,9 +97,9 @@ jobs:
         run: |
           curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar -xzC /usr/local/bin
 
-      - name: Wait for MySQL
+      - name: Wait for database
         run: |
-          dockerize -wait tcp://localhost:3306 -timeout 1m
+          dockerize -wait tcp://localhost:5432 -timeout 1m
 
       - name: Run migrations
         run: php bin/console d:m:m --no-interaction
