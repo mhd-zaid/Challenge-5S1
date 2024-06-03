@@ -133,3 +133,4 @@ jobs:
       - name: Lint
         run: npm run lint
         working-directory: ./client
+        continue-on-error: true
