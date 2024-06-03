@@ -145,7 +145,7 @@ jobs:
           path: /tmp
 
       - name: Uncompress build directory
-        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client
+        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client/build
 
       - name: Lint
         run: npm run lint
@@ -166,7 +166,7 @@ jobs:
           path: /tmp
 
       - name: Uncompress build directory
-        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client
+        run: tar -xzf /tmp/build.tar.gz -C ${{ github.workspace }}/client/build
 
       - name: Run Jest
         run: npm run test
