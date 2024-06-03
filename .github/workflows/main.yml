@@ -100,8 +100,12 @@ jobs:
         run: |
           dockerize -wait tcp://localhost:3306 -timeout 1m
 
+      - name: Run create database
+        run: php bin/console d:d:c --no-interaction
+        working-directory: ./server
+
       - name: Run migrations
-        run: php bin/console doctrine:migrations:migrate --no-interaction
+        run: php bin/console d:m:m --no-interaction
         working-directory: ./server
 
       - name: Run tests
