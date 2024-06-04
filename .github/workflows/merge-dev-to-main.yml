@@ -14,9 +14,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Merge dev to main
+      - name: Setup Git
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge dev into main
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+          git fetch origin
           git checkout main
-          git pull origin main
-          git merge dev
+          git merge origin/dev
           git push origin main
