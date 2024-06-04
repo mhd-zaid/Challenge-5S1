@@ -1,12 +1,13 @@
 name: CD
 
 on:
-  workflow_dispatch:inputs:
-    environment:
-      description: "Environnement de déploiement"
-      required: true
-      default: "production"
-      type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environnement de déploiement"
+        required: true
+        default: "production"
+        type: string
 jobs:
   deploy:
     runs-on: ubuntu-latest
