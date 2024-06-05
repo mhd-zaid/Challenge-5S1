@@ -49,8 +49,6 @@ class UserCreationSubscriber implements EventSubscriberInterface
     public function preUpdate(LifecycleEventArgs $args): void
     {
 
-        // $this->logger->info('lalalala' . $token);
-
         $object = $args->getObject();
 
         /** @var User $object */

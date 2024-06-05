@@ -24,6 +24,7 @@ use App\Controller\UserController;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:input']],
     operations: [
         new Get(),
         new Post(),
@@ -67,6 +68,7 @@ use App\Controller\UserController;
         )
     ],
 )]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
@@ -86,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -96,25 +98,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Assert\Unique]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $email = null;
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['admin:input'])]
     private ?string $password = null;
 
     #[Assert\Regex(pattern : '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/',
     message: '8 caractères requis avec au moins une majuscule, minuscule, un chiffre et un caractère spécial')]
+    #[Groups(['user:input'])]
     private ?string $plainPassword = null;
 
     #[ORM\Column]

@@ -27,7 +27,6 @@ class UserController extends AbstractController
 
     public function __invoke(string $token): Response
     {
-        $this->logger->info('Verifying email with token: ' . $token);
         $user = $this->userRepository->findOneBy(['token' => $token]);
 
         if (!$user) {
