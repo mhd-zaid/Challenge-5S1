@@ -102,6 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180)]
     #[Assert\NotBlank]
     #[Assert\Email]
+    #[Assert\Unique]
     #[Groups(['user:read'])]
     private ?string $email = null;
 
