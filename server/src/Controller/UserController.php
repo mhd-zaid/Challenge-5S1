@@ -9,18 +9,20 @@ use App\Service\MailService;
 use App\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\SecurityService;
+use App\Entity\User;
 
 #[AsController]
 class UserController extends AbstractController
 {
-    public function __construct(TokenService $tokenService, MailService $emailService, private LoggerInterface $logger, UserRepository $userRepository) 
+    public function __construct(SecurityService $securityService ,TokenService $tokenService, MailService $emailService, private LoggerInterface $logger, UserRepository $userRepository) 
     {
         $this->logger = $logger;
         $this->tokenService = $tokenService;
         $this->emailService = $emailService;
         $this->userRepository = $userRepository;
+        $this->securityService = $securityService;
     }
 
     public function __invoke(string $token): Response
@@ -99,25 +101,25 @@ class UserController extends AbstractController
     return new Response('TOKEN OK!', Response::HTTP_OK);
     }
 
-    public function me(Security $security): Response
+    public function me(): Response
     {
-    $user = $security->getUser();
+        $user = $this->securityService->securityToken();
+        if(!$user){
+            return new Response('Utilisateur non authentifié', Response::HTTP_UNAUTHORIZED);
+        }
 
-    if (!$user) {
-        return new Response('Utilisateur non authentifié', Response::HTTP_UNAUTHORIZED);
-    }
+        $responseData = [
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'roles' => $user->getRoles(),
+            'phone' => $user->getPhone(),
+            'firstname' => $user->getFirstname(),
+            'lastname' => $user->getLastname(),
+        ];
 
-    $responseData = [
-        'id' => $user->getId(),
-        'email' => $user->getEmail(),
-        'roles' => $user->getRoles(),
-    ];
-
-    $response = new Response(json_encode($responseData));
-
-    $response->headers->set('Content-Type', 'application/json');
-
-    return $response;
+        $response = new Response(json_encode($responseData));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     public function resetPassword(Request $request, string $token): Response
@@ -141,4 +143,18 @@ class UserController extends AbstractController
         return new Response('Password updated!', Response::HTTP_OK);
     }
 
+    public function register(Request $request): void
+    {
+        $payload = json_decode($request->getContent(), true);
+
+        $user = new User();
+        $user->setPlainPassword($payload['password']);
+        $user->setEmail($payload['email']);
+        $user->setIsValidated(false);
+        $user->setRoles(['ROLE_CUSTOMER']);
+        $user->setPhone($payload['phone']);
+        $user->setFirstname($payload['firstname']);
+        $user->setLastname($payload['lastname']);    
+        $this->userRepository->save($user, true);
+    }
 }

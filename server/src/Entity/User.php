@@ -59,6 +59,11 @@ use App\Controller\UserController;
             uriTemplate: '/users/reset-password/{token}', 
             controller: UserController::class . '::resetPassword', 
             read: false
+        ),
+        new Post(
+            uriTemplate: '/users/register', 
+            controller: UserController::class . '::register', 
+            read: false
         )
     ],
 )]
@@ -122,18 +127,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
     private ?string $phone = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $country = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $zipCode = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $city = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Company $company = null;
@@ -293,54 +286,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(string $phone): static
     {
         $this->phone = $phone;
-
-        return $this;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    public function getZipCode(): ?string
-    {
-        return $this->zipCode;
-    }
-
-    public function setZipCode(string $zipCode): static
-    {
-        $this->zipCode = $zipCode;
-
-        return $this;
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    public function setCity(string $city): static
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
 
         return $this;
     }
