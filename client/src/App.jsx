@@ -4,7 +4,7 @@ import Header from './components/header';
 import { Outlet } from 'react-router-dom';
 import Footer from './components/footer';
 import '@/App.css';
-import { AuthProvider } from '@/Context/AuthContext.jsx';
+import { AuthProvider } from '@/context/AuthContext.jsx';
 
 const menus = [
   { title: 'Contact', url: '/contact', requireAuth: false },
