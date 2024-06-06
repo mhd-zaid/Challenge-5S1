@@ -15,6 +15,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
@@ -58,6 +60,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ]
 )
 ]
+#[ApiFilter(SearchFilter::class, properties: [
+    'id' => 'exact',
+    'studio.city' => 'partial'
+])]
 class Service
 {
     use Traits\BlameableTrait;

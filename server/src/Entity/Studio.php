@@ -7,6 +7,7 @@ use App\Repository\StudioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioRepository::class)]
 #[ApiResource]
@@ -21,6 +22,7 @@ class Studio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['service:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -55,6 +57,9 @@ class Studio
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: WorkHour::class)]
     private Collection $workHours;
+
+    #[Groups(['service:read'])]
+    private ?string $fullAddress = null;
 
     public function __construct()
     {
@@ -264,5 +269,10 @@ class Studio
         }
 
         return $this;
+    }
+
+    public function getFullAddress(): ?string
+    {
+        return $this->address . ', ' . $this->zipCode . ' ' . $this->city . ', ' . $this->country;
     }
 }
