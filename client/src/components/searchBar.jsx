@@ -55,7 +55,7 @@ const SearchBar = () => {
   };
 
   const handleSearch = () => {
-    let url = 'prestations';
+    let url = 'studio';
     if (selectedService && city) {
       url += `?service=${selectedService}&city=${city}`;
     } else if (selectedService) {

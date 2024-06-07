@@ -23,8 +23,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const PrestationPage = () => {
-  const [prestations, setPrestations] = useState([]);
+const StudioSearchPage = () => {
+  const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -36,18 +36,18 @@ const PrestationPage = () => {
       : parseInt(queryParams.get('service'));
 
   useEffect(() => {
-    getPrestas();
+    getStudios();
   }, []);
 
-  const getPrestas = async () => {
+  const getStudios = async () => {
     setLoading(true);
-    let url = import.meta.env.VITE_BACKEND_URL + '/services';
+    let url = import.meta.env.VITE_BACKEND_URL + '/studios';
     if (city !== null && service !== null) {
-      url += `?id=${service}&studio.city=${city}`;
+      url += `?services.id=${service}&city=${city}`;
     } else if (service !== null) {
-      url += `?id=${service}`;
+      url += `?services.id=${service}`;
     } else if (city !== null) {
-      url += `?studio.city=${city}`;
+      url += `?city=${city}`;
     }
 
     const response = await fetch(url, {
@@ -59,12 +59,12 @@ const PrestationPage = () => {
     const data = await response.json();
 
     for (let i = 0; i < data.length; i++) {
-      const coords = await getCoordinates(data[i].studio.fullAddress);
+      const coords = await getCoordinates(data[i].fullAddress);
       if (coords !== null) {
-        data[i].studio.coords = coords;
+        data[i].coords = coords;
       }
     }
-    setPrestations(data);
+    setStudios(data);
     setLoading(false);
   };
 
@@ -125,7 +125,7 @@ const PrestationPage = () => {
             size="xl"
           />
         </Flex>
-      ) : prestations.length === 0 ? (
+      ) : studios.length === 0 ? (
         <Flex justifyContent={'center'} alignItems={'center'} h={'30vh'}>
           <Heading size={'md'}>Aucun résultat trouvé</Heading>
         </Flex>
@@ -136,24 +136,22 @@ const PrestationPage = () => {
           alignItems="start"
         >
           <Flex display={'flex'} flexDirection={'column'} w={'100%'}>
-            {prestations.map((prestation, index) => (
+            {studios.map((studio, index) => (
               <Box w={'100%'} h={'fit-content'} p={2} key={index}>
                 <Flex>
                   <Flex>
                     <Image
                       borderRadius={'lg'}
-                      src={`https://source.unsplash.com/random/300x200/?${prestation.name}`}
+                      src={`https://source.unsplash.com/random/300x200/?${studio.name}`}
                     />
                   </Flex>
                   <Flex flexDirection={'column'} py={2} px={5}>
                     <Text fontSize={'2xl'} fontWeight={'semibold'}>
-                      {prestation.studio.name}
+                      {studio.name}
                     </Text>
                     <Flex alignItems={'center'} gap={2}>
                       <Icon icon="tabler:location" style={{ color: 'gray' }} />
-                      <Text fontSize={'md'}>
-                        {prestation.studio.fullAddress}
-                      </Text>
+                      <Text fontSize={'md'}>{studio.fullAddress}</Text>
                     </Flex>
                     <Flex alignItems={'center'} gap={2}>
                       <Icon icon="ph:star-bold" style={{ color: 'gray' }} />
@@ -162,7 +160,12 @@ const PrestationPage = () => {
                           .toFixed(1)
                           .replace('.', ',')}{' '}
                         ({Math.floor(Math.random() * 500)} avis) -{' '}
-                        {prestation.cost} €{' '}
+                        {service === null
+                          ? '€€€'
+                          : studio.services.find(
+                              element => element.id === service,
+                            )?.cost ?? '€€€'}{' '}
+                        €{' '}
                       </Text>
                     </Flex>
                   </Flex>
@@ -177,7 +180,7 @@ const PrestationPage = () => {
                   </Text>
                   <Button variant={'flat'}>Prendre RDV</Button>
                 </Flex>
-                {index === prestations.length - 1 ? null : (
+                {index === studios.length - 1 ? null : (
                   <Divider
                     borderColor="black"
                     width={'80%'}
@@ -190,7 +193,7 @@ const PrestationPage = () => {
           </Flex>
           <Box w={'100%'} h={'100vh'} p={1} position={'sticky'} top={100}>
             <MapContainer
-              center={prestations[0].studio.coords}
+              center={studios[0].coords}
               zoom={12}
               style={{ height: '100%', width: '100%' }}
             >
@@ -198,12 +201,11 @@ const PrestationPage = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
-              {prestations.map((prestation, index) => {
+              {studios.map((studio, index) => {
                 return (
-                  <Marker position={prestation.studio.coords} key={index}>
+                  <Marker position={studio.coords} key={index}>
                     <Popup>
-                      {prestation.studio.name} <br />{' '}
-                      {prestation.studio.fullAddress}
+                      {studio.name} <br /> {studio.fullAddress}
                     </Popup>
                   </Marker>
                 );
@@ -216,4 +218,4 @@ const PrestationPage = () => {
   );
 };
 
-export default PrestationPage;
+export default StudioSearchPage;

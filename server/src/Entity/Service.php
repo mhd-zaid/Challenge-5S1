@@ -15,9 +15,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use ApiPlatform\Metadata\ApiFilter;
-
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['service:read']],
@@ -60,10 +57,6 @@ use ApiPlatform\Metadata\ApiFilter;
     ]
 )
 ]
-#[ApiFilter(SearchFilter::class, properties: [
-    'id' => 'exact',
-    'studio.city' => 'partial'
-])]
 class Service
 {
     use Traits\BlameableTrait;
@@ -72,12 +65,12 @@ class Service
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read','studio:read'])]
     #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read','studio:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -85,11 +78,11 @@ class Service
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read','studio:read'])]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read','studio:read'])]
     private ?\DateTimeInterface $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
