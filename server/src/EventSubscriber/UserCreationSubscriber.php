@@ -10,7 +10,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Psr\Log\LoggerInterface;
 use App\Service\TokenService;
 use App\Service\MailService;
-// use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class UserCreationSubscriber implements EventSubscriberInterface
 {
@@ -49,8 +48,6 @@ class UserCreationSubscriber implements EventSubscriberInterface
 
     public function preUpdate(LifecycleEventArgs $args): void
     {
-
-        // $this->logger->info('lalalala' . $token);
 
         $object = $args->getObject();
 
