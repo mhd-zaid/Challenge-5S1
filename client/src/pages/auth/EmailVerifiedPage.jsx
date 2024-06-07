@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Box, Button, Center, Heading, Text, Spinner } from '@chakra-ui/react';
-import axios from 'axios';
+import AuthService from '@/services/AuthService';
 
 const EmailVerifiedPage = () => {
   const { token } = useParams();
@@ -10,7 +10,7 @@ const EmailVerifiedPage = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/users/verify-email/${token}`);
+        const response = await AuthService.verify_email(token);
         if (response.status === 200) {
           setVerificationStatus('success');
         } else {

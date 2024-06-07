@@ -11,7 +11,7 @@ import {
   Spinner
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import AuthService from '@/services/AuthService';
 
 const ForgetPasswordPage = () => {
   const [email, setEmail] = useState('');
@@ -24,10 +24,7 @@ const ForgetPasswordPage = () => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/users/forget-password/${email}`, {
-        email: email
-      });
-      
+      const response = await AuthService.forget_password(email);
       if (response.status === 200) {
         setIsEmailSent(true);
       }

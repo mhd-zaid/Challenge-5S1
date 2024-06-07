@@ -11,7 +11,7 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import axios from 'axios';
+import AuthService from '@/services/AuthService';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
@@ -26,7 +26,7 @@ const ResetPasswordPage = () => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/users/check-token/${token}`);
+        const response = await AuthService.check_token(token);
         if (response.status === 200) {
           setIsValidToken(true);
         } else {
@@ -53,9 +53,7 @@ const ResetPasswordPage = () => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}api/users/reset-password/${token}`, {
-        password: newPassword
-      });
+      const response = await AuthService.reset_password(newPassword, token);
       if (response.status === 200) {
         toast({
           title: 'Mot de passe réinitialisé',
