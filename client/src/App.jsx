@@ -12,7 +12,7 @@ const menus = [
 const App = () => {
   return (
     <AuthProvider>
-      <Header />
+      <Header menus={menus} />
       <Outlet />
       <Footer />
     </AuthProvider>
