@@ -9,8 +9,6 @@ function App() {
 
   return (
     <AuthProvider>
-      <h1>{t('homepage.main-title')}</h1>
-      <p>{t('description')}</p>
       <Header />
       <Outlet />
       <Footer />

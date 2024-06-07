@@ -15,6 +15,8 @@ import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import EmailVerifiedPage from './pages/auth/EmailVerifiedPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
+import StudioPage from './pages/StudioPage.jsx';
+import ReservationPage from './pages/ReservationPage.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -38,6 +40,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
             <Route element={<AuthGuard />}>
               <Route path="profile" element={<Profile />} />
+            </Route>
+
+            <Route path="studios">
+              <Route index element={<>Studios</>} /> {/* ZAID */}
+              <Route path=":id" element={<StudioPage />} />
+              <Route path=":id/reservation" element={<ReservationPage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />
