@@ -32,40 +32,9 @@ use App\Controller\UserController;
         new Delete(),
         new GetCollection(),
         new Get(
-            uriTemplate: '/users/verify-email/{token}', 
-            controller: UserController::class, 
-            read: false
+            uriTemplate: '/me',
+            name: 'me',
         ),
-        new Get(
-            uriTemplate: '/users/send-email-verification/{email}', 
-            controller: UserController::class . '::verify_email', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/users/forget-password/{email}', 
-            controller: UserController::class . '::forgetPassword', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/users/check-token/{token}', 
-            controller: UserController::class . '::checkToken', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/me', 
-            controller: UserController::class . '::me', 
-            read: false
-        ),
-        new Post(
-            uriTemplate: '/users/reset-password/{token}', 
-            controller: UserController::class . '::resetPassword', 
-            read: false
-        ),
-        new Post(
-            uriTemplate: '/users/register', 
-            controller: UserController::class . '::register', 
-            read: false
-        )
     ],
 )]
 
