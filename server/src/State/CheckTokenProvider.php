@@ -3,12 +3,11 @@
 namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
-use ApiPlatform\State\ProcessorInterface;
-
+use ApiPlatform\State\ProviderInterface;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckTokenStateProcessor implements ProcessorInterface
+class CheckTokenProvider implements ProviderInterface
 {
 
     public function __construct(UserRepository $userRepository)
@@ -16,9 +15,10 @@ class CheckTokenStateProcessor implements ProcessorInterface
         $this->userRepository = $userRepository;
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Response
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): Response
     {
-        $user = $this->userRepository->findOneBy(['token' => $data->getToken()]);
+
+        $user = $this->userRepository->findOneBy(['token' => $uriVariables['token']]);
 
         if (!$user) {
             return new Response('User not found', Response::HTTP_NOT_FOUND);
