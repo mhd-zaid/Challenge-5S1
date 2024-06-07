@@ -25,13 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
-
-            <Route
-            path='profile'
-            element={ <AuthGuard component={Profile} /> }
-            />
-
-        
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
@@ -42,6 +35,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               />
               <Route path="verify/:token" element={<EmailVerifiedPage />} />
             </Route>
+
+            <Route element={<AuthGuard />}>
+              <Route path="profile" element={<Profile />} />
+            </Route>
+
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

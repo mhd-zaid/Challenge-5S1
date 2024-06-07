@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import axios from 'axios';
 
-const AuthGuard = ({ component: Component }) => {
+const AuthGuard = () => {
   const { token, setUser, logout } = useAuth();
   const [loading, setLoading] = useState(true);
 
@@ -11,26 +11,31 @@ const AuthGuard = ({ component: Component }) => {
     const fetchData = async () => {
       try {
         if (token) {
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          console.log('response:', response);
+          const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}api/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
           if (response.status === 200) {
-            const user =  response.data;
-            setUser(user); 
+            const user = response.data;
+            setUser(user);
           } else {
-            console.log('Token invalide')
+            console.log('Token invalide');
             logout();
-            setUser(null); 
+            setUser(null);
           }
         }
       } catch (error) {
-        console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+        console.error(
+          "Erreur lors de la récupération de l'utilisateur:",
+          error,
+        );
         logout();
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -40,7 +45,7 @@ const AuthGuard = ({ component: Component }) => {
   if (loading) {
     return <div>Chargement...</div>;
   }
-  return token && !loading ? <Component /> : <Navigate to="/auth/login" replace />;
+  return token && !loading ? <Outlet /> : <Navigate to="/auth/login" replace />;
 };
 
 export default AuthGuard;
