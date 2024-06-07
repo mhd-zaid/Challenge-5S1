@@ -1,0 +1,92 @@
+name: Backend tests
+
+on:
+  workflow_call:
+
+jobs:
+  install-back-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2.18"
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ./server
+
+      - name: Cache vendor
+        uses: actions/cache@v2
+        with:
+          path: ./server/vendor
+          key: packages-${{ runner.os }}-${{ hashFiles('**/server/composer.lock') }}
+          restore-keys: |
+            packages-${{ runner.os }}-
+
+      - name: Install Lexik keys
+        run: php bin/console lexik:jwt:generate-keypair
+        working-directory: ./server
+
+      - name: Cache Lexik keys
+        uses: actions/cache@v2
+        with:
+          path: ./server/config/jwt
+          key: jwt-${{ runner.os }}
+          restore-keys: |
+            jwt-${{ runner.os }}
+
+  test_backend:
+    needs: install-back-dependencies
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://user:password@localhost:5432/testdb?serverVersion=13&charset=utf8
+    services:
+      database:
+        image: postgres:13
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2.18"
+
+      - name: Install dockerize
+        run: |
+          curl -sSL https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-linux-amd64-v0.6.1.tar.gz | tar -xzC /usr/local/bin
+
+      - name: Wait for database
+        run: |
+          dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - name: Use vendor cache
+        uses: actions/cache@v2
+        with:
+          path: ./server/vendor
+          key: packages-${{ runner.os }}-${{ hashFiles('**/server/composer.lock') }}
+
+      - name: Use Lexik keys cache
+        uses: actions/cache@v2
+        with:
+          path: ./server/config/jwt
+          key: jwt-${{ runner.os }}
+
+      - name: Run migrations
+        run: php bin/console d:m:m --no-interaction
+        working-directory: ./server
+
+      - name: Run tests
+        run: php bin/phpunit
+        working-directory: ./server

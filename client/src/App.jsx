@@ -1,5 +1,3 @@
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/header';
 import { Outlet } from 'react-router-dom';
 import Footer from './components/footer';
@@ -17,28 +15,11 @@ const menus = [
 const App = () => {
   return (
     <AuthProvider>
-      <div>
-        <Header menus={menus} />
-        <Box>
-          <Outlet />
-        </Box>
-        {/*<SearchComponent />*/}
-        <Footer />
-      </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable={false}
-        pauseOnHover={false}
-        theme={"colored"}
-        transition:Bounce
-      />
-      <ToastContainer />
+      <h1>{t('homepage.main-title')}</h1>
+      <p>{t('description')}</p>
+      <Header />
+      <Outlet />
+      <Footer />
     </AuthProvider>
   );
 };

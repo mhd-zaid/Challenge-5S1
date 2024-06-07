@@ -52,7 +52,6 @@ const extend_theme = {
         fontWeight: 'bold',
         bg: 'blackAlpha.900',
         borderRadius: 'none',
-
       },
       sizes: {
         md: {
@@ -70,7 +69,7 @@ const extend_theme = {
           },
           _active: {
             bg: 'blackAlpha.700',
-          }
+          },
         },
         outline: {
           bg: 'white',
@@ -81,7 +80,7 @@ const extend_theme = {
           },
           _active: {
             border: 'blackAlpha.600',
-          }
+          },
         },
         bezel: {
           bgGradient: 'linear(to-r, whiteAlpha.200, whiteAlpha.500)', // Customize colors here
@@ -91,8 +90,9 @@ const extend_theme = {
           },
           _active: {
             bgGradient: 'linear(to-r, whiteAlpha.700, whiteAlpha.900)', // Adjust active colors
-          }
-        }
+
+          },
+        },
       },
       defaultProps: {
         size: 'md',
@@ -120,7 +120,7 @@ const extend_theme = {
           },
           _active: {
             bg: 'blackAlpha.700',
-          }
+          },
         },
         outline: {
           bg: 'white',
@@ -131,7 +131,7 @@ const extend_theme = {
           },
           _active: {
             border: 'blackAlpha.600',
-          }
+          },
         },
         bezel: {
           bgGradient: 'linear(to-r, whiteAlpha.200, whiteAlpha.500)', // Customize colors here
@@ -141,8 +141,9 @@ const extend_theme = {
           },
           _active: {
             bgGradient: 'linear(to-r, whiteAlpha.700, whiteAlpha.900)', // Adjust active colors
-          }
-        }
+
+          },
+        },
       },
       defaultProps: {
         size: 'md',
@@ -157,22 +158,22 @@ const extend_theme = {
     },
     Heading: {
       baseStyle: {
-        fontWeight: "bold",
-        fontFamily: "poppins, sans-serif",
+        fontWeight: 'bold',
+        fontFamily: 'poppins, sans-serif',
         mb: 4,
       },
       sizes: {
         xl: {
-          fontSize: "5xl",
+          fontSize: '5xl',
         },
         lg: {
-          fontSize: "4xl",
+          fontSize: '4xl',
         },
         md: {
-          fontSize: "3xl",
+          fontSize: '3xl',
         },
         sm: {
-          fontSize: "2xl",
+          fontSize: '2xl',
         },
       },
     },
@@ -184,7 +185,7 @@ const extend_theme = {
     Box: {
       baseStyle: {
         borderRadius: 'none',
-      }
+      },
     },
   },
 };

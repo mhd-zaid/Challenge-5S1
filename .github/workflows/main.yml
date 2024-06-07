@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+      - feature/*
+      - fix/*
+      - hotfix/*
+      - feat/*
+jobs:
+  backend:
+    uses: ./.github/workflows/backend.yml
+
+  frontend:
+    uses: ./.github/workflows/frontend.yml

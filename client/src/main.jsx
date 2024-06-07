@@ -5,7 +5,6 @@ import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import extend_theme from './utils/chakra-theme.js';
 import './utils/i18n.js';
 import './index.css';
-import { ProtectedRoute } from './layouts/ProtectedRoute.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import App from './App.jsx';
 import Home from './pages/HomePage';
@@ -17,6 +16,7 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import EmailVerifiedPage from './pages/auth/EmailVerifiedPage.jsx';
 import InfoPage from '@/pages/info/InfoPage.jsx';
 import AdminPage from '@/pages/admin/AdminPage.jsx';
+import AuthGuard from './context/AuthGuard.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -27,27 +27,29 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path="*" element={<App />}>
             <Route index element={<Home />} />
-
-            <Route element={<ProtectedRoute />}>
-              <Route path="profile" element={<Profile />} />
-            </Route>
-
-
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="forgetpassword" element={<ForgetPasswordPage />} />
-              <Route path="resetpassword/:token" element={<ResetPasswordPage />} />
-              <Route path="verify" element={<EmailVerifiedPage />} />
+              <Route
+                path="resetpassword/:token"
+                element={<ResetPasswordPage />}
+              />
+              <Route path="verify/:token" element={<EmailVerifiedPage />} />
+            </Route>
+
+            <Route element={<AuthGuard />}>
+              <Route path="profile" element={<Profile />} />
             </Route>
 
             <Route path="admin">
               <Route path="*" element={<NotFoundPage />} />
               <Route path="dashboard" element={<AdminPage />} />
             </Route>
+
             <Route path="info">
               <Route index element={<InfoPage/>}/>
-            </Route>
+            </Route>             
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>
