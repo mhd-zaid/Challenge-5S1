@@ -58,15 +58,13 @@ const PrestationPage = () => {
     });
     const data = await response.json();
 
-    for (let i = 0; i < data['hydra:member'].length; i++) {
-      const coords = await getCoordinates(
-        data['hydra:member'][i].studio.fullAddress,
-      );
+    for (let i = 0; i < data.length; i++) {
+      const coords = await getCoordinates(data[i].studio.fullAddress);
       if (coords !== null) {
-        data['hydra:member'][i].studio.coords = coords;
+        data[i].studio.coords = coords;
       }
     }
-    setPrestations(data['hydra:member']);
+    setPrestations(data);
     setLoading(false);
   };
 

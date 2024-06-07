@@ -1,10 +1,8 @@
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from './components/header';
-import { Outlet } from 'react-router-dom';
 import Footer from './components/footer';
 import '@/App.css';
-import { AuthProvider } from '@/context/AuthContext.jsx';
 
 const menus = [
   { title: 'Contact', url: '/contact', requireAuth: false },
@@ -14,28 +12,9 @@ const menus = [
 const App = () => {
   return (
     <AuthProvider>
-      <div>
-        <Header menus={menus} />
-        <div>
-          <Outlet />
-        </div>
-        {/*<SearchComponent />*/}
-        <Footer />
-      </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable={false}
-        pauseOnHover={false}
-        theme={'colored'}
-        transition:Bounce
-      />
-      <ToastContainer />
+      <Header />
+      <Outlet />
+      <Footer />
     </AuthProvider>
   );
 };
