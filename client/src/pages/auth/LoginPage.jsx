@@ -15,8 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import { BiShowAlt, BiHide  } from "react-icons/bi";
-
-
+import AuthService from '@/services/AuthService';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,17 +37,7 @@ const LoginPage = () => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}auth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      });
-
+      const response = await AuthService.login(email, password);
       if (response.ok) {
         const { token } = await response.json();
         login(token);
@@ -97,13 +86,7 @@ const LoginPage = () => {
     e.preventDefault();
     setIsResendingEmail(true); 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/users/send-email-verification/${email}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
+      const response = await AuthService.send_verification_email(email);
       if (response.ok) {
         toast({
           title: 'Email de validation renvoyé',

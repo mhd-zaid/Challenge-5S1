@@ -42,7 +42,7 @@ const RegisterPage = () => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}api/users`, formData);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users`, formData);
       if (response.status === 201) {
         setIsSuccess(true);
         toast({
