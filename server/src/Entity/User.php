@@ -20,6 +20,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: 'user_profile')]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:input']],
@@ -35,7 +36,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
         ),
     ],
 )]
-
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
