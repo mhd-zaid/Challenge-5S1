@@ -18,12 +18,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableTrait;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Controller\UserController;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:input']],
     operations: [
         new Get(),
         new Post(),
@@ -31,37 +30,12 @@ use App\Controller\UserController;
         new Delete(),
         new GetCollection(),
         new Get(
-            uriTemplate: '/users/verify-email/{token}', 
-            controller: UserController::class, 
-            read: false
+            uriTemplate: '/me',
+            name: 'me',
         ),
-        new Get(
-            uriTemplate: '/users/send-email-verification/{email}', 
-            controller: UserController::class . '::verify_email', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/users/forget-password/{email}', 
-            controller: UserController::class . '::forgetPassword', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/users/check-token/{token}', 
-            controller: UserController::class . '::checkToken', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/me', 
-            controller: UserController::class . '::me', 
-            read: false
-        ),
-        new Post(
-            uriTemplate: '/users/reset-password/{token}', 
-            controller: UserController::class . '::resetPassword', 
-            read: false
-        )
     ],
 )]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
@@ -81,7 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -91,24 +65,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $email = null;
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['admin:input'])]
     private ?string $password = null;
 
     #[Assert\Regex(pattern : '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/',
     message: '8 caractères requis avec au moins une majuscule, minuscule, un chiffre et un caractère spécial')]
+    #[Groups(['user:input'])]
     private ?string $plainPassword = null;
 
     #[ORM\Column]
@@ -122,18 +96,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
     private ?string $phone = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $country = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $zipCode = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $city = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Company $company = null;
@@ -293,54 +255,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPhone(string $phone): static
     {
         $this->phone = $phone;
-
-        return $this;
-    }
-
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    public function getZipCode(): ?string
-    {
-        return $this->zipCode;
-    }
-
-    public function setZipCode(string $zipCode): static
-    {
-        $this->zipCode = $zipCode;
-
-        return $this;
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    public function setCity(string $city): static
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
 
         return $this;
     }

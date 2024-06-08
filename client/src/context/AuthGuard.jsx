@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import axios from 'axios';
+import AuthService from '@/services/AuthService';
 
 const AuthGuard = () => {
   const { token, setUser, logout } = useAuth();
@@ -11,14 +11,8 @@ const AuthGuard = () => {
     const fetchData = async () => {
       try {
         if (token) {
-          const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}api/me`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          );
+          const response = await AuthService.me(token);
+          console.log('response:', response);
           if (response.status === 200) {
             const user = response.data;
             setUser(user);
