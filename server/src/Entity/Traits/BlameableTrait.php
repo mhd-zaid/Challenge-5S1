@@ -30,12 +30,12 @@ trait BlameableTrait {
 
     public function getUpdatedBy(): ?User
     {
-        return $this->UpdatedBy;
+        return $this->updatedBy;
     }
 
-    public function setUpdatedBy(?User $UpdatedBy): self
+    public function setUpdatedBy(?User $updatedBy): self
     {
-        $this->UpdatedBy = $UpdatedBy;
+        $this->updatedBy = $updatedBy;
 
         return $this;
     }
