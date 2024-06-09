@@ -13,8 +13,14 @@ class ServiceFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
+
+        $obj = new Service();
+        $obj->setName('Service 1');
+        $obj->setDescription('Description 1');
+        $obj->setCost(1000);
+        $obj->setDuration(new \DateTime('00:30:00'));
+        $obj->setStudio($manager->getRepository(Studio::class)->findAll()[0] ?? null);
+        $manager->persist($obj);
 
         $manager->flush();
     }
