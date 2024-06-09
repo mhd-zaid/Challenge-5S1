@@ -29,9 +29,9 @@ const StudioSearchPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const city =
-    queryParams.get('city') === undefined ? null : queryParams.get('city');
+    queryParams.get('city') === null ? null : queryParams.get('city');
   const service =
-    queryParams.get('service') === undefined
+    queryParams.get('service') === null
       ? null
       : parseInt(queryParams.get('service'));
 
@@ -58,13 +58,13 @@ const StudioSearchPage = () => {
     });
     const data = await response.json();
 
-    for (let i = 0; i < data.length; i++) {
-      const coords = await getCoordinates(data[i].fullAddress);
+    for (let i = 0; i < data['hydra:member'].length; i++) {
+      const coords = await getCoordinates(data['hydra:member'][i].fullAddress);
       if (coords !== null) {
-        data[i].coords = coords;
+        data['hydra:member'][i].coords = coords;
       }
     }
-    setStudios(data);
+    setStudios(data['hydra:member']);
     setLoading(false);
   };
 

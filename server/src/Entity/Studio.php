@@ -14,6 +14,7 @@ use ApiPlatform\Metadata\ApiFilter;
 #[ORM\Entity(repositoryClass: StudioRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['studio:read']],
+    stateless: false
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'services.id' => 'exact',
