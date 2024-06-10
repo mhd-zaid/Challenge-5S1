@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -14,18 +15,21 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['service:read']],
     operations: [
         new Post(),
         new GetCollection(),
         new GetCollection(
+            name: 'get_services_distinct_by_column',
             uriTemplate: '/api/services/distinct/{column}',
+            controller: ServiceController::class,
             requirements: [
                 'column' => '\w+',
             ],
-            controller: ServiceController::class,
+            description: 'Get all services distinct by column',
+            paginationEnabled: false,
             openapiContext: [
                 'parameters' => [
                     [
@@ -48,13 +52,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
                     ],
                 ],
             ],
-            paginationEnabled: false,
-            description: 'Get all services distinct by column',
-            name: 'get_services_distinct_by_column',
         ),
         new Delete(),
-    ],
-    normalizationContext: ['groups' => ['service:read']]
+    ]
 )
 ]
 class Service
@@ -65,31 +65,31 @@ class Service
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read','studio:read'])]
+    #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['service:read', 'service:read:list', 'service:read:detail','service:create', 'service:update'])]
+    #[Groups(['service:read','studio:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['service:read', 'service:read:detail','service:create', 'service:update'])]
+    #[Groups(['service:read'])]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['service:read', 'service:read:detail','service:create', 'service:update'])]
+    #[Groups(['service:read','studio:read'])]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['service:read', 'service:read:detail','service:create', 'service:update'])]
+    #[Groups(['service:read','studio:read'])]
     private ?\DateTimeInterface $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
-    #[Groups(['service:read', 'service:read:detail', 'service:create'])]
+    #[Groups(['service:read'])]
     private ?Studio $studio = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: ServiceEmployee::class)]
-    #[Groups(['service:read:detail', 'service:create', 'service:update'])]
     private Collection $serviceEmployees;
 
     public function __construct()

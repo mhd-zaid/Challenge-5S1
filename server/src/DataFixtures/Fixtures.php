@@ -129,10 +129,6 @@ class Fixtures extends Fixture
             'company{1..10}' => [
                 'name'=> '<company()>',
                 'phone'=> '<phoneNumber()>',
-                'siret'=> '<numerify("#######000####")>',
-                'email'=> '<email()>',
-                'zipCode'=> '<postcode()>',
-                'city'=> '<city()>',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',

@@ -26,32 +26,37 @@ const Slider = ({ sliders }) => {
         rounded='md'
         position="relative"
       >
-        <Image 
-          src={sliders[currentIndex].image} 
+        <Image
+          src={sliders[currentIndex].image}
           alt={`Slide ${currentIndex}`}
-          boxSize="xl"
-          objectFit='cover' 
+          boxSize="md"
+          objectFit='cover'
+          marginBottom="2em"
         />
         <Stack>
-          <Card h={"full"} maxW="38em">
-          <CardBody display="flex" flexDirection="column" justifyContent="space-around" alignItems="center">
-            <Heading size='2xl'>{sliders[currentIndex].title}</Heading>
-            <Text>{sliders[currentIndex].description}</Text>
+          <CardBody maxW="38em" display="flex" flexDirection="column" justifyContent="space-around" alignItems="center">
+            <Heading size='md' fontFamily="Poppins, sans-serif">{sliders[currentIndex].title}</Heading>
+            <Text py='2' textAlign="justify" fontFamily="Poppins, sans-serif">
+              {sliders[currentIndex].description}
+            </Text>
           </CardBody>
 
-          <CardFooter gap={4}>
+          <CardFooter>
             <IconButton
               icon={<FaArrowLeft />}
               onClick={handlePrev}
               aria-label="Previous Slide"
+              bgColor="transparent"
+              _hover={{ bgColor: 'gray.200' }}
             />
             <IconButton
               icon={<FaArrowRight />}
               onClick={handleNext}
               aria-label="Next Slide"
+              bgColor="transparent"
+              __hover={{ bgColor: 'gray.200' }}
             />
           </CardFooter>
-          </Card>
         </Stack>
       </Card>
     </Box>
