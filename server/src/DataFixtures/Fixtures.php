@@ -107,12 +107,10 @@ class Fixtures extends Fixture
                 'lastName'=> '<lastName()>',
                 'firstName'=> '<firstName()>',
                 'email'=> '<email()>',
-                'password'=> 'MotDePasse123!',
+                'password'=> 'Motdepasse123!',
                 'isValidated'=> true,
                 'roles'=> ['<randomElement(["ROLE_ADMIN", "ROLE_PRESTA", "ROLE_CUSTOMER"])>'],
-                'phone'=> '<phoneNumber()>',
-//                'country'=> 'FRANCE',
-//                'address'=> '<address()>',
+                'phone'=> '0102030405',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>'
             ]
@@ -129,9 +127,10 @@ class Fixtures extends Fixture
         return [
             'company{1..10}' => [
                 'name'=> '<company()>',
-                'phone'=> '<phoneNumber()>',
+                'phone'=> '0102030405',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
+                'siret'=> '12345678901234',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
             ],
@@ -148,7 +147,7 @@ class Fixtures extends Fixture
         return [
             'studio{1..10}' => [
                 'name'=> ' - Studio',
-                'phone'=> '<phoneNumber()>',
+                'phone'=> '0102030405',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
@@ -186,7 +185,7 @@ class Fixtures extends Fixture
         if($object instanceof Company) {
             $email = 'administration@' . str_replace([" ","."],"",strtolower($object->getName())) . '.com';
             $object->setEmail($email);
-            $object->setFile(new File('srv/app/files/kbis/juin.pdf'));
+            //$object->setFile(new File('srv/app/files/kbis/juin.pdf'));
             $object = $this->addressHandler($object);
         }
 

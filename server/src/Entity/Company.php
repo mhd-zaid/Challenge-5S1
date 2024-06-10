@@ -146,16 +146,6 @@ class Company
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
-    #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom du propriétaire doit contenir entre 2 et 255 caractères')]
-    private ?string $ownerName = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
-    #[Assert\Length(min: 2, max: 255, exactMessage: 'Le prénom du propriétaire doit contenir entre 2 et 255 caractères')]
-    private ?string $ownerFirstname = null;
-
     #[ORM\Column]
     #[Groups(['company:admin'])]
     private ?bool $isVerified = false;
@@ -201,7 +191,7 @@ class Company
         return $this->siret;
     }
 
-    public function setSiret(string $siret): static
+    public function setSiret(?string $siret): static
     {
         $this->siret = $siret;
 
