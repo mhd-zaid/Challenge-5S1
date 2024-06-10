@@ -103,7 +103,7 @@ class Fixtures extends Fixture
     private function userFixture() : array
     {
         return [
-            'user{1..100}' => [
+            'user{1..10}' => [
                 'lastName'=> '<lastName()>',
                 'firstName'=> '<firstName()>',
                 'email'=> '<email()>',
