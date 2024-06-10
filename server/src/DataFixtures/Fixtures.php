@@ -11,6 +11,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Nelmio\Alice\Loader\NativeLoader;
+use Symfony\Component\HttpFoundation\File\File;
 
 class Fixtures extends Fixture
 {
@@ -110,8 +111,8 @@ class Fixtures extends Fixture
                 'isValidated'=> true,
                 'roles'=> ['<randomElement(["ROLE_ADMIN", "ROLE_PRESTA", "ROLE_CUSTOMER"])>'],
                 'phone'=> '<phoneNumber()>',
-                'country'=> 'FRANCE',
-                'address'=> '<address()>',
+//                'country'=> 'FRANCE',
+//                'address'=> '<address()>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>'
             ]
@@ -167,7 +168,7 @@ class Fixtures extends Fixture
     {
         if($object instanceof User) {
             $object->setPassword(password_hash($object->getPassword(), PASSWORD_BCRYPT));
-            $object = $this->addressHandler($object);
+//            $object = $this->addressHandler($object);
         }
 
         $manager->persist($object);
@@ -185,6 +186,7 @@ class Fixtures extends Fixture
         if($object instanceof Company) {
             $email = 'administration@' . str_replace([" ","."],"",strtolower($object->getName())) . '.com';
             $object->setEmail($email);
+            $object->setFile(new File('srv/app/files/kbis/juin.pdf'));
             $object = $this->addressHandler($object);
         }
 

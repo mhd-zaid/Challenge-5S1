@@ -4,16 +4,18 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\CompanyController;
 use App\Repository\CompanyRepository;
+use App\State\CompanyStateProcessor;
+use App\State\CompanyStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Controller\KbisController;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 USE Symfony\Component\HttpFoundation\File\File;
@@ -22,31 +24,58 @@ USE Symfony\Component\HttpFoundation\File\File;
 #[Vich\Uploadable()]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(
-            uriTemplate: '/companies/kbis/{siret}',
-            controller: CompanyController::class . '::getKbis',
-            openapiContext: [
-                'summary' => 'Get the KBIS of a company',
-                'description' => 'Get the KBIS of a company',
-            ],
-            normalizationContext: ['groups' => ['company:info:read']],
-            denormalizationContext: ['groups' => ['company:info:read']],
-            read: false,
+        new GetCollection(
         ),
+//        new Get(),
         new Post(
             uriTemplate: '/companies',
-            controller: CompanyController::class,
+            stateless: false,
+            controller: CompanyController::class . '::create',
             openapiContext: [
                 'summary' => 'Create a company request',
                 'description' => 'Create a company request',
             ],
-            normalizationContext: ['groups' => ['company:info:create']],
             denormalizationContext: ['groups' => ['company:info:create']],
             read: false,
             deserialize: false,
-        )
-    ]
+        ),
+        new Delete(),
+    ],
+    provider: CompanyStateProvider::class,
+//    processor: CompanyStateProcessor::class
+//    operations: [
+//        new GetCollection(
+//            openapiContext: [
+//                'summary' => 'Get all companies',
+//                'description' => 'Get all companies',
+//            ],
+//            normalizationContext: ['groups' => ['company:admin']],
+//            denormalizationContext: ['groups' => ['company:admin']],
+//        ),
+//        new Get(
+//            uriTemplate: '/companies/kbis/{siret}',
+//            controller: CompanyController::class . '::getKbis',
+//            openapiContext: [
+//                'summary' => 'Get the KBIS of a company',
+//                'description' => 'Get the KBIS of a company',
+//            ],
+//            normalizationContext: ['groups' => ['company:info:read']],
+//            denormalizationContext: ['groups' => ['company:info:read']],
+//            read: false,
+//        ),
+//        new Post(
+//            uriTemplate: '/companies',
+//            controller: CompanyController::class,
+//            openapiContext: [
+//                'summary' => 'Create a company request',
+//                'description' => 'Create a company request',
+//            ],
+//            normalizationContext: ['groups' => ['company:info:create']],
+//            denormalizationContext: ['groups' => ['company:info:create']],
+//            read: false,
+//            deserialize: false,
+//        )
+//    ]
 )]
 class Company
 {
@@ -56,21 +85,22 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[ApiProperty(identifier: false)]
+//    #[ApiProperty(identifier: false)]
+    #[Groups(['company:admin'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 14)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Length(min: 14, max: 14)]
     private ?string $siret = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Email()]
     private ?string $email = null;
 
     #[ORM\Column(length: 10)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Length(min: 10, max: 10, exactMessage: 'Le numéro de téléphone doit contenir 10 chiffres')]
     private ?string $phone = null;
 
@@ -79,17 +109,19 @@ class Company
     private ?string $country = null;
 
     #[ORM\Column(length: 5)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Length(min: 5, max: 5)]
     #[Assert\Regex(pattern: '/^[0-9]{5}$/', message: 'Le code postal doit contenir 5 chiffres')]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'La ville doit contenir au moins 2 caractères')]
+    #[Groups(['company:admin'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'L\'adresse doit contenir au moins 2 caractères')]
+    #[Groups(['company:admin'])]
     private ?string $address = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
@@ -101,40 +133,45 @@ class Company
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255)]
     #[Assert\Regex(pattern: '/^[a-zA-Z0-9-_]+\.pdf$/', message: 'Le fichier doit être un PDF')]
+    #[Groups(['company:admin'])]
     private ?string $filePath = null;
 
     #[Vich\UploadableField(mapping: 'kbis_upload', fileNameProperty: 'filePath')]
-//    #[Assert\File(mimeTypes: ['application/pdf'])]
-    private ?File $file = null;
+    #[Assert\File(mimeTypes: ['application/pdf'])]
+    #[Groups(['company:admin'])]
+    private ?File $file;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom du propriétaire doit contenir entre 2 et 255 caractères')]
     private ?string $ownerName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:info:create', 'company:info:read'])]
+    #[Groups(['company:info:create', 'company:info:read', 'company:admin'])]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le prénom du propriétaire doit contenir entre 2 et 255 caractères')]
     private ?string $ownerFirstname = null;
 
     #[ORM\Column]
+    #[Groups(['company:admin'])]
     private ?bool $isVerified = false;
 
     #[ORM\Column]
+    #[Groups(['company:admin'])]
     private ?bool $isActive = false;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->studios = new ArrayCollection();
+        $this->file = null;
     }
 
-    public function getFile(): File
+    public function getFile(): ?File
     {
         return $this->file;
     }

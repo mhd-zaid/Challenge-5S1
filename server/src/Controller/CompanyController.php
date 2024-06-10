@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Company;
 use App\Entity\User;
 use App\Service\KbisService;
+use App\Service\SecurityService;
 use App\Validator\RequestValidator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,55 +18,56 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 #[AsController]
 class CompanyController extends AbstractController
 {
-    private $em;
-    private $requestValidator;
-    private $kbisService;
+    public function __construct(
+        private readonly EntityManagerInterface $em
+        , private readonly RequestValidator $requestValidator
+        , private readonly KbisService      $kbisService
+        , private readonly SecurityService  $security
+    )
+    {}
 
-    public function __construct(EntityManagerInterface $em, RequestValidator $requestValidator, KbisService $kbisService)
+    public function create(Request $request): Response
     {
-        $this->requestValidator = $requestValidator;
-        $this->kbisService = $kbisService;
-        $this->em = $em;
-    }
+        $user = $this->security->securityToken();
 
-    public function __invoke(Request $request): Response
-    {
-
-        $requestParameters = $request->request->all();
-
-        return $this->json(['error' => $request], Response::HTTP_BAD_REQUEST);
-
-        $expectedParameters = ['siret', 'email', 'phone', 'zipCode', 'name', 'ownerName', 'ownerFirstname'];
-        $validationError = $this->requestValidator->validate($requestParameters, $expectedParameters);
-        if ($validationError['success'] === false) {
-            return $this->json(['error' => $validationError, 'request' => $request], Response::HTTP_BAD_REQUEST);
+        if ($request->getContentTypeFormat() === 'json') {
+            $data = json_decode($request->getContent(), true);
+        } else {
+            $data = $request->request->all();
         }
 
-//        $file = $request->files->get('file');
-//        if($file === null) {
-//            return $this->json(['error' => 'Missing file'], Response::HTTP_BAD_REQUEST);
-//        }
-//        if($file->getMimeType() !== 'application/pdf') {
-//            return $this->json(['error' => 'Invalid file'], Response::HTTP_BAD_REQUEST);
-//        }
+        $expectedParameters = ['siret', 'email', 'phone', 'zipCode', 'name', 'ownerName', 'ownerFirstname'];
+        $validationError = $this->requestValidator->validate($data, $expectedParameters);
+        if ($validationError['success'] === false) {
+            return $this->json([
+                'error' => $validationError
+                , 'request' => $request
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
+        $file = $request->files->get('kbis');
+        if($file === null) {
+            return $this->json(['error' => 'Missing file', 'data' => $data], Response::HTTP_BAD_REQUEST);
+        }
+        if($file->getMimeType() !== 'application/pdf') {
+            return $this->json(['error' => 'Invalid file', 'data' => $data], Response::HTTP_BAD_REQUEST);
+        }
 
         $company = new Company();
-        $company->setSiret($requestParameters['siret']);
-        $company->setEmail($requestParameters['email']);
-        $company->setPhone($requestParameters['phone']);
-        $company->setZipCode($requestParameters['zipCode']);
-        $company->setName($requestParameters['name']);
-        $company->setOwnerName($requestParameters['ownerName']);
-        $company->setOwnerFirstname($requestParameters['ownerFirstname']);
-//        $company->setFile($file);
+        $company->setSiret($data['siret']);
+        $company->setEmail($data['email']);
+        $company->setPhone($data['phone']);
+        $company->setZipCode($data['zipCode']);
+        $company->setName($data['name']);
+        $company->setOwnerName($data['ownerName']);
+        $company->setOwnerFirstname($data['ownerFirstname']);
+        $company->setFile($file);
         $company->setCreatedAt(new \DateTime());
         $company->setUpdatedAt(new \DateTime());
-        //TODO: set user
+        $company->setCreatedBy($user->getId());
+        $company->setUpdatedBy($user->getId());
         $this->em->persist($company);
         $this->em->flush();
-
-
 
         return $this->json(['success' => true], Response::HTTP_CREATED);
     }

@@ -21,56 +21,45 @@ const FormCompany = () => {
     register,
     formState: { errors, isSubmitting }
   } = useForm({});
-  const createCompany = async (data) => {
+  
+  async function createCompany(data) {
+    const formData = new FormData();
+    formData.append('ownerName', data.ownerName);
+    formData.append('ownerFirstname', data.ownerFirstname);
+    formData.append('zipCode', data.zipCode);
+    formData.append('phone', data.phone);
+    formData.append('email', data.email);
+    formData.append('name', data.name);
+    formData.append('siret', data.siret);
+    formData.append('kbis', data.kbis[0]);
+
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/ld+json',
       },
       // mode: 'no-cors',
-      body: JSON.stringify(data),
+      body: formData,
     });
+
     const result = await response.json();
-    console.log("result", result);
+
+    if (result.error) {
+      console.error('error', result.error);
+    } else {
+
+    }
   }
 
-
-  function onSubmit(values) {
-    return new Promise(async (resolve) => {
-      const data = new FormData();
-      data.append('ownerName', values.ownerName);
-      data.append('ownerFirstname', values.ownerFirstname);
-      data.append('zipCode', values.zipCode);
-      data.append('phone', values.phone);
-      data.append('email', values.email);
-      data.append('name', values.name);
-      data.append('siret', values.siret);
-      data.append('kbis', values.kbis[0]);
-      console.log("Data", [...data.entries()]);
-      console.log("values", values);
-      await createCompany(data);
-
+  const onSubmit = async (values) => {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
         console.log(JSON.stringify(values, null, 2))
+        createCompany(values)
         resolve()
       }, 2000)
-    })
+    });
   }
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/services', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      setListIxServices(data['hydra:member']);
-    };
-
-    fetchServices();
-  }, []);
 
   return (
     <Box
@@ -239,7 +228,7 @@ const FormCompany = () => {
 
         {/* Fichier KBIS */}
         <FormControl isInvalid={errors.kbis} mt={4} isRequired>
-          <FormLabel htmlFor='kbis'>Fichier KBIS</FormLabel>
+          <FormLabel htmlFor='kbis'>Fichier KBIS (.pdf)</FormLabel>
           <Input
             id='kbis'
             type='file'
@@ -252,7 +241,9 @@ const FormCompany = () => {
                 isImage: (value) => {
                   const validExtensions = ['pdf'];
                   const extension = value[0].name.split('.').pop();
-                  return validExtensions.includes(extension);
+                  if(!validExtensions.includes(extension)) {
+                    return 'Le fichier doit être un PDF';
+                  }
                 },
               },
             })}

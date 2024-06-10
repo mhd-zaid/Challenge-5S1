@@ -18,6 +18,7 @@ import StudioSearchPage from './pages/StudioSearchPage.jsx';
 import InfoPage from '@/pages/info/InfoPage.jsx';
 import AdminPage from '@/pages/admin/AdminPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
+import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -44,8 +45,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </Route>
 
             <Route path="admin">
-              <Route path="*" element={<NotFoundPage />} />
-              <Route path="dashboard" element={<AdminPage />} />
+              <Route index element={<AdminPage />} />
+              <Route path="prestataires-demandes" element={<AdminPrestataireRequests />} />
             </Route>
 
             <Route path="info">
