@@ -31,5 +31,9 @@ final readonly class CurrentUserExtension implements QueryItemExtensionInterface
         if (User::class !== $resourceClass || null === $user = $this->security->getUser()) {
             return;
         }
+        $rootAlias = $queryBuilder->getRootAliases()[0];
+        $queryBuilder->andWhere(sprintf('%s.id = :current_user', $rootAlias))
+                     ->setParameter('current_user', $user->getId());
+
     }
 }
