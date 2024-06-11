@@ -16,13 +16,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['unavailabilityHour:admin:read', 'user:read']],
     operations: [
-        new Get(security: "is_granted('ROLE_PRESTA')"),
-        new Post(security: "is_granted('ROLE_PRESTA')"),
-        new Patch(security: "is_granted('ROLE_PRESTA')"),
-        new Delete(security: "is_granted('ROLE_PRESTA')"),
-        new GetCollection(security: "is_granted('ROLE_PRESTA')")
+        new Get(security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user"),
+        new Post(security: "is_granted('ROLE_EMPLOYEE')"),
+        new Patch(security: "is_granted('ROLE_EMPLOYEE')"),
+        new Delete(security: "is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user or is_granted('ROLE_ADMIN') or user.getCompany().getOwner() == user"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')")
     ],
 )]class UnavailabilityHour
 {
