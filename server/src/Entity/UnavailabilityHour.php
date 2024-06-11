@@ -3,6 +3,11 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UnavailabilityHourRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,8 +15,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
-#[ApiResource]
-class UnavailabilityHour
+#[ApiResource(
+    normalizationContext: ['groups' => ['unavailabilityHour:admin:read', 'user:read']],
+    operations: [
+        new Get(security: "is_granted('ROLE_PRESTA')"),
+        new Post(security: "is_granted('ROLE_PRESTA')"),
+        new Patch(security: "is_granted('ROLE_PRESTA')"),
+        new Delete(security: "is_granted('ROLE_PRESTA')"),
+        new GetCollection(security: "is_granted('ROLE_PRESTA')")
+    ],
+)]class UnavailabilityHour
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
@@ -21,21 +34,25 @@ class UnavailabilityHour
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "Le champ 'startTime' ne peut pas être nul.")]
+    #[Assert\Type("\DateTimeInterface", message: "Le champ 'startTime' doit être une date valide.")]
     #[Groups(['unavailabilityHour:admin:read'])]
     private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "Le champ 'endTime' ne peut pas être nul.")]
+    #[Assert\Type("\DateTimeInterface", message: "Le champ 'endTime' doit être une date valide.")]
+    #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
     #[Groups(['unavailabilityHour:admin:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     #[Groups(['unavailabilityHour:admin:read'])]
     private ?int $calendarDay = null;
 
     #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
+    #[Assert\NotNull(message: "Le champ 'employee' ne peut pas être nul.")]
     #[Groups(['unavailabilityHour:admin:read'])]
     private ?User $employee = null;
 
