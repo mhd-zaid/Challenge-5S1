@@ -23,38 +23,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new Post(),
         new GetCollection(),
-        new GetCollection(
-            name: 'get_services_distinct_by_column',
-            uriTemplate: '/api/services/distinct/{column}',
-            controller: ServiceController::class,
-            requirements: [
-                'column' => '\w+',
-            ],
-            description: 'Get all services distinct by column',
-            paginationEnabled: false,
-            openapiContext: [
-                'parameters' => [
-                    [
-                        'name' => 'column',
-                        'in' => 'path',
-                        'required' => true,
-                        'schema' => [
-                            'type' => 'string',
-                            'enum' => [
-                                'id',
-                                'name',
-                                'description',
-                                'cost',
-                                'duration',
-                                'studio'
-                            ],
-                            'description' => 'The column to distinct. Allowed values: id, name, description, cost, duration, studio',
-                            'summary' => 'Retrieve distinct services by column'
-                        ],
-                    ],
-                ],
-            ],
-        ),
         new Delete(),
     ]
 )
