@@ -15,6 +15,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['service:read']],
@@ -71,22 +73,30 @@ class Service
 
     #[ORM\Column(length: 255)]
     #[Groups(['service:read','studio:read'])]
+    #[Assert\Length(min: 5, max: 255)]
+    #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['service:read'])]
+    #[Assert\Length(min: 20, max: 255)]
     private ?string $description = null;
 
     #[ORM\Column]
     #[Groups(['service:read','studio:read'])]
+    #[Assert\NotNull]
+    #[Assert\GreaterThanOrEqual(0)]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups(['service:read','studio:read'])]
+    #[Assert\NotNull]
+    #[Assert\GreaterThan(0)]
     private ?\DateTimeInterface $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
     #[Groups(['service:read'])]
+    #[Assert\NotNull]
     private ?Studio $studio = null;
 
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: ServiceEmployee::class)]

@@ -7,7 +7,7 @@ use App\Repository\ReservationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource]
@@ -22,16 +22,20 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[Groups(['reservation:read'])]
     private ?User $utilisateur = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[Groups(['reservation:read'])]
     private ?ServiceEmployee $serviceEmployee = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Groups(['reservation:read'])]
     private ?\DateTimeInterface $horaire = null;
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'UPDATED', 'CANCELED', 'COMPLETED'])]
+    #[Groups(['reservation:read'])]
     private $status;
 
     public function getId(): ?int

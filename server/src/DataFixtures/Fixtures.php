@@ -2,11 +2,15 @@
 
 namespace App\DataFixtures;
 
+
 use App\Entity\Company;
 use App\Entity\Service;
 use App\Entity\ServiceEmployee;
 use App\Entity\Studio;
+use App\Entity\StudioOpeningTime;
+use App\Entity\UnavailabilityHour;
 use App\Entity\User;
+use App\Entity\WorkHour;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -32,10 +36,12 @@ class Fixtures extends Fixture
         }
 
         $manager->flush();
+        $this->realUser($manager);
         $this->addUserToCompany($manager);
         $this->addCompanyAndUserToStudio($manager);
         $this->loadServiceFixture($manager);
         $this->loadServiceEmployeeFixture($manager);
+        $this->loadStudioOpeningTimeFixture($manager);
     }
 
     /**
@@ -53,7 +59,7 @@ class Fixtures extends Fixture
 
         foreach ($companies as $company) {
             $userCount = 0;
-            while ($userCount < 10 && $userIndex < $totalUsers) {
+            while ($userCount < 5 && $userIndex < $totalUsers) {
                 $user = $users[$userIndex];
                 if (!$user->getCompany()) {
                     $company->addUser($user);
@@ -81,17 +87,30 @@ class Fixtures extends Fixture
         $studios = $manager->getRepository(Studio::class)->findAll();
         $i = 0;
         foreach ($companies as $company) {
-            $users = $company->getUsers();
-            $user = $users[array_rand($users->toArray())];
             $studio = $studios[$i];
             $studio->setName($company->getName() . " - Studio");
             $studio->setCompany($company);
-            $studio->setUtilisateur($user);
-            $user->setRoles(['ROLE_ADMIN']);
-            $manager->persist($user);
+            $users = $company->getUsers();
+            $admin = false;
+            foreach ($users as $user) {
+                if (in_array('ROLE_ADMIN', $user->getRoles())) {
+                    $admin = true;
+                    $studio->setUtilisateur($user);
+                    $manager->persist($studio);
+                    break;
+                }
+            }
+            if (!$admin) {
+                $user = $users[0];
+                $studio->setUtilisateur($user);
+                $user->setRoles(['ROLE_ADMIN']);
+                $manager->persist($user);
+            }
             $manager->persist($studio);
+            $manager->persist($company);
             $i++;
         }
+
         $manager->flush();
     }
 
@@ -103,14 +122,14 @@ class Fixtures extends Fixture
     private function userFixture() : array
     {
         return [
-            'user{1..10}' => [
+            'user{1..16}' => [
                 'lastName'=> '<lastName()>',
                 'firstName'=> '<firstName()>',
                 'email'=> '<email()>',
                 'password'=> 'Motdepasse123!',
                 'isValidated'=> true,
-                'roles'=> ['<randomElement(["ROLE_ADMIN", "ROLE_PRESTA", "ROLE_CUSTOMER"])>'],
-                'phone'=> '0102030405',
+                'roles'=> ['<randomElement(["ROLE_CUSTOMER"])>'],
+                'phone'=> '<numerify("06########")>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>'
             ]
@@ -125,12 +144,12 @@ class Fixtures extends Fixture
     private function companyFixture() : array
     {
         return [
-            'company{1..10}' => [
+            'company{1..4}' => [
                 'name'=> '<company()>',
-                'phone'=> '0102030405',
+                'phone'=> '<numerify("01########")>',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
-                'siret'=> '12345678901234',
+                'siret'=> '<randomElement(["12345678901234"])>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
             ],
@@ -145,9 +164,9 @@ class Fixtures extends Fixture
     private function studioFixture() : array
     {
         return [
-            'studio{1..10}' => [
+            'studio{1..4}' => [
                 'name'=> ' - Studio',
-                'phone'=> '0102030405',
+                'phone'=> '<numerify("09########")>',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
@@ -167,7 +186,6 @@ class Fixtures extends Fixture
     {
         if($object instanceof User) {
             $object->setPassword(password_hash($object->getPassword(), PASSWORD_BCRYPT));
-//            $object = $this->addressHandler($object);
         }
 
         $manager->persist($object);
@@ -187,6 +205,7 @@ class Fixtures extends Fixture
             $object->setEmail($email);
             //$object->setFile(new File('srv/app/files/kbis/juin.pdf'));
             $object = $this->addressHandler($object);
+            $object->setSiret($this->fetchSiret($object->getFullAddress()));
         }
 
         $manager->persist($object);
@@ -209,11 +228,10 @@ class Fixtures extends Fixture
      */
     private function addressHandler($object): object
     {
-        list($address, $cityZipCode) = explode("\n", $object->getAddress());
-        preg_match('/(\d+)\s+(.+)/', $cityZipCode, $matches);
-        $object->setAddress($address);
-        $object->setZipCode($matches[1]);
-        $object->setCity($matches[2]);
+        $address = $this->fetchAddress(rand(1, 250));
+        $object->setAddress($address['address']);
+        $object->setZipCode($address['zipCode']);
+        $object->setCity($address['city']);
 
         return $object;
     }
@@ -305,5 +323,133 @@ class Fixtures extends Fixture
             }
         }
         $manager->flush();
+    }
+
+    /**
+     * Permet de générer les fixtures pour les horaires de travail
+     * 
+     * @param ObjectManager $manager
+     * @return void
+     */
+    private function loadStudioOpeningTimeFixture(ObjectManager $manager): void
+    {
+        $studios = $manager->getRepository(Studio::class)->findAll();
+        foreach ($studios as $studio) {
+            $daysToOpen = rand(3, 6);
+            $days = [1, 2, 3, 4, 5, 6, 0];
+            $daysToOpenArray = array_rand($days, $daysToOpen);
+            foreach ($daysToOpenArray as $day) {
+                $studioOpeningTime = new StudioOpeningTime();
+                $studioOpeningTime->setStudio($studio);
+                $studioOpeningTime->setDay($day);
+                $startTimes = ['08:00:00', '09:00:00', '10:00:00', '11:00:00', '12:00:00', '13:00:00', '14:00:00'];
+                $endTimes = ['17:00:00', '18:00:00', '19:00:00', '20:00:00', '21:00:00', '22:00:00', '23:00:00'];
+                $startTime = new \DateTime($startTimes[array_rand($startTimes)]);
+                $endTime = new \DateTime($endTimes[array_rand($endTimes)]);
+                $openingTime = $endTime->diff($startTime);
+                while ($openingTime->h < 12) {
+                    $startTime = new \DateTime($startTimes[array_rand($startTimes)]);
+                    $endTime = new \DateTime($endTimes[array_rand($endTimes)]);
+                    $openingTime = $endTime->diff($startTime);
+                }
+                $studioOpeningTime->setStartTime($startTime);
+                $studioOpeningTime->setEndTime($endTime);
+                $manager->persist($studioOpeningTime);
+            }
+        }
+        $manager->flush();
+    }
+
+    private function realUser(ObjectManager $manager): void
+    {
+        $realUsers = [
+            [
+                'lastName' => 'Mouhamad',
+                'firstName' => 'Zaid',
+                'email' => 'zaid@mail.fr',
+                'password' => 'Motdepasse123!',
+                'isValidated' => true,
+                'roles' => ['ROLE_CUSTOMER'],
+                'phone' => '0607080910',
+                'createdAt' => new \DateTime(),
+                'updatedAt' => new \DateTime()
+            ],
+            [
+                'lastName' => 'Zeknine',
+                'firstName' => 'Jugurtha',
+                'email' => 'jug@mail.fr',
+                'password' => 'Motdepasse123!',
+                'isValidated' => true,
+                'roles' => ['ROLE_CUSTOMER'],
+                'phone' => '0605060708',
+                'createdAt' => new \DateTime(),
+                'updatedAt' => new \DateTime()
+            ],
+            [
+                'lastName' => 'Kamissoko',
+                'firstName' => 'Makan',
+                'email' => 'mak@mail.fr',
+                'password' => 'Motdepasse123!',
+                'isValidated' => true,
+                'roles' => ['ROLE_CUSTOMER'],
+                'phone' => '0601020304',
+                'createdAt' => new \DateTime(),
+                'updatedAt' => new \DateTime()
+            ],
+            [
+                'lastName' => 'Manea',
+                'firstName' => 'Daniel',
+                'email' => 'dan@mail.fr',
+                'password' => 'Motdepasse123!',
+                'isValidated' => true,
+                'roles' => ['ROLE_CUSTOMER'],
+                'phone' => '0608000100',
+                'createdAt' => new \DateTime(),
+                'updatedAt' => new \DateTime()
+            ],
+        ];
+
+        foreach ($realUsers as $realUser) {
+            $user = new User();
+            $user->setLastName($realUser['lastName']);
+            $user->setFirstName($realUser['firstName']);
+            $user->setEmail($realUser['email']);
+            $user->setPassword(password_hash($realUser['password'], PASSWORD_BCRYPT));
+            $user->setIsValidated($realUser['isValidated']);
+            $user->setRoles($realUser['roles']);
+            $user->setPhone($realUser['phone']);
+            $user->setCreatedAt($realUser['createdAt']);
+            $user->setUpdatedAt($realUser['updatedAt']);
+            $manager->persist($user);
+        }
+        $manager->flush();
+    }
+
+    private function fetchAddress(int $number): array
+    {
+        $streetType = ['rue', 'avenue', 'boulevard', 'impasse', 'place', 'chemin', 'allée'];
+        $query = "$number+" . $streetType[rand(0, 6)];
+        $addresses = json_decode(file_get_contents("https://api-adresse.data.gouv.fr/search/?q=$query&limit=50"));
+        $random = rand(0, 49);
+        $address = $addresses->features[$random]->properties;
+
+        return [
+            'address' => $address->name,
+            'city' => $address->city,
+            'zipCode' => $address->postcode
+        ];
+    }
+
+    private function fetchSiret(string $address): string
+    {
+        $address = urlencode($address);
+        $coordinates = json_decode(file_get_contents("https://api-adresse.data.gouv.fr/search/?q=$address&limit=1"));
+        $lat = $coordinates->features[0]->geometry->coordinates[1];
+        $lon = $coordinates->features[0]->geometry->coordinates[0];
+
+        $companies = json_decode(file_get_contents("https://recherche-entreprises.api.gouv.fr/near_point?lat=$lat&long=$lon&radius=20&limite_matching_etablissements=10&minimal=true&include=siege%2Ccomplements&page=1&per_page=20"));
+        $random = rand(0,15);
+
+        return $companies->results[$random]->siege->siret;
     }
 }

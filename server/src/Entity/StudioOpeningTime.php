@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
 #[ApiResource]
@@ -22,18 +24,28 @@ class StudioOpeningTime
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read'])]
+    #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 
     #[ORM\ManyToOne(inversedBy: 'studioOpeningTimes')]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read'])]
     private ?Studio $studio = null;
 
     #[ORM\OneToMany(mappedBy: 'studioOpeningTime', targetEntity: UnavailabilityHour::class)]
+    #[Groups(['studioOpeningTime:read'])]
     private Collection $unavailabilityHours;
 
     public function __construct()

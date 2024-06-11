@@ -154,6 +154,8 @@ class Company
     #[Groups(['company:admin'])]
     private ?bool $isActive = false;
 
+    private ?string $fullAddress = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -342,30 +344,6 @@ class Company
         return $this;
     }
 
-    public function getOwnerName(): ?string
-    {
-        return $this->ownerName;
-    }
-
-    public function setOwnerName(string $ownerName): static
-    {
-        $this->ownerName = $ownerName;
-
-        return $this;
-    }
-
-    public function getOwnerFirstname(): ?string
-    {
-        return $this->ownerFirstname;
-    }
-
-    public function setOwnerFirstname(string $ownerFirstname): static
-    {
-        $this->ownerFirstname = $ownerFirstname;
-
-        return $this;
-    }
-
     public function isVerified(): ?bool
     {
         return $this->isVerified;
@@ -388,5 +366,10 @@ class Company
         $this->isActive = $isActive;
 
         return $this;
+    }
+
+    public function getFullAddress(): ?string
+    {
+        return "$this->address, $this->zipCode $this->city, $this->country";
     }
 }
