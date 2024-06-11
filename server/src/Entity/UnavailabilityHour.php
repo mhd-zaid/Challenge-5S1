@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\UnavailabilityHourRepository;
+use App\State\UnavailabilityHourCreateStateProcessor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,9 +19,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     operations: [
         new Get(security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user"),
-        new Post(security: "is_granted('ROLE_EMPLOYEE')"),
+        new Post(processor: UnavailabilityHourCreateStateProcessor::class),
         new Patch(security: "is_granted('ROLE_EMPLOYEE')"),
-        new Delete(security: "is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user or is_granted('ROLE_ADMIN') or user.getCompany().getOwner() == user"),
+        new Delete(security: "is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user or is_granted('ROLE_ADMIN') or object.getEmployee().getCompany().getOwner() == user"),
         new GetCollection(security: "is_granted('ROLE_ADMIN')")
     ],
 )]class UnavailabilityHour
