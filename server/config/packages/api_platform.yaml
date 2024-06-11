@@ -6,8 +6,10 @@ api_platform:
                 type: header
     title: Hello API Platform
     version: 1.0.0
-    # formats:
-    #     jsonld: ['application/ld+json']
+    show_webby: false
+    formats:
+         jsonld: ['application/ld+json']
+         multipart: ['multipart/form-data']
     # patch_formats:
     #     jsonld: ['application/merge-patch+json']
     # error_formats:

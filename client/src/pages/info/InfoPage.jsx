@@ -83,20 +83,9 @@ const InfoPage = () => {
               flexDirection="column"
               justifyContent="center"
               alignItems="center"
-              onMouseEnter={(e) => e.currentTarget.querySelector(".button").style.opacity = 1}
-              onMouseLeave={(e) => e.currentTarget.querySelector(".button").style.opacity = 0}
               borderInlineStart={0}>
               <Heading size="xl">+ 50%</Heading>
               <Text fontSize="md">des rdv en ligne pris en dehors des horatires d'ouverture</Text>
-              <Box className="button" opacity={0} transition="opacity 0.3s">
-                <Button
-                  variant="flat"
-                  size="sm"
-                  mt="1rem"
-                >
-                  Ajouter votre établissement
-                </Button>
-              </Box>
             </Box>
           </Flex>
       </Box>

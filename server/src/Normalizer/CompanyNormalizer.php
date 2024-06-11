@@ -19,27 +19,20 @@ class CompanyNormalizer implements NormalizerInterface
     {
         $this->normalizer = $normalizer;
     }
-    public function normalize(mixed $object, ?string $format = null, array $context = [])
+    public function normalize(mixed $object, ?string $format = null, array $context = []): float|array|\ArrayObject|bool|int|string|null
     {
         // TODO: Implement normalize() method.
-
         $data = $this->normalizer->normalize($object, $format, $context);
-        dd($data);
-//        if ($object instanceof Company) {
-//            $data['fullName'] = $object->getOwnerFirstname() . ' ' . $object->getOwnerName();
-//        }
+        if ($object instanceof Company) {
+            $data['owner'] = $object->getOwner()->getFirstname() . ' ' . $object->getOwner()->getLastname();
+            $data['fullAddress'] = $object->getStreetNumber()
+                . ' ' . $object->getStreetType()
+                . ' ' . $object->getStreetName()
+                . ' ' . $object->getAddress()
+                . ' - ' . $object->getZipCode()
+                . ' ' . $object->getCity();
+        }
         return $data;
-
-//        return [
-//            'id' => $object->getId(),
-//            'siret' => $object->getSiret(),
-//            'email' => $object->getEmail(),
-//            'phone' => $object->getPhone(),
-//            'zipCode' => $object->getZipCode(),
-//            'name' => $object->getName(),
-//            'ownerName' => $object->getOwnerName(),
-//            'ownerFirstname' => $object->getOwnerFirstname(),
-//        ];
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null): bool

@@ -131,7 +131,8 @@ class Fixtures extends Fixture
                 'roles'=> ['<randomElement(["ROLE_CUSTOMER"])>'],
                 'phone'=> '<numerify("06########")>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
-                'updatedAt'=> '<dateTimeBetween("now", "now")>'
+                'updatedAt'=> '<dateTimeBetween("now", "now")>',
+                'companies'=> ['@company*']
             ]
         ];
     }
@@ -327,7 +328,7 @@ class Fixtures extends Fixture
 
     /**
      * Permet de générer les fixtures pour les horaires de travail
-     * 
+     *
      * @param ObjectManager $manager
      * @return void
      */

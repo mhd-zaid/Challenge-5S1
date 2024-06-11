@@ -17,7 +17,6 @@ class ServiceEmployee
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'serviceEmployees')]
-    #[Groups(['service:create'])]
     private ?User $employee = null;
 
     #[ORM\ManyToOne(inversedBy: 'serviceEmployees')]

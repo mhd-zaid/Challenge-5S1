@@ -74,7 +74,59 @@ const extend_theme = {
         mb: 2,
       },
     },
+    Textarea: {
+      baseStyle: {
+        field: {
+          bg: 'red',
+          borderColor: 'gray.300',
+          _hover: {
+            borderColor: 'gray.400',
+          },
+          _focus: {
+            borderColor: 'blackAlpha.900',
+            boxShadow: '0 0 0 1px blue.500',
+          },
+        },
+      },
+      sizes: {
+        md: {
+          field: {
+            borderRadius: 'md',
+          },
+        },
+      },
+      defaultProps: {
+        borderRadius: 'none',
+        size: 'md',
+      },
+    },
     Input: {
+      baseStyle: {
+        field: {
+          bg: 'white',
+          borderColor: 'gray.300',
+          _hover: {
+            borderColor: 'gray.400',
+          },
+          _focus: {
+            borderColor: 'blackAlpha.900',
+            boxShadow: '0 0 0 1px blue.500',
+          },
+        },
+      },
+      sizes: {
+        md: {
+          field: {
+            borderRadius: 'md',
+          },
+        },
+      },
+      defaultProps: {
+        borderRadius: 'none',
+        size: 'md',
+      },
+    },
+    Select: {
       baseStyle: {
         field: {
           bg: 'white',
