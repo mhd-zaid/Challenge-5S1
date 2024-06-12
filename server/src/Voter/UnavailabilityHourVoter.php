@@ -2,21 +2,22 @@
 
 namespace App\Voter;
 
-use App\Entity\WorkHour;
+use App\Entity\UnavailabilityHour;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class WorkHourVoter extends Voter
+class UnavailabilityHourVoter extends Voter
 {
     const AUTHORIZE = 'AUTHORIZE';
+
      protected function supports(string $attribute, $subject): bool
     {
         if (!in_array($attribute, [self::AUTHORIZE])) {
             return false;
         }
 
-        if (!$subject instanceof WorkHour) {
+        if (!$subject instanceof UnavailabilityHour) {
             return false;
         }
 
@@ -31,18 +32,18 @@ class WorkHourVoter extends Voter
             return false;
         }
 
-        $workHour = $subject;
+        $unavailabilityHour = $subject;
 
         switch ($attribute) {
             case self::AUTHORIZE:
-                return $this->canAuthorize($workHour, $user);
+                return $this->canAuthorize($unavailabilityHour, $user);
         }
 
         return false;
     }
 
-    private function canAuthorize(WorkHour $workHour, UserInterface $user): bool
+    private function canAuthorize(UnavailabilityHour $unavailabilityHour, UserInterface $user): bool
     {
-        return (in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner()) || in_array('ROLE_ADMIN', $user->getRoles());
+        return $user === $unavailabilityHour->getEmployee() || $user === $unavailabilityHour->getEmployee()->getCompany()->getOwner() || in_array('ROLE_ADMIN', $user->getRoles());
     }
 }

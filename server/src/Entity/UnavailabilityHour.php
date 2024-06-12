@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\UnavailabilityHourRepository;
-use App\State\UnavailabilityHourCreateStateProcessor;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,13 +17,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user"),
-        new Post(processor: UnavailabilityHourCreateStateProcessor::class),
-        new Patch(security: "is_granted('ROLE_EMPLOYEE')"),
-        new Delete(security: "is_granted('ROLE_EMPLOYEE') and object.getEmployee() == user or is_granted('ROLE_ADMIN') or object.getEmployee().getCompany().getOwner() == user"),
-        new GetCollection(security: "is_granted('ROLE_ADMIN')")
+        new Get(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Patch(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Delete(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        // new GetCollection(securityPostDenormalize: "is_granted)
     ],
-)]class UnavailabilityHour
+)]
+class UnavailabilityHour
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;

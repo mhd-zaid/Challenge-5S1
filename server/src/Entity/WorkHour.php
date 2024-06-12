@@ -10,33 +10,26 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
-use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
-use App\State\WorkHourProvider;
 
 #[ORM\Entity(repositoryClass: WorkHourRepository::class)]
 #[ApiResource (
+    security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
     normalizationContext: ['groups' => ['workHour:read']],
     denormalizationContext: ['groups' => ['workHour:write']],
     operations: [
-        // new GetCollection(
-        //     normalizationContext: ['groups' => ['workHour:read']],
-        //     provider: WorkHourProvider::class,
-        //     uriTemplate: '/work_hours/{employee}'
-            
-        // ),
         new Post(
             denormalizationContext: ['groups' => ['workHour:write']],
-            security: "is_granted('CREATE', object)"
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
         ),
         new Patch(
             denormalizationContext: ['groups' => ['workHour:write']],
-            security: "is_granted('EDIT', object)"
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
         ),
         new Delete(
             denormalizationContext: ['groups' => ['workHour:delete']],
-            security: "is_granted('DELETE', object)"
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
         )
     ]
 )]
