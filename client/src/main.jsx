@@ -14,9 +14,13 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import EmailVerifiedPage from './pages/auth/EmailVerifiedPage.jsx';
+import StudioSearchPage from './pages/StudioSearchPage.jsx';
+import InfoPage from '@/pages/info/InfoPage.jsx';
+import AdminPage from '@/pages/admin/AdminPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
 import StudioPage from './pages/StudioPage.jsx';
 import ReservationPage from './pages/ReservationPage.jsx';
+import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -43,10 +47,20 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </Route>
 
             <Route path="studios">
-              <Route index element={<>Studios</>} /> {/* ZAID */}
+              <Route index element={<StudioSearchPage />} />
               <Route path=":id" element={<StudioPage />} />
               <Route path=":id/reservation" element={<ReservationPage />} />
             </Route>
+
+            <Route path="admin">
+              <Route index element={<AdminPage />} />
+              <Route
+                path="prestataires-demandes"
+                element={<AdminPrestataireRequests />}
+              />
+            </Route>
+
+            <Route path="info" element={<InfoPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>

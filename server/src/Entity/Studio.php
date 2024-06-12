@@ -7,9 +7,20 @@ use App\Repository\StudioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StudioRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['studio:read']],
+    stateless: false
+)]
+#[ApiFilter(SearchFilter::class, properties: [
+    'services.id' => 'exact',
+    'city' => 'partial'
+])]
 class Studio
 {
     use Traits\BlameableTrait;
@@ -21,33 +32,59 @@ class Studio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:5,max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['studio:read'])]
+    #[Assert\Length(min:20,max: 255)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:10,max: 10)]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:2,max: 10)]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:5,max: 5)]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:5,max: 255)]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min:5,max: 255)]
     private ?string $address = null;
 
     #[ORM\ManyToOne(inversedBy: 'studios')]
+    #[Groups(['studio:read'])]
+    #[Assert\NotNull]
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'studios')]
+    #[Groups(['studio:read'])]
+    #[Assert\NotNull]
     private ?User $utilisateur = null;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Service::class)]
+    #[Groups(['studio:read'])]
+    #[Assert\NotNull]
     private Collection $services;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: StudioOpeningTime::class)]
@@ -55,6 +92,9 @@ class Studio
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: WorkHour::class)]
     private Collection $workHours;
+
+    #[Groups(['studio:read'])]
+    private ?string $fullAddress = null;
 
     public function __construct()
     {
@@ -264,5 +304,10 @@ class Studio
         }
 
         return $this;
+    }
+
+    public function getFullAddress(): ?string
+    {
+        return $this->address . ', ' . $this->zipCode . ' ' . $this->city . ', ' . $this->country;
     }
 }

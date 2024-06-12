@@ -1,3 +1,5 @@
+import { Spinner } from '@chakra-ui/react';
+
 const extend_theme = {
   styles: {
     global: {
@@ -5,6 +7,57 @@ const extend_theme = {
         bg: 'gray.50',
         color: 'gray.800',
         fontFamily: 'poppins, sans-serif',
+      },
+      fontSizes: {
+        xs: '0.75rem',
+        sm: '0.875rem',
+        md: '1rem',
+        lg: '1.125rem',
+        xl: '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+        '5xl': '3rem',
+        '6xl': '3.75rem',
+        '7xl': '4.5rem',
+        '8xl': '6rem',
+        '9xl': '8rem',
+      },
+      fontWeights: {
+        hairline: 100,
+        thin: 200,
+        light: 300,
+        normal: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
+        extrabold: 800,
+        black: 900,
+      },
+      lineHeights: {
+        normal: 'normal',
+        none: 1,
+        shorter: 1.25,
+        short: 1.375,
+        base: 1.5,
+        tall: 1.625,
+        taller: '2',
+        3: '.75rem',
+        4: '1rem',
+        5: '1.25rem',
+        6: '1.5rem',
+        7: '1.75rem',
+        8: '2rem',
+        9: '2.25rem',
+        10: '2.5rem',
+      },
+      letterSpacings: {
+        tighter: '-0.05em',
+        tight: '-0.025em',
+        normal: '0',
+        wide: '0.025em',
+        wider: '0.05em',
+        widest: '0.1em',
       },
     },
   },
@@ -21,7 +74,59 @@ const extend_theme = {
         mb: 2,
       },
     },
+    Textarea: {
+      baseStyle: {
+        field: {
+          bg: 'red',
+          borderColor: 'gray.300',
+          _hover: {
+            borderColor: 'gray.400',
+          },
+          _focus: {
+            borderColor: 'blackAlpha.900',
+            boxShadow: '0 0 0 1px blue.500',
+          },
+        },
+      },
+      sizes: {
+        md: {
+          field: {
+            borderRadius: 'md',
+          },
+        },
+      },
+      defaultProps: {
+        borderRadius: 'none',
+        size: 'md',
+      },
+    },
     Input: {
+      baseStyle: {
+        field: {
+          bg: 'white',
+          borderColor: 'gray.300',
+          _hover: {
+            borderColor: 'gray.400',
+          },
+          _focus: {
+            borderColor: 'blackAlpha.900',
+            boxShadow: '0 0 0 1px blue.500',
+          },
+        },
+      },
+      sizes: {
+        md: {
+          field: {
+            borderRadius: 'md',
+          },
+        },
+      },
+      defaultProps: {
+        borderRadius: 'none',
+        size: 'md',
+      },
+    },
+    Select: {
       baseStyle: {
         field: {
           bg: 'white',
@@ -90,7 +195,14 @@ const extend_theme = {
           },
           _active: {
             bgGradient: 'linear(to-r, whiteAlpha.700, whiteAlpha.900)', // Adjust active colors
+
           },
+        },
+        outline_transparent: {
+          bg: 'transparent',
+          color: 'blackAlpha',
+          border: '1px solid',
+          borderColor: 'blackAlpha',
         },
       },
       defaultProps: {
@@ -140,6 +252,7 @@ const extend_theme = {
           },
           _active: {
             bgGradient: 'linear(to-r, whiteAlpha.700, whiteAlpha.900)', // Adjust active colors
+
           },
         },
       },
@@ -172,6 +285,9 @@ const extend_theme = {
         },
         sm: {
           fontSize: '2xl',
+        },
+        xs: {
+          fontSize: 'lg',
         },
       },
     },

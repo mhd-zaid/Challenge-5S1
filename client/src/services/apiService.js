@@ -1,9 +1,9 @@
 const API_URL_BASE = import.meta.env.VITE_BACKEND_URL;
+const headers = new Headers({ "Content-Type": "application/json" });
 
 export const apiService = {
 
     getAll(instance, params){
-        const headers = new Headers({ "Content-Type": "application/json" });
         let url = `${API_URL_BASE}/${instance}`;
         if (params) {
             url += params.includes("/") ? params : `?${params}`;
@@ -13,7 +13,6 @@ export const apiService = {
     },
 
     getUserInfo(instance, id){
-        const headers = new Headers({ "Content-Type": "application/json" });
         const token = localStorage.getItem("token");
         if (token) {
             headers.append("Authorization", `Bearer ${token}`);
@@ -23,7 +22,6 @@ export const apiService = {
     },
 
     create(instance, data){
-        const headers = new Headers({ "Content-Type": "application/json" });
         const token = localStorage.getItem("token");
         if (token) {
             headers.append("Authorization", `Bearer ${token}`);
@@ -33,7 +31,6 @@ export const apiService = {
     },
 
     update(instance, id, data){
-        const headers = new Headers({ "Content-Type": "application/json" });
         const token = localStorage.getItem("token");
         if (token) {
             headers.append("Authorization", `Bearer ${token}`);
@@ -43,7 +40,6 @@ export const apiService = {
     },
 
     patch(instance, id, data){
-        const headers = new Headers({ "Content-Type": "application/json" });
         const token = localStorage.getItem("token");
         if (token) {
             headers.append("Authorization", `Bearer ${token}`);
@@ -54,7 +50,6 @@ export const apiService = {
 
 
     deleteById(instance, id){
-        const headers = new Headers({ "Content-Type": "application/json" });
         return fetch(`${API_URL_BASE}/${instance}/${id}`, { method: "DELETE", headers })
           .then((response) => {
               if (response.status === 204 || response.status === 200) {
@@ -63,5 +58,6 @@ export const apiService = {
                   return response.json();
               }
           });
-    }
+    },
+
 }

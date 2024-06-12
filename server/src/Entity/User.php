@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -119,6 +120,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ApiProperty(identifier: true, description: "Token unique de l'utilisateur")] // Définir que 'token' est l'identifiant pour une opération spécifique
     private ?string $token = null;
 
+    /**
+     * @var Collection<int, Company>
+     */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
+    private Collection $companies;
+
     public function __construct()
     {
         $this->studios = new ArrayCollection();
@@ -126,6 +133,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->unavailabilityHours = new ArrayCollection();
         $this->serviceEmployees = new ArrayCollection();
         $this->reservations = new ArrayCollection();
+        $this->companies = new ArrayCollection();
+        $this->createdAt = new \DateTime('now');
+        $this->updatedAt = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -467,6 +477,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setToken(?string $token): static
     {
         $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompanies(): Collection
+    {
+        return $this->companies;
+    }
+
+    public function addCompany(Company $company): static
+    {
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+            $company->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompany(Company $company): static
+    {
+        if ($this->companies->removeElement($company)) {
+            // set the owning side to null (unless already changed)
+            if ($company->getOwner() === $this) {
+                $company->setOwner(null);
+            }
+        }
 
         return $this;
     }

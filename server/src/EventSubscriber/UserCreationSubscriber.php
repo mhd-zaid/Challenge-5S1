@@ -38,7 +38,7 @@ class UserCreationSubscriber implements EventSubscriberInterface
             $this->updatePassword($object);
             $token = $this->tokenService->generateToken();
             $object->setToken($token);
-            $frontendUrl = $_ENV['FRONTEND_URL']; 
+            $frontendUrl = $_ENV['FRONTEND_URL'];
             $this->emailService->sendEmail($object, 'Vérifiez votre mail', 'verify_email.html.twig', [
                 'verificationUrl' => $frontendUrl . '/auth/verify/' . $token,
                 'user' => $object 
