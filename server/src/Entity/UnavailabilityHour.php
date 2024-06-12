@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\UnavailabilityHourRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -47,18 +48,15 @@ class UnavailabilityHour
     #[Groups(['unavailabilityHour:admin:read'])]
     private ?\DateTimeInterface $endTime = null;
 
-    #[ORM\Column]
-    #[Groups(['unavailabilityHour:admin:read'])]
-    private ?int $calendarDay = null;
-
     #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
     #[Assert\NotNull(message: "Le champ 'employee' ne peut pas être nul.")]
     #[Groups(['unavailabilityHour:admin:read'])]
     private ?User $employee = null;
 
-    #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
+    #[ORM\Column]
+    #[Assert\Choice(choices: ['Pending', 'Accepted', 'Rejected'], message: "Le champ 'status' doit être 'Pending', 'Accepted' ou 'Rejected'.")]
     #[Groups(['unavailabilityHour:admin:read'])]
-    private ?StudioOpeningTime $studioOpeningTime = null;
+    private string $status = 'Pending';
 
     public function getId(): ?int
     {
@@ -89,18 +87,6 @@ class UnavailabilityHour
         return $this;
     }
 
-    public function getCalendarDay(): ?int
-    {
-        return $this->calendarDay;
-    }
-
-    public function setCalendarDay(int $calendarDay): static
-    {
-        $this->calendarDay = $calendarDay;
-
-        return $this;
-    }
-
     public function getEmployee(): ?User
     {
         return $this->employee;
@@ -113,14 +99,14 @@ class UnavailabilityHour
         return $this;
     }
 
-    public function getStudioOpeningTime(): ?StudioOpeningTime
+    public function getStatus(): string
     {
-        return $this->studioOpeningTime;
+        return $this->status;
     }
 
-    public function setStudioOpeningTime(?StudioOpeningTime $studioOpeningTime): static
+    public function setStatus(string $status): static
     {
-        $this->studioOpeningTime = $studioOpeningTime;
+        $this->status = $status;
 
         return $this;
     }

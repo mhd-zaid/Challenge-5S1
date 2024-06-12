@@ -45,20 +45,14 @@ class WorkHour
     #[Groups(['workHour:write', 'workHour:delete'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
     #[Groups(['workHour:read', 'workHour:write'])]
     private ?\DateTimeInterface $startTime = null;
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
     #[Groups(['workHour:read', 'workHour:write'])]
     private ?\DateTimeInterface $endTime = null;
-
-    #[ORM\Column]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
-    #[Groups(['workHour:read', 'workHour:write'])]
-    private ?int $calendarDay = null;
 
     #[ORM\ManyToOne(inversedBy: 'workHours')]
     #[Assert\NotNull]
@@ -95,18 +89,6 @@ class WorkHour
     public function setEndTime(\DateTimeInterface $endTime): static
     {
         $this->endTime = $endTime;
-
-        return $this;
-    }
-
-    public function getCalendarDay(): ?int
-    {
-        return $this->calendarDay;
-    }
-
-    public function setCalendarDay(int $calendarDay): static
-    {
-        $this->calendarDay = $calendarDay;
 
         return $this;
     }
