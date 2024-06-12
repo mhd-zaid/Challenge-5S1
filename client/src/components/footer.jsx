@@ -7,23 +7,25 @@ import {
   Text,
   Heading,
   Icon,
-  Divider
+  Divider,
 } from '@chakra-ui/react';
 import { FaInstagram, FaTiktok } from 'react-icons/fa';
 function Footer() {
   return (
-    <Box
-      bg="black"
-      color="white">
+    <Box bg="black" color="white">
       <Container as={Stack} maxW={'6xl'} py={10}>
-        <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={8} fontFamily="Poppins, sans-serif">
-        <Stack align={'flex-start'} gap="8">
-          <Heading fontSize="x-large">Instant Studio</Heading>
-          <Stack display="flex" direction="row" spacing={4} align="center">
-            <Icon as={FaInstagram} boxSize={12} color="white"/>
-            <Icon as={FaTiktok} boxSize={12} color="white" />
+        <SimpleGrid
+          columns={{ base: 1, sm: 2, md: 4 }}
+          spacing={8}
+          fontFamily="Poppins, sans-serif"
+        >
+          <Stack align={'flex-start'} gap="8">
+            <Heading fontSize="x-large">Instant Studio</Heading>
+            <Stack display="flex" direction="row" spacing={4} align="center">
+              <Icon as={FaInstagram} boxSize={12} color="white" />
+              <Icon as={FaTiktok} boxSize={12} color="white" />
+            </Stack>
           </Stack>
-        </Stack>
           <Stack align={'flex-start'} gap="8">
             <Heading fontSize="x-large">À propos de Instant Studio</Heading>
             <Stack>
@@ -54,8 +56,15 @@ function Footer() {
             </Stack>
           </Stack>
         </SimpleGrid>
-        <Divider marginTop={'2em'}/>
-        <Text  display="flex" align={'flex-start'} pt={6} fontSize={'sm'} textAlign={'center'} py={6}>
+        <Divider marginTop={'2em'} />
+        <Text
+          display="flex"
+          align={'flex-start'}
+          pt={6}
+          fontSize={'sm'}
+          textAlign={'center'}
+          py={6}
+        >
           © 2024 Instant Studio. All rights reserved
         </Text>
       </Container>

@@ -1,23 +1,29 @@
 import {
   Box,
   Button,
+  Divider,
   Flex,
   Heading,
   Image,
   Link,
   Spinner,
+  Text,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import NotFoundPage from './NotFoundPage';
 import { CiLocationOn } from 'react-icons/ci';
 import { useTranslation } from 'react-i18next';
+import { scroller } from 'react-scroll';
+import useCustomDate from '../hooks/useCustomDate';
 
 const StudioPage = () => {
   const { t } = useTranslation();
   const { id } = useParams();
+  const d = useCustomDate();
   const [studio, setStudio] = useState();
   const [studioServices, setStudioServices] = useState([]);
+  const [studioOpeningHours, setStudioOpeningHours] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -35,21 +41,24 @@ const StudioPage = () => {
       })
       .then(data => {
         setStudio(data);
-        getStudioServices();
+        setStudioServices(data.services);
+        getOpeningHours();
       })
       .catch(err => console.error(err))
       .finally(() => setIsLoading(false));
   };
 
-  const getStudioServices = async () => {
+  const getOpeningHours = async () => {
     setIsLoading(true);
-    await fetch(import.meta.env.VITE_BACKEND_URL + `/services?studio=${id}`)
+    await fetch(
+      import.meta.env.VITE_BACKEND_URL + `/studio_opening_times?studio=${id}`,
+    )
       .then(res => {
         if (!res.ok) return;
         return res.json();
       })
       .then(data => {
-        setStudioServices(data['hydra:member']);
+        setStudioOpeningHours(data['hydra:member']);
       })
       .catch(err => console.error(err))
       .finally(() => setIsLoading(false));
@@ -64,7 +73,7 @@ const StudioPage = () => {
   if (!studio) return <NotFoundPage />;
 
   return (
-    <Box w="full" h="full" p={8}>
+    <Box w="full" p={8} py={24}>
       <Flex justifyContent={'space-between'} alignItems={'end'}>
         <Box>
           <Heading>{studio.name}</Heading>
@@ -79,7 +88,18 @@ const StudioPage = () => {
             {`${studio.address},  ${studio.zipCode} ${studio.city}`}
           </Flex>
         </Box>
-        <Button>{t('studio.reservation-btn')}</Button>
+        <Button
+          onClick={() => {
+            scroller.scrollTo('prestation-choice', {
+              duration: 600,
+              delay: 0,
+              smooth: 'smooth',
+              offset: -100,
+            });
+          }}
+        >
+          {t('studio.reservation-btn')}
+        </Button>
       </Flex>
       <Box mt={4} h={60}>
         <Image
@@ -90,16 +110,76 @@ const StudioPage = () => {
           h={'full'}
         />
       </Box>
-      <Box mt={4}>
-        <Heading size={'sm'}>{t('studio.prestation-choice')}</Heading>
-        {studioServices.map(service => (
-          <Box key={service.id}>
-            <Heading size={'xs'}>{service.name}</Heading>
-            <Box>{service.description}</Box>
-            <Box>{service.cost} €</Box>
+      <Flex py={10}>
+        <Flex flexDir={'column'} flex={7}>
+          <Heading id="prestation-choice" size={'sm'}>
+            {t('studio.prestation-choice')}
+          </Heading>
+          <Box bgColor={'white'} px={4} mr={6}>
+            {studioServices.map((service, i) => (
+              <Fragment key={service.id}>
+                {i !== 0 && <Divider />}
+                <Flex
+                  as={Link}
+                  href={`/studios/${id}/reservation/${service.id}`}
+                  _hover={{ textDecor: 'none' }}
+                  py={4}
+                  justifyContent="space-between"
+                  alignItems={'center'}
+                >
+                  <Text>{service.name}</Text>
+                  <Flex alignItems={'center'}>
+                    <Text>{/* service.duration */}60min</Text>
+                    <Box
+                      w={1}
+                      h={1}
+                      rounded={'full'}
+                      bgColor={'gray.100'}
+                      mx={2}
+                    />
+                    <Text mr={6}>{service.cost} €</Text>
+                    <Button>{t('studio.book')}</Button>
+                  </Flex>
+                </Flex>
+              </Fragment>
+            ))}
           </Box>
-        ))}
-      </Box>
+        </Flex>
+        <Flex flexDir={'column'} flex={3}>
+          <Heading size={'sm'}>{t('studio.opening-hours')}</Heading>
+          <Box bgColor={'white'} px={4}>
+            {Array.from({ length: 7 }, (_, i) => i).map((day, i) => {
+              const openingHour = studioOpeningHours.find(
+                openingHour => openingHour.day === day,
+              );
+              return (
+                <Fragment key={day}>
+                  {i !== 0 && <Divider />}
+                  <Flex
+                    justifyContent="space-between"
+                    alignItems={'center'}
+                    py={4}
+                  >
+                    <Text as={'b'} textTransform={'uppercase'} fontSize={'sm'}>
+                      {d().weekday(day).format('dddd')}
+                    </Text>
+                    <Text
+                      fontWeight={openingHour && 'medium'}
+                      fontStyle={!openingHour && 'italic'}
+                    >
+                      {openingHour
+                        ? d(openingHour.startTime).format('HH:mm') +
+                          ' - ' +
+                          d(openingHour.endTime).format('HH:mm')
+                        : t('studio.closed')}
+                    </Text>
+                  </Flex>
+                </Fragment>
+              );
+            })}
+          </Box>
+        </Flex>
+      </Flex>
     </Box>
   );
 };
