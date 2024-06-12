@@ -206,7 +206,7 @@ class Fixtures extends Fixture
             $object->setEmail($email);
             //$object->setFile(new File('srv/app/files/kbis/juin.pdf'));
             $object = $this->addressHandler($object);
-            $object->setSiret($this->fetchSiret($object->getFullAddress()));
+            $object->setSiret($this->fetchSiret($object->getAddress()));
         }
 
         $manager->persist($object);

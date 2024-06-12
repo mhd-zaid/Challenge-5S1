@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240608160354 extends AbstractMigration
+final class Version20240612103741 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,7 +29,8 @@ final class Version20240608160354 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE unavailability_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE user_profile_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE work_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE company (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, kbis VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(255) NOT NULL, country VARCHAR(255) NOT NULL, zip_code VARCHAR(255) NOT NULL, city VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE company (id INT NOT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, siret VARCHAR(14) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, country VARCHAR(255) DEFAULT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, file_path VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, is_verified BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, street_number INT DEFAULT NULL, street_type VARCHAR(255) DEFAULT NULL, street_name VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_4FBF094F7E3C61F9 ON company (owner_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094FB03A8386 ON company (created_by_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094F896DBBDE ON company (updated_by_id)');
         $this->addSql('CREATE TABLE reservation (id INT NOT NULL, utilisateur_id INT DEFAULT NULL, service_employee_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, horaire TIME(0) WITHOUT TIME ZONE NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
@@ -83,6 +84,7 @@ final class Version20240608160354 extends AbstractMigration
         $$ LANGUAGE plpgsql;');
         $this->addSql('DROP TRIGGER IF EXISTS notify_trigger ON messenger_messages;');
         $this->addSql('CREATE TRIGGER notify_trigger AFTER INSERT OR UPDATE ON messenger_messages FOR EACH ROW EXECUTE PROCEDURE notify_messenger_messages();');
+        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F7E3C61F9 FOREIGN KEY (owner_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094FB03A8386 FOREIGN KEY (created_by_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F896DBBDE FOREIGN KEY (updated_by_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C84955FB88E14F FOREIGN KEY (utilisateur_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -127,6 +129,7 @@ final class Version20240608160354 extends AbstractMigration
         $this->addSql('DROP SEQUENCE unavailability_hour_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE user_profile_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE work_hour_id_seq CASCADE');
+        $this->addSql('ALTER TABLE company DROP CONSTRAINT FK_4FBF094F7E3C61F9');
         $this->addSql('ALTER TABLE company DROP CONSTRAINT FK_4FBF094FB03A8386');
         $this->addSql('ALTER TABLE company DROP CONSTRAINT FK_4FBF094F896DBBDE');
         $this->addSql('ALTER TABLE reservation DROP CONSTRAINT FK_42C84955FB88E14F');
