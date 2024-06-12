@@ -10,7 +10,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Controller\CompanyController;
 use App\Repository\CompanyRepository;
-use App\State\CompanyStateProcessor;
+use App\State\CompanyPostStateProcessor;
 use App\State\CompanyStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -28,15 +28,17 @@ USE Symfony\Component\HttpFoundation\File\File;
         new Get(),
         new Post(
             uriTemplate: '/companies',
-            controller: CompanyController::class,
-            openapiContext: [
-                'summary' => 'Create a company request',
-                'description' => 'Create a company request',
-            ],
+            stateless: false,
+            processor: CompanyPostStateProcessor::class,
+//            controller: CompanyController::class,
+//            openapiContext: [
+//                'summary' => 'Create a company request',
+//                'description' => 'Create a company request',
+//            ],
             normalizationContext: ['groups' => ['company:read']],
             denormalizationContext: ['groups' => ['company:write']],
-            read: false,
-            deserialize: false,
+//            read: false,
+//            deserialize: false,
         ),
         new Delete(),
     ],
@@ -103,16 +105,11 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Studio::class)]
     private Collection $studios;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(min: 2, max: 255)]
-    #[Assert\Regex(pattern: '/^[a-zA-Z0-9-_]+\.pdf$/', message: 'Le fichier doit être un PDF')]
+    #[ORM\ManyToOne(targetEntity: MediaObject::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[ApiProperty(types: ['https://schema.org/image'])]
     #[Groups(['company:read', 'company:write'])]
-    private ?string $filePath = null;
-
-    #[Vich\UploadableField(mapping: 'kbis_upload', fileNameProperty: 'filePath')]
-    #[Assert\File(mimeTypes: ['application/pdf'])]
-    #[Groups(['company:read', 'company:write'])]
-    private ?File $file;
+    public ?MediaObject $kbis = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
@@ -120,59 +117,30 @@ class Company
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:write'])]
     private ?bool $isVerified = false;
 
     #[ORM\Column]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:write'])]
     private ?bool $isActive = false;
 
     private ?string $fullAddress = null;
 
     #[ORM\ManyToOne(inversedBy: 'companies')]
+    #[Groups(['company:read', 'company:write'])]
     private ?User $owner = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:write'])]
     private ?string $description = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $streetNumber = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $streetType = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $streetName = null;
-
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->studios = new ArrayCollection();
-        $this->file = null;
-        $this->owner = null;
+        $this->kbis = null;
         $this->setCreatedAt(new \DateTime("now"));
         $this->setUpdatedAt(new \DateTime("now"));
-    }
-
-    public function getFile(): ?File
-    {
-        return $this->file;
-    }
-
-    public function setFile(File $file): void
-    {
-        $this->file = $file;
-    }
-
-    public function getFilePath(): ?string
-    {
-        return $this->filePath;
-    }
-
-    public function setFilePath(?string $filePath): void
-    {
-        $this->filePath = $filePath;
     }
 
     public function getId(): ?int
@@ -262,6 +230,16 @@ class Company
         $this->address = $address;
 
         return $this;
+    }
+
+    public function getKbis(): ?MediaObject
+    {
+        return $this->kbis;
+    }
+
+    public function setKbis(?MediaObject $kbis): void
+    {
+        $this->kbis = $kbis;
     }
 
     /**
@@ -384,39 +362,4 @@ class Company
         return $this;
     }
 
-    public function getStreetNumber(): ?int
-    {
-        return $this->streetNumber;
-    }
-
-    public function setStreetNumber(?int $streetNumber): static
-    {
-        $this->streetNumber = $streetNumber;
-
-        return $this;
-    }
-
-    public function getStreetType(): ?string
-    {
-        return $this->streetType;
-    }
-
-    public function setStreetType(?string $streetType): static
-    {
-        $this->streetType = $streetType;
-
-        return $this;
-    }
-
-    public function getStreetName(): ?string
-    {
-        return $this->streetName;
-    }
-
-    public function setStreetName(?string $streetName): static
-    {
-        $this->streetName = $streetName;
-
-        return $this;
-    }
 }

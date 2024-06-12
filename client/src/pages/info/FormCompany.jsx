@@ -29,8 +29,8 @@ const FormCompany = () => {
     formData.append('description', data.description);
     formData.append('zipCode', data.zipCode);
     formData.append('city', data.city);
-    formData.append('companyPhone', data.companyPhone);
-    formData.append('companyEmail', data.companyEmail);
+    formData.append('phone', data.phone);
+    formData.append('email', data.email);
     formData.append('siret', data.siret);
     formData.append('file', data.kbis[0]);
 
@@ -150,60 +150,6 @@ const FormCompany = () => {
               {/*  </FormErrorMessage>*/}
               {/*</FormControl>*/}
 
-              {/* Numéro de voie */}
-              {/*<FormControl isInvalid={errors.streetNumber} mt={4} isRequired>*/}
-              {/*  <FormLabel htmlFor='streetNumber'>Numéro de voie</FormLabel>*/}
-              {/*  <Input*/}
-              {/*    id='streetNumber'*/}
-              {/*    placeholder='Entrer le numéro de voie'*/}
-              {/*    {...register('streetNumber', {*/}
-              {/*      required: 'Ce champ est requis',*/}
-              {/*    })}*/}
-              {/*  />*/}
-              {/*  <FormErrorMessage>*/}
-              {/*    {errors.streetNumber && errors.streetNumber.message}*/}
-              {/*  </FormErrorMessage>*/}
-              {/*</FormControl>*/}
-
-              {/* Type de voie */}
-              {/*<FormControl isInvalid={errors.streetType} mt={4} isRequired>*/}
-              {/*  <FormLabel htmlFor='streetType'>Type de voie</FormLabel>*/}
-              {/*  <Select*/}
-              {/*    id='streetType'*/}
-              {/*    placeholder='Selectionner le type de voie'*/}
-              {/*    {...register('streetType', {*/}
-              {/*      required: 'Ce champ est requis',*/}
-              {/*    })}*/}
-              {/*  >*/}
-              {/*    <option value='Rue'>Rue</option>*/}
-              {/*    <option value='Avenue'>Avenue</option>*/}
-              {/*    <option value='Boulevard'>Boulevard</option>*/}
-              {/*    <option value='Impasse'>Impasse</option>*/}
-              {/*    <option value='Place'>Place</option>*/}
-              {/*    <option value='Route'>Route</option>*/}
-              {/*    <option value='Chemin'>Chemin</option>*/}
-              {/*    <option value='Allée'>Allée</option>*/}
-              {/*  </Select>*/}
-              {/*  <FormErrorMessage>*/}
-              {/*    {errors.streetType && errors.streetType.message}*/}
-              {/*  </FormErrorMessage>*/}
-              {/*</FormControl>*/}
-
-              {/* Nom de la voie */}
-              {/*<FormControl isInvalid={errors.streetName} mt={4} isRequired>*/}
-              {/*  <FormLabel htmlFor='streetName'>Nom de la voie</FormLabel>*/}
-              {/*  <Input*/}
-              {/*    id='streetName'*/}
-              {/*    placeholder='Entrer le nom de la voie'*/}
-              {/*    {...register('streetName', {*/}
-              {/*      required: 'Ce champ est requis',*/}
-              {/*    })}*/}
-              {/*  />*/}
-              {/*  <FormErrorMessage>*/}
-              {/*    {errors.streetName && errors.streetName.message}*/}
-              {/*  </FormErrorMessage>*/}
-              {/*</FormControl>*/}
-
               <Flex gap={8}>
                 <Box w='50%'>
                   {/* Code Postal */}
@@ -246,17 +192,17 @@ const FormCompany = () => {
               <Flex gap={8}>
                 <Box w='50%'>
                   {/* Champ Téléphone Portable */}
-                  <FormControl isInvalid={errors.companyPhone} mt={4} isRequired>
-                    <FormLabel htmlFor='companyPhone'>Téléphone</FormLabel>
+                  <FormControl isInvalid={errors.phone} mt={4} isRequired>
+                    <FormLabel htmlFor='phone'>Téléphone</FormLabel>
                     <InputGroup>
                       <InputLeftElement>
                         <Icon icon="twemoji:flag-for-flag-france" />
                       </InputLeftElement>
                       <Input
-                        id='companyPhone'
+                        id='phone'
                         placeholder='01XXXXXXXX'
                         autoComplete={"tel"}
-                        {...register('companyPhone', {
+                        {...register('phone', {
                           required: 'Ce champ est requis',
                           pattern: {
                             value: /^[0-9]{10}$/,
@@ -266,20 +212,20 @@ const FormCompany = () => {
                       />
                     </InputGroup>
                     <FormErrorMessage>
-                      {errors.companyPhone && errors.companyPhone.message}
+                      {errors.phone && errors.phone.message}
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
                 <Box w='50%'>
                   {/* Champ Email */}
-                  <FormControl isInvalid={errors.companyEmail} mt={4} isRequired>
-                    <FormLabel htmlFor='companyEmail'>Email</FormLabel>
+                  <FormControl isInvalid={errors.email} mt={4} isRequired>
+                    <FormLabel htmlFor='email'>Email</FormLabel>
                     <Input
-                      id='companyEmail'
+                      id='email'
                       type='email'
                       placeholder='Email'
                       autoComplete={"email"}
-                      {...register('companyEmail', {
+                      {...register('email', {
                         required: 'Ce champ est requis',
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -288,7 +234,7 @@ const FormCompany = () => {
                       })}
                     />
                     <FormErrorMessage>
-                      {errors.companyEmail && errors.companyEmail.message}
+                      {errors.email && errors.email.message}
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
