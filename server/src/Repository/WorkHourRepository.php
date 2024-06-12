@@ -21,6 +21,14 @@ class WorkHourRepository extends ServiceEntityRepository
         parent::__construct($registry, WorkHour::class);
     }
 
+    public function findByEmployee($employeeId)
+    {
+        return $this->createQueryBuilder('w')
+            ->andWhere('w.employee = :employeeId')
+            ->setParameter('employeeId', $employeeId)
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return WorkHour[] Returns an array of WorkHour objects
 //     */
