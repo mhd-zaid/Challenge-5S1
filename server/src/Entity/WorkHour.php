@@ -12,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
+use App\Validator\UniqueWorkHour;
+use App\Validator\WorkHourInStudioOpeningHours;
 
 #[ORM\Entity(repositoryClass: WorkHourRepository::class)]
 #[ApiResource (
@@ -33,6 +35,8 @@ use ApiPlatform\Metadata\Patch;
         )
     ]
 )]
+#[WorkHourInStudioOpeningHours]
+#[UniqueWorkHour]
 class WorkHour
 {
     use Traits\BlameableTrait;

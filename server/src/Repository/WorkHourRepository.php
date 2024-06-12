@@ -29,6 +29,19 @@ class WorkHourRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findConflictsWorkHours($startTime, $endTime, $employee)
+    {
+        return $this->createQueryBuilder('wh')
+            ->andWhere('wh.employee = :employee')
+            ->andWhere('wh.startTime < :endTime')
+            ->andWhere('wh.endTime > :startTime')
+            ->setParameter('employee', $employee)
+            ->setParameter('startTime', $startTime)
+            ->setParameter('endTime', $endTime)
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return WorkHour[] Returns an array of WorkHour objects
 //     */

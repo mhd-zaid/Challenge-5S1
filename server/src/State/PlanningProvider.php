@@ -125,7 +125,7 @@ class PlanningProvider implements ProviderInterface
     }
 
     /**
-     * Récupère le planning de tout les employés de tout les studios de tout l'entreprise
+     * Récupère le planning de tout les employés de tout les studios de tout les entreprise
      * @param User $user
      * @return array
      */
