@@ -50,16 +50,16 @@ class WorkHourVoter extends Voter
 
     private function canCreate(WorkHour $workHour, UserInterface $user): bool
     {
-        return $user === $workHour->getEmployee() || in_array('ROLE_ADMIN', $user->getRoles());
+        return (in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner()) || in_array('ROLE_ADMIN', $user->getRoles());
     }
 
     private function canEdit(WorkHour $workHour, UserInterface $user): bool
     {
-        return $user === $workHour->getEmployee() || in_array('ROLE_ADMIN', $user->getRoles());
+        return (in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner()) || in_array('ROLE_ADMIN', $user->getRoles());
     }
 
     private function canDelete(WorkHour $workHour, UserInterface $user): bool
     {
-        return $user === $workHour->getEmployee() || in_array('ROLE_ADMIN', $user->getRoles());
+        return (in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner()) || in_array('ROLE_ADMIN', $user->getRoles());
     }
 }

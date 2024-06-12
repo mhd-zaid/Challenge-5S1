@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\WorkHourRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Patch;
 use App\State\WorkHourProvider;
 
 #[ORM\Entity(repositoryClass: WorkHourRepository::class)]
@@ -19,19 +20,24 @@ use App\State\WorkHourProvider;
     normalizationContext: ['groups' => ['workHour:read']],
     denormalizationContext: ['groups' => ['workHour:write']],
     operations: [
-        new GetCollection(
-            normalizationContext: ['groups' => ['workHour:read']],
-            provider: WorkHourProvider::class,
-            uriTemplate: '/work_hours/{employee}'
-        ),
+        // new GetCollection(
+        //     normalizationContext: ['groups' => ['workHour:read']],
+        //     provider: WorkHourProvider::class,
+        //     uriTemplate: '/work_hours/{employee}'
+            
+        // ),
         new Post(
             denormalizationContext: ['groups' => ['workHour:write']],
             security: "is_granted('CREATE', object)"
         ),
-        new Put(
+        new Patch(
             denormalizationContext: ['groups' => ['workHour:write']],
             security: "is_granted('EDIT', object)"
         ),
+        new Delete(
+            denormalizationContext: ['groups' => ['workHour:delete']],
+            security: "is_granted('DELETE', object)"
+        )
     ]
 )]
 class WorkHour
@@ -43,6 +49,7 @@ class WorkHour
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[ApiProperty(identifier: false)]
+    #[Groups(['workHour:write', 'workHour:delete'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
@@ -62,7 +69,7 @@ class WorkHour
 
     #[ORM\ManyToOne(inversedBy: 'workHours')]
     #[Assert\NotNull]
-    #[Groups(['workHour:read', 'workHour:write'])]
+    #[Groups(['workHour:read', 'workHour:write','user:read'])]
     private ?User $employee = null;
 
     #[ORM\ManyToOne(inversedBy: 'workHours')]
