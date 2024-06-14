@@ -41,6 +41,9 @@ const CalendarPage = () => {
   const [day, setDay] = useState('');
   const [event, setEvent] = useState(null)
 
+  const [selectedFilterStudio, setSelectedFilterStudio] = useState('');
+
+  
   const toast = useToast();
 
   const handleSubmit = async() => {
@@ -167,11 +170,11 @@ const CalendarPage = () => {
   function renderEventContent(eventInfo) {
     return (
       <>
-        {eventInfo.event.extendedProps.type === 'workHour' ? (
+        {/* {eventInfo.event.extendedProps.type === 'workHour' ? (
         <b>Heures de travails</b>
         ) : (
           <b>Absences</b>
-        )}
+        )} */}
         <p>{eventInfo.event.extendedProps.employeeFullName}</p>
         <p>{eventInfo.event.extendedProps.studioName}</p>
         <p>{eventInfo.event.extendedProps.startTime} - {eventInfo.event.extendedProps.endTime}</p>
@@ -202,25 +205,46 @@ const CalendarPage = () => {
     onOpen();
   }
 
+  const filteredPlannings = selectedFilterStudio
+    ? plannings.filter(planning => planning.extendedProps.studio === selectedFilterStudio)
+    : plannings;
+
   return (
     <>
     <Box pt="4" bg="white" color="black" py="4" px="6" width="60%">
         <h1>Calendar</h1>
+        {user.roles.includes('ROLE_PRESTA') && (
+        <FormControl mb={4}>
+          <FormLabel>Filtrer par studio</FormLabel>
+          <Select
+            value={selectedFilterStudio}
+            onChange={(e) => setSelectedFilterStudio(e.target.value)}
+            placeholder="Sélectionnez un studio"
+          >
+            {studios.map((studio) => (
+              <option key={studio.id} value={studio['@id']}>
+                {studio.name}
+              </option>
+            ))}
+          </Select>
+        </FormControl>
+        )
+        }
+
         <FullCalendar
       locales={[frLocale]}
-      plugins={[ dayGridPlugin, timeGridPlugin, interactionPlugin]}
+      plugins={[ timeGridPlugin, interactionPlugin]}
       headerToolbar={{
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        right: 'timeGridWeek,timeGridDay'
         }}
-        eventClick={handleEventClick}
+        eventClick={user.roles.includes('ROLE_PRESTA') ? handleEventClick : ''}
         eventContent={renderEventContent} 
-        dateClick={handleDateSelect}
+        dateClick={user.roles.includes('ROLE_PRESTA') ? handleDateSelect : ''}
         selectMirror={true}
-        dayMaxEvents={true}
         initialView="timeGridWeek"
-        events={plannings}
+        events={filteredPlannings}
         />
     </Box>
 
@@ -256,7 +280,7 @@ const CalendarPage = () => {
               placeholder="Sélectionnez un utilisateur"
             >
               {users.map((user) => (
-                <option key={user.id} value={user['@id']}>
+                <option key={user['@id']} value={user['@id']}>
                   {user.lastname} {user.firstname}
                 </option>
               ))}
@@ -283,9 +307,9 @@ const CalendarPage = () => {
             Fermer
           </Button>
           <Button onClick={handleSubmit}>
-            {startTime && endTime && selectedUser && selectedStudio ? 'Modifier' : 'Créer'}
+            {event ? 'Modifier' : 'Créer'}
           </Button>
-          { startTime && endTime && selectedUser && selectedStudio && (
+          { event && (
             <Box ml="4">
             <Button onClick={handleDeleteEvent}>
             Supprimer
