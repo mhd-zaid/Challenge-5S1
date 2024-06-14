@@ -12,12 +12,10 @@ const AuthGuard = () => {
       try {
         if (token) {
           const response = await AuthService.me(token);
-          console.log('response:', response);
           if (response.status === 200) {
-            const user = response.data;
+            const user = await response.json();
             setUser(user);
           } else {
-            console.log('Token invalide');
             logout();
             setUser(null);
           }
