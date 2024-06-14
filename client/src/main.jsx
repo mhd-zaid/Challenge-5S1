@@ -20,6 +20,7 @@ import AdminPage from '@/pages/admin/AdminPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
 import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
 import CalendarPage from './components/calendarPage.jsx';
+import Unavailability from './pages/Unavailability.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -57,6 +58,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="studio" element={<StudioSearchPage />} />
             <Route element={<AuthGuard />}>
               <Route path="calendar" element={<CalendarPage />} />
+              <Route path="my-absences" element={<Unavailability />} />
             </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Route>

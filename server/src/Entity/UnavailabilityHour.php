@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
@@ -14,15 +13,17 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\State\UnavailabilityHourStateProvider;
 
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['unavailabilityHour:read']],
+    denormalizationContext: ['groups' => ['unavailabilityHour:write']],
     operations: [
-        new Get(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new GetCollection(securityPostDenormalize: "is_granted('AUTHORIZE', object)", provider: UnavailabilityHourStateProvider::class),
         new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
         new Patch(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
         new Delete(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
-        // new GetCollection(securityPostDenormalize: "is_granted)
     ],
 )]
 class UnavailabilityHour
@@ -38,24 +39,24 @@ class UnavailabilityHour
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotNull(message: "Le champ 'startTime' ne peut pas être nul.")]
     #[Assert\Type("\DateTimeInterface", message: "Le champ 'startTime' doit être une date valide.")]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotNull(message: "Le champ 'endTime' ne peut pas être nul.")]
     #[Assert\Type("\DateTimeInterface", message: "Le champ 'endTime' doit être une date valide.")]
     #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
     #[Assert\NotNull(message: "Le champ 'employee' ne peut pas être nul.")]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
     private ?User $employee = null;
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['Pending', 'Accepted', 'Rejected'], message: "Le champ 'status' doit être 'Pending', 'Accepted' ou 'Rejected'.")]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[Groups(['unavailabilityHour:presta:writee', 'unavailabilityHour:read'])]
     private string $status = 'Pending';
 
     public function getId(): ?int
