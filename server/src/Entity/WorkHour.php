@@ -45,7 +45,6 @@ class WorkHour
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[ApiProperty(identifier: false)]
     #[Groups(['workHour:write', 'workHour:delete'])]
     private ?int $id = null;
 
