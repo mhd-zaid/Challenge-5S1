@@ -25,6 +25,7 @@ import PlanningService from '../services/planningService';
 import CompanyService from '../services/CompanyService';
 import { useAuth } from '../context/AuthContext';
 import WorkHourService from '../services/WorkHourService';
+import frLocale from '@fullcalendar/core/locales/fr';
 
 const CalendarPage = () => {
   const { token, user } = useAuth();
@@ -38,39 +39,68 @@ const CalendarPage = () => {
   const [selectedUser, setSelectedUser] = useState('');
   const [selectedStudio, setSelectedStudio] = useState('');
   const [day, setDay] = useState('');
+  const [event, setEvent] = useState(null)
 
   const toast = useToast();
 
   const handleSubmit = async() => {
 
-    const formData = {
-      startTime: `${day}T${startTime}`,
-      endTime: `${day}T${endTime}`,
-      employee: selectedUser,
-      studio: selectedStudio,
-    };
-
-    console.log('Form Data:', formData);
-
-    await WorkHourService.create_work_hour(token, formData).then(response => {
-      if(response.status === 201) {
-        toast({
-          title: 'Work hour created successfully',
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        });
-      } else {
-        toast({
-          title: 'An error occurred',
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
+    if(event) {
+      await WorkHourService.update_work_hour(token, event.extendedProps.eventId, {
+        startTime: `${day}T${startTime}`,
+        endTime: `${day}T${endTime}`,
+        employee: selectedUser,
+        studio: selectedStudio,
+      }).then(response => {
+        if(response.status === 200) {
+          toast({
+            title: 'Work hour updated successfully',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: 'An error occurred',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      }).then(() => {
+        get_plannings();
+        onClose();
       }
-    });
-
-    onClose();
+      );
+    }else{
+      const formData = {
+        startTime: `${day}T${startTime}`,
+        endTime: `${day}T${endTime}`,
+        employee: selectedUser,
+        studio: selectedStudio,
+      };
+  
+      await WorkHourService.create_work_hour(token, formData).then(response => {
+        if(response.status === 201) {
+          toast({
+            title: 'Work hour created successfully',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: 'An error occurred',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      }).then(() => {
+        get_plannings();
+        onClose();
+      });
+    }
   };
 
   const get_plannings = async () => {
@@ -110,6 +140,29 @@ const CalendarPage = () => {
   }
   , []);
 
+  const handleDeleteEvent = async() => {
+    await WorkHourService.delete_work_hour(token, event.extendedProps.eventId).then(response => {
+      if(response.status === 204) {
+        toast({
+          title: 'Work hour deleted successfully',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'An error occurred',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    }).then(() => {
+      get_plannings();
+    })
+
+    onClose();
+  }
 
   function renderEventContent(eventInfo) {
     return (
@@ -127,7 +180,8 @@ const CalendarPage = () => {
   }
 
   const handleEventClick = (clickInfo) => {
-    console.log(clickInfo.event);
+    setEvent(clickInfo.event);
+    setDay(clickInfo.event.startStr.split('T')[0]);
     setStartTime(clickInfo.event.extendedProps.startTime);
     setEndTime(clickInfo.event.extendedProps.endTime);
     setSelectedUser(clickInfo.event.extendedProps.employee);
@@ -136,6 +190,12 @@ const CalendarPage = () => {
   };
 
   function handleDateSelect(selectInfo) {
+    setEndTime('');
+    setStartTime('');
+    setSelectedUser('');
+    setSelectedStudio('');
+    setEvent(null);
+
     const date = dayjs(selectInfo.dateStr);
     const formattedDate = date.format('YYYY-MM-DD');
     setDay(formattedDate);
@@ -147,6 +207,7 @@ const CalendarPage = () => {
     <Box pt="4" bg="white" color="black" py="4" px="6" width="60%">
         <h1>Calendar</h1>
         <FullCalendar
+      locales={[frLocale]}
       plugins={[ dayGridPlugin, timeGridPlugin, interactionPlugin]}
       headerToolbar={{
         left: 'prev,next today',
@@ -218,12 +279,20 @@ const CalendarPage = () => {
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
+          <Button mr={3} onClick={onClose}>
             Fermer
           </Button>
-          <Button variant="ghost" onClick={handleSubmit}>
-            Valider
+          <Button onClick={handleSubmit}>
+            {startTime && endTime && selectedUser && selectedStudio ? 'Modifier' : 'Créer'}
           </Button>
+          { startTime && endTime && selectedUser && selectedStudio && (
+            <Box ml="4">
+            <Button onClick={handleDeleteEvent}>
+            Supprimer
+          </Button>
+          </Box>
+          )
+          }
         </ModalFooter>
       </ModalContent>
     </Modal>
