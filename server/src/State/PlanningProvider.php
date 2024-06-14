@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Bundle\SecurityBundle\Security;
+use App\ApiResource\Planning;
 
 class PlanningProvider implements ProviderInterface
 {
@@ -26,8 +27,7 @@ class PlanningProvider implements ProviderInterface
         private Security $security,
         private EntityManagerInterface $em,
     )
-    {
-    }
+    {}
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []):  object|array|null
     {
@@ -51,28 +51,31 @@ class PlanningProvider implements ProviderInterface
      * @param User $user
      * @return array
      */
-    private function getEmployeePlanning(User $user): array
+    
+     private function getEmployeePlanning(User $user): array
     {
-        $workHours = $this->em->getRepository(WorkHour::class)->findBy(['employee' => $user->getId()]);
-        $unavailabilityHours = $this->em->getRepository(UnavailabilityHour::class)->findBy(['employee' => $user->getId()]);
-
+    $workHours = $this->em->getRepository(WorkHour::class)->findBy(['employee' => $user->getId()]);
+    $unavailabilityHours = $this->em->getRepository(UnavailabilityHour::class)->findBy(['employee' => $user->getId()]);
         $planning = [];
 
         foreach ($workHours as $workHour) {
             $planning[] = [
                 'type' => 'workHour',
-                'startTime' => $workHour->getStartTime(),
-                'endTime' => $workHour->getEndTime(),
+                'start' => $workHour->getStartTime(),
+                'end' => $workHour->getEndTime(),
                 'studio' => $workHour->getStudio(),
+                'employee' => $workHour->getEmployee(),
+                'idEvent' => $workHour->getId(),
             ];
         }
 
         foreach ($unavailabilityHours as $unavailabilityHour) {
             $planning[] = [
                 'type' => 'unavailabilityHour',
-                'startTime' => $unavailabilityHour->getStartTime(),
-                'endTime' => $unavailabilityHour->getEndTime(),
-                'studio' => $unavailabilityHour->getStudio(),
+                'start' => $unavailabilityHour->getStartTime(),
+                'end' => $unavailabilityHour->getEndTime(),
+                'employee' => $unavailabilityHour->getEmployee(),
+                'idEvent' => $unavailabilityHour->getId(),
             ];
         }
 
@@ -106,18 +109,21 @@ class PlanningProvider implements ProviderInterface
         foreach ($workHours as $workHour) {
             $planning[] = [
                 'type' => 'workHour',
-                'startTime' => $workHour->getStartTime(),
-                'endTime' => $workHour->getEndTime(),
+                'start' => $workHour->getStartTime(),
+                'end' => $workHour->getEndTime(),
                 'studio' => $workHour->getStudio(),
+                'employee' => $workHour->getEmployee(),
+                'idEvent' => $workHour->getId(),
             ];
         }
 
         foreach ($unavailabilityHours as $unavailabilityHour) {
             $planning[] = [
                 'type' => 'unavailabilityHour',
-                'startTime' => $unavailabilityHour->getStartTime(),
-                'endTime' => $unavailabilityHour->getEndTime(),
-                'studio' => $unavailabilityHour->getStudio(),
+                'start' => $unavailabilityHour->getStartTime(),
+                'end' => $unavailabilityHour->getEndTime(),
+                'employee' => $unavailabilityHour->getEmployee(),
+                'idEvent' => $unavailabilityHour->getId(),
             ];
         }
 
@@ -151,8 +157,8 @@ class PlanningProvider implements ProviderInterface
         foreach ($workHours as $workHour) {
             $planning[] = [
                 'type' => 'workHour',
-                'startTime' => $workHour->getStartTime(),
-                'endTime' => $workHour->getEndTime(),
+                'start' => $workHour->getStartTime(),
+                'end' => $workHour->getEndTime(),
                 'studio' => $workHour->getStudio(),
             ];
         }
@@ -160,8 +166,8 @@ class PlanningProvider implements ProviderInterface
         foreach ($unavailabilityHours as $unavailabilityHour) {
             $planning[] = [
                 'type' => 'unavailabilityHour',
-                'startTime' => $unavailabilityHour->getStartTime(),
-                'endTime' => $unavailabilityHour->getEndTime(),
+                'start' => $unavailabilityHour->getStartTime(),
+                'end' => $unavailabilityHour->getEndTime(),
                 'studio' => $unavailabilityHour->getStudio(),
             ];
         }
