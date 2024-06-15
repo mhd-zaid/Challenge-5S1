@@ -22,8 +22,14 @@ use App\State\UnavailabilityHourStateProvider;
     operations: [
         new GetCollection(securityPostDenormalize: "is_granted('AUTHORIZE', object)", provider: UnavailabilityHourStateProvider::class),
         new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
-        new Patch(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
-        new Delete(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Patch(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
+            security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
+        ),
+        new Delete(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
+            security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
+        )    
     ],
 )]
 class UnavailabilityHour
@@ -56,7 +62,7 @@ class UnavailabilityHour
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['Pending', 'Accepted', 'Rejected'], message: "Le champ 'status' doit être 'Pending', 'Accepted' ou 'Rejected'.")]
-    #[Groups(['unavailabilityHour:presta:writee', 'unavailabilityHour:read'])]
+    #[Groups(['unavailabilityHour:presta:write', 'unavailabilityHour:read'])]
     private string $status = 'Pending';
 
     public function getId(): ?int
