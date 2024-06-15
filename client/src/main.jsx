@@ -19,8 +19,8 @@ import InfoPage from '@/pages/info/InfoPage.jsx';
 import AdminPage from '@/pages/admin/AdminPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
 import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
-import CalendarPage from './components/calendarPage.jsx';
 import Unavailability from './pages/Unavailability.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
 
 const theme = extendTheme(extend_theme);
 

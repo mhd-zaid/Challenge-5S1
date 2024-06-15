@@ -55,7 +55,10 @@ class PlanningProvider implements ProviderInterface
      private function getEmployeePlanning(User $user): array
     {
     $workHours = $this->em->getRepository(WorkHour::class)->findBy(['employee' => $user->getId()]);
-    $unavailabilityHours = $this->em->getRepository(UnavailabilityHour::class)->findBy(['employee' => $user->getId()]);
+    $unavailabilityHours = $this->em->getRepository(UnavailabilityHour::class)->findBy([
+        'employee' => $user->getId(),
+        'status' => 'Accepted',
+    ]);
         $planning = [];
 
         foreach ($workHours as $workHour) {
@@ -97,10 +100,13 @@ class PlanningProvider implements ProviderInterface
                 $workHours->add($workHour);
             }
         }
+        
         $unavailabilityHours = new ArrayCollection();
         foreach ($users as $user) {
             foreach ($user->getUnavailabilityHours() as $unavailabilityHour) {
-                $unavailabilityHours->add($unavailabilityHour);
+                if ($unavailabilityHour->getStatus() === 'Accepted') {
+                    $unavailabilityHours->add($unavailabilityHour);
+                }
             }
         }
 
