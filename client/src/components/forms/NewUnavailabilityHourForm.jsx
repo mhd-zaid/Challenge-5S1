@@ -32,7 +32,7 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
       <FormControl mb="4">
         <FormLabel>Début de l'absence</FormLabel>
         <Input
-          type="date"
+          type="datetime-local"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           placeholder="Select start date"
@@ -41,7 +41,7 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
       <FormControl mb="4">
         <FormLabel>Fin de l'absence</FormLabel>
         <Input
-          type="date"
+          type="datetime-local"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
           placeholder="Select end date"
