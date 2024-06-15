@@ -12,9 +12,11 @@ class WorkHourVoter extends Voter
     const AUTHORIZE = 'AUTHORIZE';
     const CREATE = 'CREATE';
 
+    const EDIT = 'EDIT';
+
      protected function supports(string $attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::AUTHORIZE, self::CREATE])) {
+        if (!in_array($attribute, [self::AUTHORIZE, self::CREATE, self::EDIT])) {
             return false;
         }
 
@@ -40,6 +42,8 @@ class WorkHourVoter extends Voter
                 return $this->canAuthorize($workHour, $user);
             case self::CREATE:
                 return $this->canCreate($workHour, $user);
+            case self::EDIT:
+                return $this->canEdit($workHour, $user);
         }
 
         return false;
@@ -51,6 +55,11 @@ class WorkHourVoter extends Voter
     }
 
     private function canCreate(WorkHour $workHour, UserInterface $user): bool
+    {
+        return in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner() &&  $workHour->getEmployee()->getCompany()->getStudios()->contains($workHour->getStudio());
+    }
+
+    private function canEdit(WorkHour $workHour, UserInterface $user): bool
     {
         return in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner() &&  $workHour->getEmployee()->getCompany()->getStudios()->contains($workHour->getStudio());
     }

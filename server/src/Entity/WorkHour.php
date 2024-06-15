@@ -27,8 +27,7 @@ use App\Validator\WorkHourInStudioOpeningHours;
         ),
         new Patch(
             denormalizationContext: ['groups' => ['workHour:write']],
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
-            security: "object.getEmployee().getCompany().getStudios().contains(object.getStudio())"
+            securityPostDenormalize: "is_granted('EDIT', object)",
         ),
         new Delete(
             denormalizationContext: ['groups' => ['workHour:delete']],
