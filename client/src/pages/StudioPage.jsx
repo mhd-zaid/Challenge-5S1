@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Card,
+  CardBody,
   Divider,
   Flex,
   Heading,
@@ -129,7 +131,8 @@ const StudioPage = () => {
                 >
                   <Text>{service.name}</Text>
                   <Flex alignItems={'center'}>
-                    <Text>{/* service.duration */}60min</Text>
+                    <Text>{/* service.duration */}60min</Text>{' '}
+                    {/* TODO: change when duration is integer */}
                     <Box
                       w={1}
                       h={1}
@@ -180,6 +183,28 @@ const StudioPage = () => {
           </Box>
         </Flex>
       </Flex>
+      {/* <Flex flexDir={'column'} flex={7}>
+        <Heading size={'sm'}>{t('studio.person')}</Heading>
+        <Box bgColor={'white'} p={4}>
+          <Card maxW="3xs">
+            <CardBody>
+              <Image src="" bgColor={'gray'} w="full" h={40} />
+              <Text fontWeight={'bold'} size="sm" textAlign={'center'} mt={4}>
+                Josh
+              </Text>
+            </CardBody>
+          </Card>
+        </Box>
+      </Flex> */}
+
+      {studio.description && (
+        <Flex flexDir={'column'} flex={7}>
+          <Heading size={'sm'}>{t('studio.about')}</Heading>
+          <Box bgColor={'white'} p={4}>
+            <Text>{studio.description}</Text>
+          </Box>
+        </Flex>
+      )}
     </Box>
   );
 };
