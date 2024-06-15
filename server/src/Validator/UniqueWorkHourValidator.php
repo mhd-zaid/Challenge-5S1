@@ -16,7 +16,6 @@ class UniqueWorkHourValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint)
     {
-
         if (!$constraint instanceof UniqueWorkHour) {
             throw new UnexpectedTypeException($constraint, UniqueWorkHour::class);
         }
@@ -33,8 +32,8 @@ class UniqueWorkHourValidator extends ConstraintValidator
             return;
         }
 
-        $conflictsWorkHours = $this->em->getRepository(WorkHour::class)->findConflictsWorkHours($startTime, $endTime, $employee);
-        
+        $conflictsWorkHours = $this->em->getRepository(WorkHour::class)->findConflictsWorkHours($startTime, $endTime, $employee, $value->getId());
+
         if (count($conflictsWorkHours) > 0) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();

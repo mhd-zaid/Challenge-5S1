@@ -23,15 +23,16 @@ use App\Validator\WorkHourInStudioOpeningHours;
     operations: [
         new Post(
             denormalizationContext: ['groups' => ['workHour:write']],
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
+            securityPostDenormalize: "is_granted('CREATE', object)"
         ),
         new Patch(
             denormalizationContext: ['groups' => ['workHour:write']],
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
+            security: "object.getEmployee().getCompany().getStudios().contains(object.getStudio())"
         ),
         new Delete(
             denormalizationContext: ['groups' => ['workHour:delete']],
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         )
     ]
 )]
