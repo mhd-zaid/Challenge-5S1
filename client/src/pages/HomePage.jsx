@@ -12,6 +12,7 @@ const HomePage = () => {
     height: '100vh',
     width: '100vw',
   };
+
   const sliders = [
     {
       image: slider1,

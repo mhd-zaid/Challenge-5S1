@@ -23,15 +23,9 @@ class CompanyNormalizer implements NormalizerInterface
     {
         // TODO: Implement normalize() method.
         $data = $this->normalizer->normalize($object, $format, $context);
-        if ($object instanceof Company) {
-            $data['owner'] = $object->getOwner()->getFirstname() . ' ' . $object->getOwner()->getLastname();
-            $data['fullAddress'] = $object->getStreetNumber()
-                . ' ' . $object->getStreetType()
-                . ' ' . $object->getStreetName()
-                . ' ' . $object->getAddress()
-                . ' - ' . $object->getZipCode()
-                . ' ' . $object->getCity();
-        }
+//        if ($object instanceof Company) {
+//            $data['owner'] = $object->getOwner();
+//        }
         return $data;
     }
 

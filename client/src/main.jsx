@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<App />}>
+          <Route path="*" element={<App />}>
             <Route index element={<Home />} />
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
@@ -64,7 +64,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </Route>
 
             <Route path="info" element={<InfoPage />} />
-
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
