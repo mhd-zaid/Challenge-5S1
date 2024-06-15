@@ -10,6 +10,8 @@ import {
   Text,
   useToast,
   useDisclosure,
+  Spinner,
+  Flex
 } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
 import UnavailabilityService from '../services/UnavailabilityService';
@@ -35,6 +37,9 @@ const Unavailability = () => {
   const [currentRequestId, setCurrentRequestId] = useState(null);
   const cancelRef = React.useRef();
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isRequestLoading, setIsRequestLoading] = useState(true);
+
 
   useEffect(() => {
     fetchRequests();
@@ -45,6 +50,7 @@ const Unavailability = () => {
     const response = await UnavailabilityService.get_unavailabilities(token);
     const data = await response.json();
     setRequests(data['hydra:member']);
+    setIsRequestLoading(false);
   };
 
   const getCompanyDetail = async () => {
@@ -84,11 +90,11 @@ const Unavailability = () => {
     onOpen();
   };
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = async () => {
     if (currentAction) {
-      currentAction();
+      setIsLoading(true);
+      await currentAction();
     }
-    onClose();
   };
 
   const cancelUnavaibility = async (id) => {
@@ -108,7 +114,11 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchRequests();
+    fetchRequests().then(() => {
+      setIsLoading(false);
+      onClose();
+    }
+    );
   };
 
   const acceptUnavaibility = async (id) => {
@@ -128,7 +138,11 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchRequests();
+    fetchRequests().then(() => {
+      setIsLoading(false);
+      onClose();
+    }
+    );
   };
 
   const rejectUnavaibility = async (id) => {
@@ -148,14 +162,25 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchRequests();
+    fetchRequests().then(() => {
+      setIsLoading(false);
+      onClose();
+    }
+    );
   };
 
   const pendingRequests = requests.filter(request => request.status === 'Pending');
   const historyRequests = requests.filter(request => ['Accepted', 'Rejected'].includes(request.status));
 
   return (
-    <Box>
+    <>
+    {
+      isRequestLoading ? (
+        <Flex justifyContent="center" alignItems="center" height="100vh">
+          <Spinner size="xl" />
+        </Flex>
+      )  : (
+      <Box>
       <Heading mb="7">Absences</Heading>
       <Tabs>
         <TabList>
@@ -184,8 +209,12 @@ const Unavailability = () => {
         onClose={onClose}
         onConfirm={handleConfirmAction}
         cancelRef={cancelRef}
-      />
-    </Box>
+        isLoading={isLoading}
+        />
+    </Box>     
+    )
+    }
+    </>
   );
 };
 

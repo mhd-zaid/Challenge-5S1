@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
-import { FormControl, FormLabel, Input, Button, Select } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Button, Select, Spinner, Box  } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 
 const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
+
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedUser, setSelectedUser] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+
+    setIsSubmitting(true);
+
     const formData = {
       startTime: startDate,
       endTime: endDate,
       employee: user.roles.includes('ROLE_PRESTA') ? selectedUser : `/api/users/${user.id}`,
       status: user.roles.includes('ROLE_PRESTA') ? 'Accepted' : 'Pending',
     };
-    onSubmit(formData);
+   await onSubmit(formData);
+
+   setStartDate('');
+   setEndDate('');
+   setSelectedUser('');
+   setIsSubmitting(false);
   };
 
   return (
@@ -53,8 +63,8 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
           </Select>
         </FormControl>
       )}
-      <Button colorScheme="teal" onClick={handleSubmit}>
-        Soumettre
+      <Button colorScheme="teal" onClick={handleSubmit} disabled={isSubmitting}>
+      {isSubmitting ? <Spinner size="sm" /> : 'Soumettre'}
       </Button>
     </>
   );
