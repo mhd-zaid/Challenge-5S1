@@ -24,8 +24,8 @@ USE Symfony\Component\HttpFoundation\File\File;
 #[Vich\Uploadable()]
 #[ApiResource(
     operations: [
-        new GetCollection(),
-        new Get(),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
+        new Get(security: "is_granted('ROLE_ADMIN') or object.getOwner() === user or object.getUsers().contains(user)"),
         new Post(
             uriTemplate: '/companies',
             stateless: false,
@@ -44,8 +44,6 @@ USE Symfony\Component\HttpFoundation\File\File;
     ],
     normalizationContext: ['groups' => ['company:read']],
     denormalizationContext: ['groups' => ['company:write']],
-//    provider: CompanyStateProvider::class,
-//    processor: CompanyStateProcessor::class,
 )]
 class Company
 {
@@ -100,9 +98,11 @@ class Company
     private ?string $address = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
+    #[Groups(['company:read'])]
     private Collection $users;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Studio::class)]
+    #[Groups(['company:read'])]
     private Collection $studios;
 
     #[ORM\ManyToOne(targetEntity: MediaObject::class)]
@@ -126,7 +126,7 @@ class Company
 
     private ?string $fullAddress = null;
 
-    #[ORM\ManyToOne(inversedBy: 'companies')]
+    #[ORM\ManyToOne(inversedBy: 'company')]
     #[Groups(['company:read', 'company:write'])]
     private ?User $owner = null;
 

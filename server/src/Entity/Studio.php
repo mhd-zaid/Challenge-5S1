@@ -32,7 +32,7 @@ class Studio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read'])]
+    #[Groups(['studio:read', 'company:read', 'planning:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $name = null;
@@ -88,6 +88,7 @@ class Studio
     private Collection $services;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: StudioOpeningTime::class)]
+    #[Groups(['company:read'])]
     private Collection $studioOpeningTimes;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: WorkHour::class)]
