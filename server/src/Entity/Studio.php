@@ -88,6 +88,7 @@ class Studio
     private Collection $services;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: StudioOpeningTime::class)]
+    #[Groups(['company:read'])]
     private Collection $studioOpeningTimes;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: WorkHour::class)]

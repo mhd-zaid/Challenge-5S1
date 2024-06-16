@@ -7,7 +7,6 @@ import dayjs from 'dayjs';
 
 const Calendar = ({ user, plannings, setEvent, get_plannings }) => {
   const handleEventClick = (clickInfo) => {
-    console.log(clickInfo.event);
     if(clickInfo.event.extendedProps.type !== 'unavailabilityHour') {
       setEvent(clickInfo.event);
     }

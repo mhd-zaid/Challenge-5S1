@@ -25,17 +25,17 @@ class StudioOpeningTime
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read'])]
     #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 

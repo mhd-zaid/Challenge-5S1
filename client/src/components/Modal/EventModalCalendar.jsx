@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button,
   FormControl, FormLabel, Input, Select, Box
@@ -8,6 +8,8 @@ import WorkHourService from '../../services/WorkHourService';
 
 const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, studios, get_plannings, toast }) => {
   const { register, handleSubmit, setValue, reset, getValues, formState: { errors } } = useForm();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (event && event.startStr) {
@@ -22,7 +24,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
   }, [event, setValue, reset]);
 
   const onSubmit = async (data) => {
-
+    setIsLoading(true);
     const startDay = event && event.startStr ? getValues('day') : event.start.split('T')[0] ;
     const formData = {
       startTime: `${startDay}T${data.startTime}`,
@@ -31,8 +33,35 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
       studio: data.studio,
     };
 
-    console.log(event)
-    console.log(formData);
+    const studio = studios.find(studio => studio['@id'] === data.studio);
+    const dayOfWeek = new Date(startDay).getDay();
+    const openingTime = studio.studioOpeningTimes.find(time => time.day === dayOfWeek);
+
+
+    if (!openingTime) {
+      toast({
+        title: 'Studio fermé ce jour-là',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const openingStartTime = openingTime.startTime.split('T')[1].slice(0, 5);
+    const openingEndTime = openingTime.endTime.split('T')[1].slice(0, 5);
+
+    if (data.startTime < openingStartTime || data.endTime > openingEndTime) {
+      toast({
+        title: `Les heures doivent être comprises entre ${openingStartTime} et ${openingEndTime}`,
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+      return;
+    }
 
     if (event?.extendedProps?.eventId) {
       await WorkHourService.update_work_hour(token, event.extendedProps.eventId, formData)
@@ -73,9 +102,11 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
           }
         }).then(get_plannings).then(onClose);
     }
+    setIsLoading(false);
   };
 
   const handleDeleteEvent = async () => {
+    setIsLoading(true);
     await WorkHourService.delete_work_hour(token, event.extendedProps.eventId).then(response => {
       if (response.status === 204) {
         toast({
@@ -93,7 +124,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
         });
       }
     }).then(get_plannings);
-
+    setIsLoading(false);
     onClose();
   };
 
@@ -158,16 +189,16 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
               {errors.studio && <p>{errors.studio.message}</p>}
             </FormControl>
             <ModalFooter>
-              <Button mr={3} onClick={onClose}>
+              <Button mr={3} onClick={onClose} isDisabled={isLoading}>
                 Fermer
               </Button>
-              <Button type="submit">
+              <Button type="submit" isLoading={isLoading}>
                 {event?.extendedProps?.eventId ? 'Modifier' : 'Créer'}
               </Button>
               {event?.extendedProps?.eventId && (
                 <Box ml="4">
-                  <Button onClick={handleDeleteEvent}>
-                    Supprimer
+                  <Button onClick={handleDeleteEvent} isLoading={isLoading}>
+                  Supprimer
                   </Button>
                 </Box>
               )}

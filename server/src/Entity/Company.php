@@ -126,7 +126,7 @@ class Company
 
     private ?string $fullAddress = null;
 
-    #[ORM\ManyToOne(inversedBy: 'companies')]
+    #[ORM\ManyToOne(inversedBy: 'company')]
     #[Groups(['company:read', 'company:write'])]
     private ?User $owner = null;
 
