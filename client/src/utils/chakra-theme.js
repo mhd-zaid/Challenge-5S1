@@ -198,6 +198,36 @@ const extend_theme = {
 
           },
         },
+        success: {
+          bg: 'green.500',
+          color: 'white',
+          _hover: {
+            bg: 'green.600',
+          },
+          _active: {
+            bg: 'green.700',
+          },
+        },
+        danger: {
+          bg: 'red.500',
+          color: 'white',
+          _hover: {
+            bg: 'red.600',
+          },
+          _active: {
+            bg: 'red.700',
+          },
+        },
+        warning: {
+          bg: 'yellow.500',
+          color: 'white',
+          _hover: {
+            bg: 'yellow.600',
+          },
+          _active: {
+            bg: 'yellow.700',
+          },
+        },
         outline_transparent: {
           bg: 'transparent',
           color: 'blackAlpha',
@@ -210,6 +240,7 @@ const extend_theme = {
         variant: 'flat',
       },
     },
+
     IconButton: {
       baseStyle: {
         fontWeight: 'bold',

@@ -150,9 +150,11 @@ class Fixtures extends Fixture
                 'phone'=> '<numerify("01########")>',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
-                'siret'=> '<randomElement(["12345678901234"])>',
+                'siren'=> '<randomElement(["12345678901234"])>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
+                'socialMedia'=> 'https://www.facebook.com',
+                'website'=> 'https://www.google.com',
             ],
         ];
     }
@@ -206,7 +208,7 @@ class Fixtures extends Fixture
             $object->setEmail($email);
             //$object->setFile(new File('srv/app/files/kbis/juin.pdf'));
             $object = $this->addressHandler($object);
-            $object->setSiret($this->fetchSiret($object->getAddress()));
+            $object->setSiren($this->fetchSiren($object->getAddress()));
         }
 
         $manager->persist($object);
@@ -392,7 +394,7 @@ class Fixtures extends Fixture
                 'email' => 'mak@mail.fr',
                 'password' => 'Motdepasse123!',
                 'isValidated' => true,
-                'roles' => ['ROLE_CUSTOMER'],
+                'roles' => ['ROLE_ADMIN'],
                 'phone' => '0601020304',
                 'createdAt' => new \DateTime(),
                 'updatedAt' => new \DateTime()
@@ -441,7 +443,7 @@ class Fixtures extends Fixture
         ];
     }
 
-    private function fetchSiret(string $address): string
+    private function fetchSiren(string $address): string
     {
         $address = urlencode($address);
         $coordinates = json_decode(file_get_contents("https://api-adresse.data.gouv.fr/search/?q=$address&limit=1"));
@@ -451,6 +453,6 @@ class Fixtures extends Fixture
         $companies = json_decode(file_get_contents("https://recherche-entreprises.api.gouv.fr/near_point?lat=$lat&long=$lon&radius=20&limite_matching_etablissements=10&minimal=true&include=siege%2Ccomplements&page=1&per_page=20"));
         $random = rand(0,15);
 
-        return $companies->results[$random]->siege->siret;
+        return $companies->results[$random]->siege->siren;
     }
 }

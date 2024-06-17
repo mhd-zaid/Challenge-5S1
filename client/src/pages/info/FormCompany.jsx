@@ -31,7 +31,7 @@ const FormCompany = () => {
     formData.append('city', data.city);
     formData.append('phone', data.phone);
     formData.append('email', data.email);
-    formData.append('siret', data.siret);
+    formData.append('siren', data.siren);
     formData.append('file', data.kbis[0]);
 
     formData.append('website', data.website);
@@ -242,22 +242,22 @@ const FormCompany = () => {
 
               <Flex gap={8}>
                 <Box w='50%'>
-                  {/* Numéro de siret */}
-                  <FormControl isInvalid={errors.siret} mt={4} isRequired>
-                    <FormLabel htmlFor='siret'>Numéro de siret</FormLabel>
+                  {/* Numéro de siren */}
+                  <FormControl isInvalid={errors.siren} mt={4} isRequired>
+                    <FormLabel htmlFor='siren'>Numéro de siren</FormLabel>
                     <Input
-                      id='siret'
-                      placeholder='Entrer votre numéro de siret'
-                      {...register('siret', {
+                      id='siren'
+                      placeholder='Entrer votre numéro de siren'
+                      {...register('siren', {
                         required: 'Ce champ est requis',
                         pattern: {
-                          value: /^[0-9]{14}$/,
-                          message: 'Numéro de siret invalide, il doit contenir 14 chiffres',
+                          value: /^[0-9]{9}$/,
+                          message: 'Numéro de siren invalide, il doit contenir 14 chiffres',
                         },
                       })}
                     />
                     <FormErrorMessage>
-                      {errors.siret && errors.siret.message}
+                      {errors.siren && errors.siren.message}
                     </FormErrorMessage>
                   </FormControl>
                 </Box>

@@ -23,6 +23,7 @@ class CompanyNormalizer implements NormalizerInterface
     {
         // TODO: Implement normalize() method.
         $data = $this->normalizer->normalize($object, $format, $context);
+//        dd($data, $object, $format, $context);
 //        if ($object instanceof Company) {
 //            $data['owner'] = $object->getOwner();
 //        }

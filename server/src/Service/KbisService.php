@@ -15,26 +15,22 @@ use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 class KbisService
 {
     private $httpClient;
-    private $inseeApiUrl;
+    private $inseeSiretApiUrl;
+    private $inseeSirenApiUrl;
     private $inseeApiKey;
 
     public function __construct(HttpClientInterface $httpClient)
     {
         $this->httpClient = $httpClient;
-        $this->inseeApiUrl = getenv("INSEE_API_URL");
-        $this->inseeApiKey = getenv("INSEE_API_KEY");
+        $this->inseeSiretApiUrl = $_ENV['INSEE_SIRET_API_URL'];
+        $this->inseeSirenApiUrl = $_ENV['INSEE_SIREN_API_URL'];
+        $this->inseeApiKey = $_ENV['INSEE_API_KEY'];
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
-    public function getKbisInfo(string $siret): array
+
+    public function getStudioInfo(string $siret): array
     {
-        $response = $this->httpClient->request('GET', "$this->inseeApiUrl$siret?date=2999-12-31", [
+        $response = $this->httpClient->request('GET', "$this->inseeSiretApiUrl$siret?date=2999-12-31", [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->inseeApiKey
             ]
@@ -46,7 +42,6 @@ class KbisService
 
         $data = $response->toArray();
 
-
         $etatAdministratifUniteLegale = $data['etablissement']['uniteLegale']['etatAdministratifUniteLegale'];
 
         if ($etatAdministratifUniteLegale !== 'A'
@@ -57,22 +52,60 @@ class KbisService
 
         return [
             "status" => "valid",
-            "data"  => [
-                "siren" => $data['etablissement']['siren'],
-                "siret" => $siret,
-                "denominationUniteLegale" => $data['etablissement']['uniteLegale']['denominationUniteLegale'],
-                "categorieJuridiqueUniteLegale" => $data['etablissement']['uniteLegale']['categorieJuridiqueUniteLegale'],
-                "activitePrincipaleUniteLegale" => $data['etablissement']['uniteLegale']['activitePrincipaleUniteLegale'],
-                "nomenclatureActivitePrincipaleUniteLegale" => $data['etablissement']['uniteLegale']['nomenclatureActivitePrincipaleUniteLegale'],
-                "dateCreationEtablissement" => $data['etablissement']['dateCreationEtablissement'],
-                "numeroVoieEtablissement" => $data['etablissement']['adresseEtablissement']['numeroVoieEtablissement'],
-                "typeVoieEtablissement" => $data['etablissement']['adresseEtablissement']['typeVoieEtablissement'],
-                "libelleVoieEtablissement" => $data['etablissement']['adresseEtablissement']['libelleVoieEtablissement'],
-                "codePostalEtablissement" => $data['etablissement']['adresseEtablissement']['codePostalEtablissement'],
-                "libelleCommuneEtablissement" => $data['etablissement']['adresseEtablissement']['libelleCommuneEtablissement'],
-            ]
+            "data"  => $this->mapStudioData($data)
         ];
 
+    }
+
+    private function mapStudioData(array $data): array
+    {
+        return [
+            "siren" => $data['etablissement']['siren'],
+            "siret" => $data['etablissement']['siret'],
+            "denominationUniteLegale" => $data['etablissement']['uniteLegale']['denominationUniteLegale'],
+            "dateCreationEtablissement" => $data['etablissement']['dateCreationEtablissement'],
+            "numeroVoieEtablissement" => $data['etablissement']['adresseEtablissement']['numeroVoieEtablissement'],
+            "typeVoieEtablissement" => $data['etablissement']['adresseEtablissement']['typeVoieEtablissement'],
+            "libelleVoieEtablissement" => $data['etablissement']['adresseEtablissement']['libelleVoieEtablissement'],
+            "codePostalEtablissement" => $data['etablissement']['adresseEtablissement']['codePostalEtablissement'],
+            "libelleCommuneEtablissement" => $data['etablissement']['adresseEtablissement']['libelleCommuneEtablissement'],
+        ];
+    }
+
+    public function getCompanyInfo(string $siren): array
+    {
+        $response = $this->httpClient->request('GET', "$this->inseeSirenApiUrl$siren?date=2999-12-31", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $this->inseeApiKey
+            ]
+        ]);
+
+        if($response->getStatusCode() !== 200) {
+            return ['status' => 'invalid'];
+        }
+
+        $data = $response->toArray();
+        $etatAdministratifUniteLegale = $data['uniteLegale']['periodesUniteLegale'][0]['etatAdministratifUniteLegale'];
+
+        if ($etatAdministratifUniteLegale !== 'A')
+        {
+            return ['status' => 'invalid'];
+        }
+
+        return [
+            "status" => "valid",
+            "data"  => $this->mapCompanyData($data)
+        ];
+    }
+
+    private function mapCompanyData(array $data): array
+    {
+        return [
+            "siren" => $data['uniteLegale']['siren'],
+            "sigleUniteLegale" => $data['uniteLegale']['sigleUniteLegale'],
+            "denominationUniteLegale" => $data['uniteLegale']['periodesUniteLegale'][0]['denominationUniteLegale'],
+            "dateCreationUniteLegale" => $data['uniteLegale']['dateCreationUniteLegale'],
+        ];
     }
 
     public function hasActiveEtablissement(array $etablissements): bool
@@ -84,4 +117,5 @@ class KbisService
         }
         return false;
     }
+
 }

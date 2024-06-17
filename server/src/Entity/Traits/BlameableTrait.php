@@ -5,6 +5,7 @@ namespace App\Entity\Traits;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 trait BlameableTrait {
 

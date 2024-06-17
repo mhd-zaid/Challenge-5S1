@@ -48,8 +48,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             processor: SaveMediaObject::class
         )
     ],
-    outputFormats: ['jsonld' => ['application/ld+json']],
-    normalizationContext: ['groups' => ['media_object:read']]
+    outputFormats: ['json' => ['application/json']],
+    normalizationContext: ['groups' => ['media_object:read']],
+
 )]
 class MediaObject
 {
@@ -60,7 +61,7 @@ class MediaObject
     private ?int $id = null;
 
     #[ApiProperty(types: ['https://schema.org/contentUrl'])]
-    #[Groups(['media_object:read'])]
+    #[Groups(['media_object:read', 'company:read'])]
     public ?string $contentUrl = null;
 
     #[Vich\UploadableField(mapping: 'media_object', fileNameProperty: 'filePath')]

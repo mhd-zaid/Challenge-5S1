@@ -4,14 +4,17 @@ namespace App\Entity\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 trait TimestampableTrait {
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     #[Gedmo\Timestampable(on: 'create')]
+    #[Groups(['company:read:admin', 'company:read:presta'])]
     private ?\DateTime $createdAt = null;
 
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     #[Gedmo\Timestampable(on: 'update')]
+    #[Groups(['company:read:admin', 'company:read:presta'])]
     private ?\DateTime $updatedAt = null;
 
     /**
@@ -29,7 +32,7 @@ trait TimestampableTrait {
     public function setCreatedAt(?\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
-        return $this;
+        return $this; 
     }
 
     /**

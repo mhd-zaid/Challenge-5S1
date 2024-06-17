@@ -7,42 +7,43 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Controller\CompanyController;
 use App\Repository\CompanyRepository;
 use App\State\CompanyPostStateProcessor;
-use App\State\CompanyStateProvider;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-USE Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
 #[Vich\Uploadable()]
 #[ApiResource(
     operations: [
-        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
-        new Get(security: "is_granted('ROLE_ADMIN') or object.getOwner() === user or object.getUsers().contains(user)"),
+        new Get(
+            security: "is_granted('ROLE_ADMIN') or object.getOwner() === user or object.getUsers().contains(user)"
+//          normalizationContext: ['groups' => ['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer']],
+        ),
+        new GetCollection(
+            paginationItemsPerPage: 15,
+            normalizationContext: ['groups' => ['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer']],
+//            security: "is_granted('ROLE_ADMIN')",
+        ),
         new Post(
-            uriTemplate: '/companies',
-            stateless: false,
+            normalizationContext: ['groups' => ['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer']],
+            denormalizationContext: ['groups' => ['company:create']],
             processor: CompanyPostStateProcessor::class,
-//            controller: CompanyController::class,
-//            openapiContext: [
-//                'summary' => 'Create a company request',
-//                'description' => 'Create a company request',
-//            ],
-            normalizationContext: ['groups' => ['company:read']],
-            denormalizationContext: ['groups' => ['company:write']],
-//            read: false,
-//            deserialize: false,
+        ),
+        new Patch(
+            normalizationContext: ['groups' => ['company:read:admin', 'company:read:presta']],
+            denormalizationContext: ['groups' => ['company:update:admin', 'company:update:presta']],
+//            securityPostDenormalize: 'is_granted(UPDATE, object)',
         ),
         new Delete(),
     ],
-    normalizationContext: ['groups' => ['company:read']],
+    normalizationContext: ['groups' => ['company:read:common', 'company:read']],
     denormalizationContext: ['groups' => ['company:write']],
 )]
 class Company
@@ -53,43 +54,50 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-//    #[ApiProperty(identifier: false)]
-    #[Groups(['company:read'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 14)]
-    #[Assert\Length(min: 14, max: 14)]
-    #[Assert\Regex(pattern: '/^[0-9]{14}$/', message: 'Le SIRET doit contenir 14 chiffres')]
-    #[Groups(['company:read', 'company:write'])]
-    private ?string $siret = null;
+    #[ORM\Column(length: 9, nullable: true)]
+    #[Assert\Length(min: 9, max: 9)]
+    #[Assert\Regex(pattern: '/^[0-9]{9}$/', message: 'Le SIREN doit contenir 9 chiffres')]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
+    private ?string $siren = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Email()]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'L\'email doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     private ?string $email = null;
 
     #[ORM\Column(length: 10)]
     #[Assert\Length(min: 10, max: 10, exactMessage: 'Le numéro de téléphone doit contenir 10 chiffres')]
     #[Assert\Regex(pattern: '/^[0-9]{10}$/', message: 'Le numéro de téléphone doit contenir 10 chiffres')]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     private ?string $phone = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Country]
-    #[Assert\Length(min: 2, max: 255, exactMessage: 'Le pays doit contenir au moins 2 caractères')]
-    #[Groups(['company:read', 'company:write'])]
-    private ?string $country = null;
-
     #[ORM\Column(length: 5)]
     #[Assert\Length(min: 5, max: 5)]
     #[Assert\Regex(pattern: '/^[0-9]{5}$/', message: 'Le code postal doit contenir 5 chiffres')]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'La ville doit contenir au moins 2 caractères')]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -98,49 +106,87 @@ class Company
     private ?string $address = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
-    #[Groups(['company:read'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin', 'company:read'
+    ])]
     private Collection $users;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Studio::class)]
-    #[Groups(['company:read'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin', 'company:read'
+    ])]
     private Collection $studios;
 
     #[ORM\ManyToOne(targetEntity: MediaObject::class)]
     #[ORM\JoinColumn(nullable: true)]
     #[ApiProperty(types: ['https://schema.org/image'])]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     public ?MediaObject $kbis = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer', 'company:read:common'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups(['company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin'
+        , 'company:create:admin'
+    ])]
     private ?bool $isVerified = false;
 
     #[ORM\Column]
-    #[Groups(['company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin'
+        , 'company:create:admin'
+    ])]
     private ?bool $isActive = false;
 
     private ?string $fullAddress = null;
 
     #[ORM\ManyToOne(inversedBy: 'company')]
-    #[Groups(['company:read', 'company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin'
+        , 'company:create:admin', 'company:read', 'company:write'
+    ])]
     private ?User $owner = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:write'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
     private ?string $description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
+    private ?string $website = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:customer'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin'
+    ])]
+    private ?string $socialMedia = null;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->studios = new ArrayCollection();
         $this->kbis = null;
-        $this->setCreatedAt(new \DateTime("now"));
-        $this->setUpdatedAt(new \DateTime("now"));
+        $this->setCreatedAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
     }
 
     public function getId(): ?int
@@ -148,14 +194,14 @@ class Company
         return $this->id;
     }
 
-    public function getSiret(): ?string
+    public function getSiren(): ?string
     {
-        return $this->siret;
+        return $this->siren;
     }
 
-    public function setSiret(?string $siret): static
+    public function setSiren(?string $siren): static
     {
-        $this->siret = $siret;
+        $this->siren = $siren;
 
         return $this;
     }
@@ -184,18 +230,6 @@ class Company
         return $this;
     }
 
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
     public function getZipCode(): ?string
     {
         return $this->zipCode;
@@ -216,18 +250,6 @@ class Company
     public function setCity(string $city): static
     {
         $this->city = $city;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
 
         return $this;
     }
@@ -314,24 +336,24 @@ class Company
         return $this;
     }
 
-    public function isVerified(): ?bool
+    public function getIsVerified(): ?bool
     {
         return $this->isVerified;
     }
 
-    public function setVerified(bool $isVerified): static
+    public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
 
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function getIsActive(): ?bool
     {
         return $this->isActive;
     }
 
-    public function setActive(bool $isActive): static
+    public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
 
@@ -358,6 +380,30 @@ class Company
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getWebsite(): ?string
+    {
+        return $this->website;
+    }
+
+    public function setWebsite(?string $website): static
+    {
+        $this->website = $website;
+
+        return $this;
+    }
+
+    public function getSocialMedia(): ?string
+    {
+        return $this->socialMedia;
+    }
+
+    public function setSocialMedia(?string $socialMedia): static
+    {
+        $this->socialMedia = $socialMedia;
 
         return $this;
     }

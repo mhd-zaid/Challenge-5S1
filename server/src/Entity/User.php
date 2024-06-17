@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:read', 'user:input', 'company:write'])]
+    #[Groups(['user:read', 'user:input', 'company:write', 'company:read'])]
     private ?string $email = null;
 
     /**
@@ -98,6 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
+    #[Groups(['company:read'])]
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
@@ -125,8 +126,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->unavailabilityHours = new ArrayCollection();
         $this->serviceEmployees = new ArrayCollection();
         $this->reservations = new ArrayCollection();
-        $this->createdAt = new \DateTime('now');
-        $this->updatedAt = new \DateTime('now');
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
     }
 
     public function getId(): ?int

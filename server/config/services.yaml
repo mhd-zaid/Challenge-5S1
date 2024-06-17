@@ -12,6 +12,10 @@ services:
         decorates: 'api_platform.serializer.context_builder'
         arguments: [ '@App\Serializer\UnavailabilityHourContextBuilder.inner' ]
         autoconfigure: false
+    'App\Serializer\CompanyContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\Serializer\CompanyContextBuilder.inner']
+        autoconfigure: false
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.

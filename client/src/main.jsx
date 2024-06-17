@@ -56,10 +56,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </Route>
 
             <Route path="studio" element={<StudioSearchPage />} />
-            <Route element={<AuthGuard />}>
+            {/*<Route element={<AuthGuard />}>*/}
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="my-absences" element={<Unavailability />} />
-            </Route>
+            {/*</Route>*/}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
