@@ -46,6 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     
@@ -56,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read', 'user:input', 'company:write'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -66,7 +67,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read', 'user:input', 'company:write'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -91,7 +92,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Assert\Unique]
-    #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN'], multiple: true)]
+    #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN', 'ROLE_EMPLOYEE'], multiple: true)]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column (length: 25, nullable: true)]
@@ -99,10 +101,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups(['user:read'])]
     private ?Company $company = null;
-
-    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Studio::class)]
-    private Collection $studios;
 
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: WorkHour::class)]
     private Collection $workHours;
@@ -117,26 +117,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $reservations;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[ApiProperty(identifier: true, description: "Token unique de l'utilisateur")] // Définir que 'token' est l'identifiant pour une opération spécifique
     private ?string $token = null;
-
-    /**
-     * @var Collection<int, Company>
-     */
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Company::class)]
-    private Collection $companies;
 
     public function __construct()
     {
-        $this->studios = new ArrayCollection();
         $this->workHours = new ArrayCollection();
         $this->unavailabilityHours = new ArrayCollection();
         $this->serviceEmployees = new ArrayCollection();
         $this->reservations = new ArrayCollection();
-        $this->companies = new ArrayCollection();
 
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
+        $this->createdAt = new \DateTime('now');
+        $this->updatedAt = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -282,32 +273,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-    public function __serialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'lastname'=>$this->lastname,
-            'firstname'=>$this->firstname,
-            'email' => $this->email,
-            'password' => $this->password,
-            'isValidated' => $this->isValidated,
-            'roles' => $this->roles,
-        ];
-    }
-    public function __unserialize(array $serialized)
-    {
-        $this->id = $serialized['id'];
-        $this->email = $serialized['email'];
-        $this->password = $serialized['password'];
-        $this->lastname = $serialized['lastname'];
-        $this->firstname = $serialized['firstname'];
-        $this->isValidated = $serialized['isValidated'];
-        $this->roles = $serialized['roles'];
-
-        return $this;
-    }
-
     public function getCompany(): ?Company
     {
         return $this->company;
@@ -316,36 +281,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Studio>
-     */
-    public function getStudios(): Collection
-    {
-        return $this->studios;
-    }
-
-    public function addStudio(Studio $studio): static
-    {
-        if (!$this->studios->contains($studio)) {
-            $this->studios->add($studio);
-            $studio->setUtilisateur($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStudio(Studio $studio): static
-    {
-        if ($this->studios->removeElement($studio)) {
-            // set the owning side to null (unless already changed)
-            if ($studio->getUtilisateur() === $this) {
-                $studio->setUtilisateur(null);
-            }
-        }
 
         return $this;
     }
@@ -478,36 +413,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setToken(?string $token): static
     {
         $this->token = $token;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Company>
-     */
-    public function getCompanies(): Collection
-    {
-        return $this->companies;
-    }
-
-    public function addCompany(Company $company): static
-    {
-        if (!$this->companies->contains($company)) {
-            $this->companies->add($company);
-            $company->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCompany(Company $company): static
-    {
-        if ($this->companies->removeElement($company)) {
-            // set the owning side to null (unless already changed)
-            if ($company->getOwner() === $this) {
-                $company->setOwner(null);
-            }
-        }
 
         return $this;
     }

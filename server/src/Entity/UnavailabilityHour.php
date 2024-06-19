@@ -3,14 +3,35 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UnavailabilityHourRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\State\UnavailabilityHourStateProvider;
 
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['unavailabilityHour:read']],
+    denormalizationContext: ['groups' => ['unavailabilityHour:write']],
+    operations: [
+        new GetCollection(securityPostDenormalize: "is_granted('AUTHORIZE', object)", provider: UnavailabilityHourStateProvider::class),
+        new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Patch(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
+            security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
+        ),
+        new Delete(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
+            security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
+        )    
+    ],
+)]
 class UnavailabilityHour
 {
     use Traits\BlameableTrait;
@@ -21,27 +42,28 @@ class UnavailabilityHour
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "Le champ 'startTime' ne peut pas être nul.")]
+    #[Assert\Type("\DateTimeInterface", message: "Le champ 'startTime' doit être une date valide.")]
+    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
     private ?\DateTimeInterface $startTime = null;
 
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "Le champ 'endTime' ne peut pas être nul.")]
+    #[Assert\Type("\DateTimeInterface", message: "Le champ 'endTime' doit être une date valide.")]
+    #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
+    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
     private ?\DateTimeInterface $endTime = null;
 
-    #[ORM\Column]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
-    #[Groups(['unavailabilityHour:admin:read'])]
-    private ?int $calendarDay = null;
-
     #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
-    #[Groups(['unavailabilityHour:admin:read'])]
+    #[Assert\NotNull(message: "Le champ 'employee' ne peut pas être nul.")]
+    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
     private ?User $employee = null;
 
-    #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
-    #[Groups(['unavailabilityHour:admin:read'])]
-    private ?StudioOpeningTime $studioOpeningTime = null;
+    #[ORM\Column]
+    #[Assert\Choice(choices: ['Pending', 'Accepted', 'Rejected'], message: "Le champ 'status' doit être 'Pending', 'Accepted' ou 'Rejected'.")]
+    #[Groups(['unavailabilityHour:presta:write', 'unavailabilityHour:read'])]
+    private string $status = 'Pending';
 
     public function getId(): ?int
     {
@@ -72,18 +94,6 @@ class UnavailabilityHour
         return $this;
     }
 
-    public function getCalendarDay(): ?int
-    {
-        return $this->calendarDay;
-    }
-
-    public function setCalendarDay(int $calendarDay): static
-    {
-        $this->calendarDay = $calendarDay;
-
-        return $this;
-    }
-
     public function getEmployee(): ?User
     {
         return $this->employee;
@@ -96,14 +106,14 @@ class UnavailabilityHour
         return $this;
     }
 
-    public function getStudioOpeningTime(): ?StudioOpeningTime
+    public function getStatus(): string
     {
-        return $this->studioOpeningTime;
+        return $this->status;
     }
 
-    public function setStudioOpeningTime(?StudioOpeningTime $studioOpeningTime): static
+    public function setStatus(string $status): static
     {
-        $this->studioOpeningTime = $studioOpeningTime;
+        $this->status = $status;
 
         return $this;
     }

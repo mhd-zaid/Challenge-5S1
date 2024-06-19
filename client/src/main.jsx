@@ -21,6 +21,8 @@ import AuthGuard from './context/AuthGuard.jsx';
 import StudioPage from './pages/StudioPage.jsx';
 import ReservationPage from './pages/ReservationPage.jsx';
 import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
+import Unavailability from './pages/Unavailability.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -29,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={<App />}>
+          <Route path="/" element={<App />}>
             <Route index element={<Home />} />
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
@@ -44,6 +46,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
             <Route element={<AuthGuard />}>
               <Route path="profile" element={<Profile />} />
+              <Route path="calendar" element={<CalendarPage />} />
+              <Route path="my-absences" element={<Unavailability />} />
             </Route>
 
             <Route path="studios">
@@ -64,6 +68,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </Route>
 
             <Route path="info" element={<InfoPage />} />
+
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

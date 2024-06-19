@@ -31,17 +31,17 @@ class StudioOpeningTime
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read'])]
     #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 
@@ -108,36 +108,6 @@ class StudioOpeningTime
     public function setStudio(?Studio $studio): static
     {
         $this->studio = $studio;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, UnavailabilityHour>
-     */
-    public function getUnavailabilityHours(): Collection
-    {
-        return $this->unavailabilityHours;
-    }
-
-    public function addUnavailabilityHour(UnavailabilityHour $unavailabilityHour): static
-    {
-        if (!$this->unavailabilityHours->contains($unavailabilityHour)) {
-            $this->unavailabilityHours->add($unavailabilityHour);
-            $unavailabilityHour->setStudioOpeningTime($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUnavailabilityHour(UnavailabilityHour $unavailabilityHour): static
-    {
-        if ($this->unavailabilityHours->removeElement($unavailabilityHour)) {
-            // set the owning side to null (unless already changed)
-            if ($unavailabilityHour->getStudioOpeningTime() === $this) {
-                $unavailabilityHour->setStudioOpeningTime(null);
-            }
-        }
 
         return $this;
     }
