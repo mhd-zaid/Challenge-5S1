@@ -2,5 +2,15 @@
   "greeting": "Bonjour, Monde!",
   "homepage": {
     "main-title": "Bienvenue à notre site!"
+  },
+  "studio": {
+    "reservation-btn": "Prendre RDV",
+    "book": "Réserver",
+    "prestation-choice": "Choix de la prestation",
+    "location": "Où se trouve le studio?",
+    "person": "Photographes du studio",
+    "about": "À propos du studio",
+    "opening-hours": "Horaires d'ouverture",
+    "closed": "Fermé"
   }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
@@ -25,8 +27,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Delete(),
     ]
-)
-]
+)]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: ['studio' => 'exact']
+)]
 class Service
 {
     use Traits\BlameableTrait;

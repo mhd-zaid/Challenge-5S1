@@ -1,8 +1,9 @@
-import React from 'react';
 import { Table, Thead, Tbody, Tr, Th, Td, Button } from '@chakra-ui/react';
-import dayjs from 'dayjs';
+import useCustomDate from '@/hooks/useCustomDate';
 
 const PendingUnavailabilityHourTable = ({ requests, onActionClick, user }) => {
+  const dayjs = useCustomDate();
+
   return (
     <Table variant="simple">
       <Thead>
@@ -15,7 +16,9 @@ const PendingUnavailabilityHourTable = ({ requests, onActionClick, user }) => {
       <Tbody>
         {requests.map(request => (
           <Tr key={request.id}>
-            <Td>{dayjs.utc(request.startTime).format('YYYY-MM-DD HH:mm:ss')}</Td>
+            <Td>
+              {dayjs.utc(request.startTime).format('YYYY-MM-DD HH:mm:ss')}
+            </Td>
             <Td>{dayjs.utc(request.endTime).format('YYYY-MM-DD HH:mm:ss')}</Td>
             <Td>
               {user.roles.includes('ROLE_EMPLOYEE') && (
@@ -25,10 +28,14 @@ const PendingUnavailabilityHourTable = ({ requests, onActionClick, user }) => {
               )}
               {user.roles.includes('ROLE_PRESTA') && (
                 <>
-                  <Button onClick={() => onActionClick('accept', request['@id'])}>
+                  <Button
+                    onClick={() => onActionClick('accept', request['@id'])}
+                  >
                     Accepter
                   </Button>
-                  <Button onClick={() => onActionClick('reject', request['@id'])}>
+                  <Button
+                    onClick={() => onActionClick('reject', request['@id'])}
+                  >
                     Refuser
                   </Button>
                 </>

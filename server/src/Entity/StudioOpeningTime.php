@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StudioOpeningTimeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -13,6 +15,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
 #[ApiResource]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: ['studio' => 'exact']
+)]
 class StudioOpeningTime
 {
     use Traits\BlameableTrait;

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -20,7 +21,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: 'user_profile')]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:input']],
@@ -36,7 +37,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
         ),
     ],
 )]
-
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
@@ -125,6 +125,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->unavailabilityHours = new ArrayCollection();
         $this->serviceEmployees = new ArrayCollection();
         $this->reservations = new ArrayCollection();
+
         $this->createdAt = new \DateTime('now');
         $this->updatedAt = new \DateTime('now');
     }
