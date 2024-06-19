@@ -17,7 +17,7 @@ import NotFoundPage from './NotFoundPage';
 import { CiLocationOn } from 'react-icons/ci';
 import { useTranslation } from 'react-i18next';
 import { scroller } from 'react-scroll';
-import useCustomDate from '../hooks/useCustomDate';
+import useCustomDate from '@/hooks/useCustomDate';
 
 const StudioPage = () => {
   const { t } = useTranslation();
