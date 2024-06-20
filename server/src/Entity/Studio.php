@@ -82,11 +82,6 @@ class Studio
     #[Assert\NotNull]
     private ?User $utilisateur = null;
 
-    #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Service::class)]
-    #[Groups(['studio:read'])]
-    #[Assert\NotNull]
-    private Collection $services;
-
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: StudioOpeningTime::class)]
     #[Groups(['company:read'])]
     private Collection $studioOpeningTimes;
@@ -97,11 +92,17 @@ class Studio
     #[Groups(['studio:read'])]
     private ?string $fullAddress = null;
 
+    /**
+     * @var Collection<int, Service>
+     */
+    #[ORM\ManyToMany(targetEntity: Service::class, mappedBy: 'studios')]
+    private Collection $services;
+
     public function __construct()
     {
-        $this->services = new ArrayCollection();
         $this->studioOpeningTimes = new ArrayCollection();
         $this->workHours = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -216,37 +217,6 @@ class Studio
 
         return $this;
     }
-
-    /**
-     * @return Collection<int, Service>
-     */
-    public function getServices(): Collection
-    {
-        return $this->services;
-    }
-
-    public function addService(Service $service): static
-    {
-        if (!$this->services->contains($service)) {
-            $this->services->add($service);
-            $service->setStudio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeService(Service $service): static
-    {
-        if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
-            if ($service->getStudio() === $this) {
-                $service->setStudio(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, StudioOpeningTime>
      */
@@ -310,5 +280,32 @@ class Studio
     public function getFullAddress(): ?string
     {
         return $this->address . ', ' . $this->zipCode . ' ' . $this->city . ', ' . $this->country;
+    }
+
+    /**
+     * @return Collection<int, Service>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+            $service->addStudio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): static
+    {
+        if ($this->services->removeElement($service)) {
+            $service->removeStudio($this);
+        }
+
+        return $this;
     }
 }

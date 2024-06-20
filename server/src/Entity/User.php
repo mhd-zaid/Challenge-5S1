@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'user_profile')]
+#[ORM\Table(name: 'utilisateur')]
 #[ApiResource(
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:input']],
@@ -110,24 +110,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: UnavailabilityHour::class)]
     private Collection $unavailabilityHours;
 
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: ServiceEmployee::class)]
-    private Collection $serviceEmployees;
-
-    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Reservation::class)]
-    private Collection $reservations;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $token = null;
+
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Reservation::class, orphanRemoval: true)]
+    private Collection $reservations;
 
     public function __construct()
     {
         $this->workHours = new ArrayCollection();
         $this->unavailabilityHours = new ArrayCollection();
-        $this->serviceEmployees = new ArrayCollection();
-        $this->reservations = new ArrayCollection();
-
         $this->createdAt = new \DateTime('now');
         $this->updatedAt = new \DateTime('now');
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -345,32 +343,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, ServiceEmployee>
-     */
-    public function getServiceEmployees(): Collection
+    public function getToken(): ?string
     {
-        return $this->serviceEmployees;
+        return $this->token;
     }
 
-    public function addServiceEmployee(ServiceEmployee $serviceEmployee): static
+    public function setToken(?string $token): static
     {
-        if (!$this->serviceEmployees->contains($serviceEmployee)) {
-            $this->serviceEmployees->add($serviceEmployee);
-            $serviceEmployee->setEmployee($this);
-        }
-
-        return $this;
-    }
-
-    public function removeServiceEmployee(ServiceEmployee $serviceEmployee): static
-    {
-        if ($this->serviceEmployees->removeElement($serviceEmployee)) {
-            // set the owning side to null (unless already changed)
-            if ($serviceEmployee->getEmployee() === $this) {
-                $serviceEmployee->setEmployee(null);
-            }
-        }
+        $this->token = $token;
 
         return $this;
     }
@@ -387,7 +367,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
-            $reservation->setUtilisateur($this);
+            $reservation->setCustomer($this);
         }
 
         return $this;
@@ -397,22 +377,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->reservations->removeElement($reservation)) {
             // set the owning side to null (unless already changed)
-            if ($reservation->getUtilisateur() === $this) {
-                $reservation->setUtilisateur(null);
+            if ($reservation->getCustomer() === $this) {
+                $reservation->setCustomer(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(?string $token): static
-    {
-        $this->token = $token;
 
         return $this;
     }

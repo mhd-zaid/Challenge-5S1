@@ -8,10 +8,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
-#[ApiResource]
-class Reservation
+#[ApiResource(
+    normalizationContext: ['groups' => ['service:read']],
+    operations: [
+        new Post(),
+        new Patch(),
+        new GetCollection(),
+    ]
+)]class Reservation
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
@@ -21,60 +30,36 @@ class Reservation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['reservation:read'])]
-    private ?User $utilisateur = null;
-
-    #[ORM\ManyToOne(inversedBy: 'reservations')]
-    #[Groups(['reservation:read'])]
-    private ?ServiceEmployee $serviceEmployee = null;
-
-    #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['reservation:read'])]
-    private ?\DateTimeInterface $horaire = null;
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
-    #[Assert\Choice(choices: ['RESERVED', 'UPDATED', 'CANCELED', 'COMPLETED'])]
+    #[Assert\Choice(choices: ['RESERVED', 'CANCELED', 'COMPLETED'])]
     #[Groups(['reservation:read'])]
     private $status;
+
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $customer = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $employee = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUtilisateur(): ?User
+    public function getDate(): ?\DateTimeInterface
     {
-        return $this->utilisateur;
+        return $this->date;
     }
 
-    public function setUtilisateur(?User $utilisateur): static
+    public function setDate(\DateTimeInterface $date): static
     {
-        $this->utilisateur = $utilisateur;
-
-        return $this;
-    }
-
-    public function getServiceEmployee(): ?ServiceEmployee
-    {
-        return $this->serviceEmployee;
-    }
-
-    public function setServiceEmployee(?ServiceEmployee $serviceEmployee): static
-    {
-        $this->serviceEmployee = $serviceEmployee;
-
-        return $this;
-    }
-
-    public function getHoraire(): ?\DateTimeInterface
-    {
-        return $this->horaire;
-    }
-
-    public function setHoraire(\DateTimeInterface $horaire): static
-    {
-        $this->horaire = $horaire;
+        $this->date = $date;
 
         return $this;
     }
@@ -87,6 +72,30 @@ class Reservation
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getCustomer(): ?User
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?User $customer): static
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getEmployee(): ?User
+    {
+        return $this->employee;
+    }
+
+    public function setEmployee(?User $employee): static
+    {
+        $this->employee = $employee;
 
         return $this;
     }
