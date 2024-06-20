@@ -131,8 +131,7 @@ class Fixtures extends Fixture
                 'roles'=> ['<randomElement(["ROLE_CUSTOMER"])>'],
                 'phone'=> '<numerify("06########")>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
-                'updatedAt'=> '<dateTimeBetween("now", "now")>',
-                'companies'=> ['@company*']
+                'updatedAt'=> '<dateTimeBetween("now", "now")>'
             ]
         ];
     }
