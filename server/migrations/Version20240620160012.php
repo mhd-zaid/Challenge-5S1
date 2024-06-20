@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240615131746 extends AbstractMigration
+final class Version20240620160012 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -59,9 +59,8 @@ final class Version20240615131746 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_8C015D57446F285F ON studio_opening_time (studio_id)');
         $this->addSql('CREATE INDEX IDX_8C015D57B03A8386 ON studio_opening_time (created_by_id)');
         $this->addSql('CREATE INDEX IDX_8C015D57896DBBDE ON studio_opening_time (updated_by_id)');
-        $this->addSql('CREATE TABLE unavailability_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, studio_opening_time_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIME(0) WITHOUT TIME ZONE NOT NULL, end_time TIME(0) WITHOUT TIME ZONE NOT NULL, calendar_day INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE unavailability_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_6B4423308C03F15C ON unavailability_hour (employee_id)');
-        $this->addSql('CREATE INDEX IDX_6B44233077A0EE06 ON unavailability_hour (studio_opening_time_id)');
         $this->addSql('CREATE INDEX IDX_6B442330B03A8386 ON unavailability_hour (created_by_id)');
         $this->addSql('CREATE INDEX IDX_6B442330896DBBDE ON unavailability_hour (updated_by_id)');
         $this->addSql('CREATE TABLE user_profile (id INT NOT NULL, company_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, roles JSON NOT NULL, phone VARCHAR(25) DEFAULT NULL, token TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
@@ -69,7 +68,7 @@ final class Version20240615131746 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_D95AB405979B1AD6 ON user_profile (company_id)');
         $this->addSql('CREATE INDEX IDX_D95AB405B03A8386 ON user_profile (created_by_id)');
         $this->addSql('CREATE INDEX IDX_D95AB405896DBBDE ON user_profile (updated_by_id)');
-        $this->addSql('CREATE TABLE work_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, studio_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIME(0) WITHOUT TIME ZONE NOT NULL, end_time TIME(0) WITHOUT TIME ZONE NOT NULL, calendar_day INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE work_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, studio_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_89DDA0768C03F15C ON work_hour (employee_id)');
         $this->addSql('CREATE INDEX IDX_89DDA076446F285F ON work_hour (studio_id)');
         $this->addSql('CREATE INDEX IDX_89DDA076B03A8386 ON work_hour (created_by_id)');
@@ -112,7 +111,6 @@ final class Version20240615131746 extends AbstractMigration
         $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57B03A8386 FOREIGN KEY (created_by_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57896DBBDE FOREIGN KEY (updated_by_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B4423308C03F15C FOREIGN KEY (employee_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B44233077A0EE06 FOREIGN KEY (studio_opening_time_id) REFERENCES studio_opening_time (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B442330B03A8386 FOREIGN KEY (created_by_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B442330896DBBDE FOREIGN KEY (updated_by_id) REFERENCES user_profile (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE user_profile ADD CONSTRAINT FK_D95AB405979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -161,7 +159,6 @@ final class Version20240615131746 extends AbstractMigration
         $this->addSql('ALTER TABLE studio_opening_time DROP CONSTRAINT FK_8C015D57B03A8386');
         $this->addSql('ALTER TABLE studio_opening_time DROP CONSTRAINT FK_8C015D57896DBBDE');
         $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B4423308C03F15C');
-        $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B44233077A0EE06');
         $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B442330B03A8386');
         $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B442330896DBBDE');
         $this->addSql('ALTER TABLE user_profile DROP CONSTRAINT FK_D95AB405979B1AD6');

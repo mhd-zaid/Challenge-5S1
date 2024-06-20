@@ -33,16 +33,16 @@ security:
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
-    access_control:
-      - { path: ^/api/login, roles: PUBLIC_ACCESS }
-      - { path: ^/api/services/distinct/name, roles: PUBLIC_ACCESS }
-      - { path: ^/api/send-forget-password, roles: PUBLIC_ACCESS }
-      - { path: ^/api/verify-mail, roles: PUBLIC_ACCESS }
-      - { path: ^/api/check-token, roles: PUBLIC_ACCESS }
-      - { path: ^/api/send-verification-email, roles: PUBLIC_ACCESS }
-      - { path: ^/api/reset-password, roles: PUBLIC_ACCESS }
-      - { path: ^/api/docs, roles: PUBLIC_ACCESS }
-      - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+  access_control:
+    - { path: ^/api/login, roles: PUBLIC_ACCESS }
+    - { path: ^/api/services/distinct/name, roles: PUBLIC_ACCESS }
+    - { path: ^/api/send-forget-password, roles: PUBLIC_ACCESS }
+    - { path: ^/api/verify-mail, roles: PUBLIC_ACCESS }
+    - { path: ^/api/check-token, roles: PUBLIC_ACCESS }
+    - { path: ^/api/send-verification-email, roles: PUBLIC_ACCESS }
+    - { path: ^/api/reset-password, roles: PUBLIC_ACCESS }
+    - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+    - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
   security:
