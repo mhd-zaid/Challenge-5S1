@@ -51,8 +51,6 @@ ehthumbs_vista.db
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/
 ###< lexik/jwt-authentication-bundle ###
-composer.lock
-symfony.lock
 
 /files/kbis
 /public/media

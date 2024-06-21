@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
-use App\Controller\ServiceController;
 use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,8 +25,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         new GetCollection(),
         new Delete(),
     ]
-)
-]
+)]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: ['studio' => 'exact']
+)]
 class Service
 {
     use Traits\BlameableTrait;
@@ -62,17 +65,15 @@ class Service
     #[Assert\GreaterThan(0)]
     private ?\DateTimeInterface $duration = null;
 
-    #[ORM\ManyToOne(inversedBy: 'services')]
-    #[Groups(['service:read'])]
-    #[Assert\NotNull]
-    private ?Studio $studio = null;
-
-    #[ORM\OneToMany(mappedBy: 'service', targetEntity: ServiceEmployee::class)]
-    private Collection $serviceEmployees;
+    /**
+     * @var Collection<int, Studio>
+     */
+    #[ORM\ManyToMany(targetEntity: Studio::class, inversedBy: 'services')]
+    private Collection $studios;
 
     public function __construct()
     {
-        $this->serviceEmployees = new ArrayCollection();
+        $this->studios = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -128,44 +129,26 @@ class Service
         return $this;
     }
 
-    public function getStudio(): ?Studio
-    {
-        return $this->studio;
-    }
-
-    public function setStudio(?Studio $studio): static
-    {
-        $this->studio = $studio;
-
-        return $this;
-    }
-
     /**
-     * @return Collection<int, ServiceEmployee>
+     * @return Collection<int, Studio>
      */
-    public function getServiceEmployees(): Collection
+    public function getStudios(): Collection
     {
-        return $this->serviceEmployees;
+        return $this->studios;
     }
 
-    public function addServiceEmployee(ServiceEmployee $serviceEmployee): static
+    public function addStudio(Studio $studio): static
     {
-        if (!$this->serviceEmployees->contains($serviceEmployee)) {
-            $this->serviceEmployees->add($serviceEmployee);
-            $serviceEmployee->setService($this);
+        if (!$this->studios->contains($studio)) {
+            $this->studios->add($studio);
         }
 
         return $this;
     }
 
-    public function removeServiceEmployee(ServiceEmployee $serviceEmployee): static
+    public function removeStudio(Studio $studio): static
     {
-        if ($this->serviceEmployees->removeElement($serviceEmployee)) {
-            // set the owning side to null (unless already changed)
-            if ($serviceEmployee->getService() === $this) {
-                $serviceEmployee->setService(null);
-            }
-        }
+        $this->studios->removeElement($studio);
 
         return $this;
     }

@@ -7,15 +7,6 @@ parameters:
 
 services:
     # default configuration for services in *this* file
-
-    'App\Serializer\UnavailabilityHourContextBuilder':
-        decorates: 'api_platform.serializer.context_builder'
-        arguments: [ '@App\Serializer\UnavailabilityHourContextBuilder.inner' ]
-        autoconfigure: false
-    'App\Serializer\CompanyContextBuilder':
-        decorates: 'api_platform.serializer.context_builder'
-        arguments: [ '@App\Serializer\CompanyContextBuilder.inner']
-        autoconfigure: false
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
@@ -33,6 +24,13 @@ services:
     App\EventListener\VichUploaderPreUploadListener:
         tags:
             - { name: kernel.event_listener, event: vich_uploader.pre_upload, method: preUpload }
-
+    'App\ContextBuilder\UnavailabilityHourContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\ContextBuilder\UnavailabilityHourContextBuilder.inner' ]
+        autoconfigure: false
+    'App\Serializer\CompanyContextBuilder':
+      decorates: 'api_platform.serializer.context_builder'
+      arguments: [ '@App\Serializer\CompanyContextBuilder.inner']
+      autoconfigure: false
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

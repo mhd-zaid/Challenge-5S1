@@ -5,7 +5,6 @@ namespace App\DataFixtures;
 
 use App\Entity\Company;
 use App\Entity\Service;
-use App\Entity\ServiceEmployee;
 use App\Entity\Studio;
 use App\Entity\StudioOpeningTime;
 use App\Entity\UnavailabilityHour;
@@ -40,7 +39,6 @@ class Fixtures extends Fixture
         $this->addUserToCompany($manager);
         $this->addCompanyAndUserToStudio($manager);
         $this->loadServiceFixture($manager);
-        $this->loadServiceEmployeeFixture($manager);
         $this->loadStudioOpeningTimeFixture($manager);
     }
 
@@ -90,22 +88,6 @@ class Fixtures extends Fixture
             $studio = $studios[$i];
             $studio->setName($company->getName() . " - Studio");
             $studio->setCompany($company);
-            $users = $company->getUsers();
-            $admin = false;
-            foreach ($users as $user) {
-                if (in_array('ROLE_ADMIN', $user->getRoles())) {
-                    $admin = true;
-                    $studio->setUtilisateur($user);
-                    $manager->persist($studio);
-                    break;
-                }
-            }
-            if (!$admin) {
-                $user = $users[0];
-                $studio->setUtilisateur($user);
-                $user->setRoles(['ROLE_ADMIN']);
-                $manager->persist($user);
-            }
             $manager->persist($studio);
             $manager->persist($company);
             $i++;
@@ -131,8 +113,7 @@ class Fixtures extends Fixture
                 'roles'=> ['<randomElement(["ROLE_CUSTOMER"])>'],
                 'phone'=> '<numerify("06########")>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
-                'updatedAt'=> '<dateTimeBetween("now", "now")>',
-                'companies'=> ['@company*']
+                'updatedAt'=> '<dateTimeBetween("now", "now")>'
             ]
         ];
     }
@@ -231,7 +212,7 @@ class Fixtures extends Fixture
      */
     private function addressHandler($object): object
     {
-        $address = $this->fetchAddress(rand(1, 250));
+        $address = $this->fetchAddress(rand(1, 50));
         $object->setAddress($address['address']);
         $object->setZipCode($address['zipCode']);
         $object->setCity($address['city']);
@@ -293,7 +274,7 @@ class Fixtures extends Fixture
             $service->setDescription($serviceFixtures[$rand]['description']);
             $service->setCost($serviceFixtures[$rand]['cost']);
             $service->setDuration($serviceFixtures[$rand]['duration']);
-            $service->setStudio($studio);
+            $service->addStudio($studio);
             $service->setCreatedAt(new \DateTime());
             $service->setUpdatedAt(new \DateTime());
             $manager->persist($service);
@@ -307,26 +288,6 @@ class Fixtures extends Fixture
      * @param ObjectManager $manager
      * @return void
      */
-    private function loadServiceEmployeeFixture(ObjectManager $manager): void
-    {
-        $services = $manager->getRepository(Service::class)->findAll();
-        foreach ($services as $service) {
-            $serviceEmployee = new ServiceEmployee();
-            $serviceEmployee->setService($service);
-            $rand = rand(1,4);
-            $users = array_filter($service->getStudio()->getCompany()->getUsers()->toArray(), function($user) {
-                return !in_array('ROLE_ADMIN', $user->getRoles());
-            });
-            for ($i = 0; $i < $rand; $i++) {
-                $user = $users[array_rand($users)];
-                $serviceEmployee->setEmployee($user);
-                $user->setRoles(['ROLE_PRESTA']);
-                $manager->persist($user);
-                $manager->persist($serviceEmployee);
-            }
-        }
-        $manager->flush();
-    }
 
     /**
      * Permet de générer les fixtures pour les horaires de travail
@@ -430,10 +391,10 @@ class Fixtures extends Fixture
 
     private function fetchAddress(int $number): array
     {
-        $streetType = ['rue', 'avenue', 'boulevard', 'impasse', 'place', 'chemin', 'allée'];
-        $query = "$number+" . $streetType[rand(0, 6)];
+        $streetType = ['rue', 'avenue', 'boulevard'];
+        $query = "$number+" . $streetType[rand(0, 2)];
         $addresses = json_decode(file_get_contents("https://api-adresse.data.gouv.fr/search/?q=$query&limit=50"));
-        $random = rand(0, 49);
+        $random = rand(0, 2);
         $address = $addresses->features[$random]->properties;
 
         return [

@@ -18,6 +18,8 @@ import StudioSearchPage from './pages/StudioSearchPage.jsx';
 import InfoPage from '@/pages/info/InfoPage.jsx';
 import AdminPage from '@/pages/admin/AdminPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
+import StudioPage from './pages/StudioPage.jsx';
+import ReservationPage from './pages/ReservationPage.jsx';
 import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
 import Unavailability from './pages/Unavailability.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
@@ -29,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ChakraProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="*" element={<App />}>
+          <Route path="/" element={<App />}>
             <Route index element={<Home />} />
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
@@ -44,22 +46,34 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
             <Route element={<AuthGuard />}>
               <Route path="profile" element={<Profile />} />
+              <Route path="calendar" element={<CalendarPage />} />
+              <Route path="my-absences" element={<Unavailability />} />
+            </Route>
+
+            <Route path="studios">
+              <Route index element={<StudioSearchPage />} />
+              <Route path=":id" element={<StudioPage />} />
+              <Route
+                path=":id/reservation/:service_id"
+                element={<ReservationPage />}
+              />
             </Route>
 
             <Route path="admin">
               <Route index element={<AdminPage />} />
-              <Route path="prestataires-demandes" element={<AdminPrestataireRequests />} />
+              <Route
+                path="prestataires-demandes"
+                element={<AdminPrestataireRequests />}
+              />
             </Route>
 
-            <Route path="info">
-              <Route index element={<InfoPage/>}/>
-            </Route>
+            <Route path="info" element={<InfoPage />} />
 
             <Route path="studio" element={<StudioSearchPage />} />
-            {/*<Route element={<AuthGuard />}>*/}
+            <Route element={<AuthGuard />}>
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="my-absences" element={<Unavailability />} />
-            {/*</Route>*/}
+            </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>
