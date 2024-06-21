@@ -5,7 +5,6 @@ namespace App\DataFixtures;
 
 use App\Entity\Company;
 use App\Entity\Service;
-use App\Entity\ServiceEmployee;
 use App\Entity\Studio;
 use App\Entity\StudioOpeningTime;
 use App\Entity\UnavailabilityHour;
@@ -40,7 +39,6 @@ class Fixtures extends Fixture
         $this->addUserToCompany($manager);
         $this->addCompanyAndUserToStudio($manager);
         $this->loadServiceFixture($manager);
-        $this->loadServiceEmployeeFixture($manager);
         $this->loadStudioOpeningTimeFixture($manager);
     }
 
@@ -290,7 +288,7 @@ class Fixtures extends Fixture
             $service->setDescription($serviceFixtures[$rand]['description']);
             $service->setCost($serviceFixtures[$rand]['cost']);
             $service->setDuration($serviceFixtures[$rand]['duration']);
-            $service->setStudio($studio);
+            $service->addStudio($studio);
             $service->setCreatedAt(new \DateTime());
             $service->setUpdatedAt(new \DateTime());
             $manager->persist($service);
@@ -304,26 +302,6 @@ class Fixtures extends Fixture
      * @param ObjectManager $manager
      * @return void
      */
-    private function loadServiceEmployeeFixture(ObjectManager $manager): void
-    {
-        $services = $manager->getRepository(Service::class)->findAll();
-        foreach ($services as $service) {
-            $serviceEmployee = new ServiceEmployee();
-            $serviceEmployee->setService($service);
-            $rand = rand(1,4);
-            $users = array_filter($service->getStudio()->getCompany()->getUsers()->toArray(), function($user) {
-                return !in_array('ROLE_ADMIN', $user->getRoles());
-            });
-            for ($i = 0; $i < $rand; $i++) {
-                $user = $users[array_rand($users)];
-                $serviceEmployee->setEmployee($user);
-                $user->setRoles(['ROLE_PRESTA']);
-                $manager->persist($user);
-                $manager->persist($serviceEmployee);
-            }
-        }
-        $manager->flush();
-    }
 
     /**
      * Permet de générer les fixtures pour les horaires de travail
