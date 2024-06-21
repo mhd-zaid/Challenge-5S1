@@ -1,5 +1,5 @@
 <?php
-namespace App\Serializer;
+namespace App\ContextBuilder;
 
 use ApiPlatform\Serializer\SerializerContextBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
