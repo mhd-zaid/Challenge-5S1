@@ -88,22 +88,6 @@ class Fixtures extends Fixture
             $studio = $studios[$i];
             $studio->setName($company->getName() . " - Studio");
             $studio->setCompany($company);
-            $users = $company->getUsers();
-            $admin = false;
-            foreach ($users as $user) {
-                if (in_array('ROLE_ADMIN', $user->getRoles())) {
-                    $admin = true;
-                    $studio->setUtilisateur($user);
-                    $manager->persist($studio);
-                    break;
-                }
-            }
-            if (!$admin) {
-                $user = $users[0];
-                $studio->setUtilisateur($user);
-                $user->setRoles(['ROLE_ADMIN']);
-                $manager->persist($user);
-            }
             $manager->persist($studio);
             $manager->persist($company);
             $i++;
@@ -226,7 +210,7 @@ class Fixtures extends Fixture
      */
     private function addressHandler($object): object
     {
-        $address = $this->fetchAddress(rand(1, 250));
+        $address = $this->fetchAddress(rand(1, 50));
         $object->setAddress($address['address']);
         $object->setZipCode($address['zipCode']);
         $object->setCity($address['city']);
@@ -405,10 +389,10 @@ class Fixtures extends Fixture
 
     private function fetchAddress(int $number): array
     {
-        $streetType = ['rue', 'avenue', 'boulevard', 'impasse', 'place', 'chemin', 'allée'];
-        $query = "$number+" . $streetType[rand(0, 6)];
+        $streetType = ['rue', 'avenue', 'boulevard'];
+        $query = "$number+" . $streetType[rand(0, 2)];
         $addresses = json_decode(file_get_contents("https://api-adresse.data.gouv.fr/search/?q=$query&limit=50"));
-        $random = rand(0, 49);
+        $random = rand(0, 2);
         $address = $addresses->features[$random]->properties;
 
         return [

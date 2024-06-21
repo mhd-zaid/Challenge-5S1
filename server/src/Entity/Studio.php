@@ -77,11 +77,6 @@ class Studio
     #[Assert\NotNull]
     private ?Company $company = null;
 
-    #[ORM\ManyToOne(inversedBy: 'studios')]
-    #[Groups(['studio:read'])]
-    #[Assert\NotNull]
-    private ?User $utilisateur = null;
-
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: StudioOpeningTime::class)]
     #[Groups(['company:read'])]
     private Collection $studioOpeningTimes;
@@ -96,6 +91,7 @@ class Studio
      * @var Collection<int, Service>
      */
     #[ORM\ManyToMany(targetEntity: Service::class, mappedBy: 'studios')]
+    #[Groups(['studio:read'])]
     private Collection $services;
 
     public function __construct()
@@ -206,17 +202,6 @@ class Studio
         return $this;
     }
 
-    public function getUtilisateur(): ?User
-    {
-        return $this->utilisateur;
-    }
-
-    public function setUtilisateur(?User $utilisateur): static
-    {
-        $this->utilisateur = $utilisateur;
-
-        return $this;
-    }
     /**
      * @return Collection<int, StudioOpeningTime>
      */
