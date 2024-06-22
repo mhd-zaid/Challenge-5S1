@@ -6,6 +6,8 @@ use App\Entity\UnavailabilityHour;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use App\Entity\User;
+
 /**
  * @extends ServiceEntityRepository<UnavailabilityHour>
  *
@@ -20,7 +22,20 @@ class UnavailabilityHourRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, UnavailabilityHour::class);
     }
-
+    public function findByEmployeeAndDateRange(User $employee, \DateTime $startDate, \DateTime $endDate)
+    {
+        return $this->createQueryBuilder('uh')
+            ->where('uh.employee = :employee')
+            ->andWhere('uh.startTime BETWEEN :start AND :end')
+            ->andWhere('uh.status = :status')
+            ->setParameter('employee', $employee)
+            ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
+            ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
+            ->setParameter('status', 'Accepted')
+            ->getQuery()
+            ->getResult();
+    }
+    
     //    /**
     //     * @return UnavailabilityHour[] Returns an array of UnavailabilityHour objects
     //     */
