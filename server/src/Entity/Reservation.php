@@ -22,6 +22,7 @@ use App\State\ReservationStateProvider;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
+    normalizationContext: ['groups' => ['reservation:read']],
     operations: [
         new Post(
         securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
