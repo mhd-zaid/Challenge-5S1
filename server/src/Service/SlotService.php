@@ -6,6 +6,7 @@ use App\Repository\ReservationRepository;
 use App\Repository\UnavailabilityHourRepository;
 use App\Repository\WorkHourRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Reservation;
 
 class SlotService {
 
@@ -103,12 +104,20 @@ class SlotService {
         return $availableSlots;
     }
 
-    public function isReservationPossible(User $employee,\DateTime $desiredStartTime): bool
+    public function isReservationPossible(User $employee,\DateTime $desiredStartTime, ?Reservation $currentReservation = null): bool
     {
+
         $workHours = $this->workHourRepo->findByEmployeeAndDate($employee, $desiredStartTime);
         $unavailabilityHours = $this->unavailabilityHourRepo->findByEmployeeAndDate($employee, $desiredStartTime);
         $reservations = $this->reservationRepo->findByEmployeeAndDate($employee, $desiredStartTime);
 
+        foreach ($reservations as $key => $reservation) {
+            if ($currentReservation && $reservation->getId() === $currentReservation->getId()) {
+                unset($reservations[$key]);
+                break;
+            }
+        }
+        
         $dailySlots = $this->getDailyAvailability($workHours, $unavailabilityHours, $reservations, $desiredStartTime);
 
         $desiredStartTime = clone $desiredStartTime;

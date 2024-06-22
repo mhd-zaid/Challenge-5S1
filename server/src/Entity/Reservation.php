@@ -15,20 +15,20 @@ use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
 use App\Validator\AvailableSlot;
 
+#[AvailableSlot]
+
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
     operations: [
         new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)", securityPostDenormalizeMessage: "Only the customer can create a reservation."),
-        new Patch(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Patch(securityPostDenormalize: "is_granted('EDIT', object)"),
         new GetCollection(),
     ]
-    
 )]
 
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
-#[AvailableSlot]
 class Reservation
 {
     use Traits\BlameableTrait;

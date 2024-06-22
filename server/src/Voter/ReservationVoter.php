@@ -11,9 +11,12 @@ class ReservationVoter extends Voter
 {
     const AUTHORIZE = 'AUTHORIZE';
 
+    const EDIT = 'EDIT';
+
+
      protected function supports(string $attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::AUTHORIZE])) {
+        if (!in_array($attribute, [self::AUTHORIZE, self::EDIT ])) {
             return false;
         }
 
@@ -37,6 +40,8 @@ class ReservationVoter extends Voter
         switch ($attribute) {
             case self::AUTHORIZE:
                 return $this->canAuthorize($reservation, $user);
+            case self::EDIT:
+                return $this->canEdit($reservation, $user);
         }
 
         return false;
@@ -45,5 +50,10 @@ class ReservationVoter extends Voter
     private function canAuthorize(Reservation $reservation, UserInterface $user): bool
     {
         return($reservation->getCustomer() === $user);
+    }
+
+    private function canEdit(Reservation $reservation, UserInterface $user): bool
+    {
+        return($reservation->getCustomer() === $user && $reservation->getStatus() === 'RESERVED');
     }
 }
