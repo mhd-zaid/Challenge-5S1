@@ -15,6 +15,7 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
 use App\Validator\AvailableSlot;
+use App\State\ReservationStateProvider;
 
 #[AvailableSlot]
 
@@ -31,7 +32,7 @@ use App\Validator\AvailableSlot;
         denormalizationContext: ['groups' => ['reservation:update']],    
         ),
         new Delete(security: "is_granted('EDIT', object)"),
-        new GetCollection(),
+        new GetCollection(provider: ReservationStateProvider::class, normalizationContext: ['groups' => ['reservation:read']]),
     ]
 )]
 
@@ -48,7 +49,7 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['reservation:create', 'reservation:update'])]
+    #[Groups(['reservation:create', 'reservation:update', 'reservation:read'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
@@ -63,7 +64,7 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create'])]
+    #[Groups(['reservation:create', 'reservation:read'])]
     private ?User $employee = null;
 
     #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
@@ -71,12 +72,12 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create'])]
+    #[Groups(['reservation:create', 'reservation:read'])]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create'])]
+    #[Groups(['reservation:create', 'reservation:read'])]
     private ?Studio $studio = null;
 
     public function getId(): ?int

@@ -43,7 +43,7 @@ class Service
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['service:read','studio:read'])]
+    #[Groups(['service:read','studio:read','reservation:read'])]
     #[Assert\Length(min: 5, max: 255)]
     #[Assert\NotBlank]
     private ?string $name = null;

@@ -32,7 +32,7 @@ class Studio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'company:read', 'planning:read'])]
+    #[Groups(['studio:read', 'company:read', 'planning:read', 'reservation:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $name = null;
@@ -67,7 +67,7 @@ class Studio
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read'])]
+    #[Groups(['studio:read', 'reservation:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $address = null;
