@@ -39,7 +39,7 @@ class Service
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['service:read','studio:read'])]
-    #[ApiProperty(identifier: false)]
+    // #[ApiProperty(identifier: false)]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

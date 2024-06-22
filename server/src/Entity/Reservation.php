@@ -11,16 +11,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
+use App\Validator\StudioHasService;
+
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['service:read']],
+    // normalizationContext: ['groups' => ['service:read']],
     operations: [
         new Post(),
         new Patch(),
         new GetCollection(),
     ]
-)]class Reservation
+)]
+#[StudioHasService]
+class Reservation
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
