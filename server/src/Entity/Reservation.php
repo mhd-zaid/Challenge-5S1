@@ -18,13 +18,13 @@ use App\Validator\AvailableSlot;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
-    // normalizationContext: ['groups' => ['service:read']],
     operations: [
-        new Post(),
-        new Patch(),
+        new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)", securityPostDenormalizeMessage: "Only the customer can create a reservation."),
+        new Patch(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
         new GetCollection(),
     ]
 )]
+
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
 #[AvailableSlot]
