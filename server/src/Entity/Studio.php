@@ -94,11 +94,18 @@ class Studio
     #[Groups(['studio:read'])]
     private Collection $services;
 
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
     public function __construct()
     {
         $this->studioOpeningTimes = new ArrayCollection();
         $this->workHours = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -289,6 +296,36 @@ class Studio
     {
         if ($this->services->removeElement($service)) {
             $service->removeStudio($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setStudio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getStudio() === $this) {
+                $reservation->setStudio(null);
+            }
         }
 
         return $this;

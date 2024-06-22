@@ -50,6 +50,14 @@ use ApiPlatform\Metadata\GetCollection;
     #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
     private ?Feedback $feedback = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Service $service = null;
+
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Studio $studio = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -116,7 +124,28 @@ use ApiPlatform\Metadata\GetCollection;
         }
 
         $this->feedback = $feedback;
+    }
 
+    public function getService(): ?Service
+    {
+        return $this->service;
+    }
+
+    public function setService(?Service $service): static
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    public function getStudio(): ?Studio
+    {
+        return $this->studio;
+    }
+
+    public function setStudio(?Studio $studio): static
+    {
+        $this->studio = $studio;
         return $this;
     }
 }
