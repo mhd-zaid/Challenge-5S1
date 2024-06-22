@@ -52,7 +52,7 @@ class Reservation
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
-    #[Assert\Choice(choices: ['RESERVED', 'CANCELED', 'COMPLETED'])]
+    #[Assert\Choice(choices: ['RESERVED', 'COMPLETED'])]
     #[Groups(['reservation:read'])]
     private $status = 'RESERVED';
 
