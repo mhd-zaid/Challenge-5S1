@@ -17,11 +17,35 @@ class ReservationStateProvider implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $user = $this->security->getUser();
-
         if (!$user) {
             throw new \Exception('Utilisateur non connecté.');
         }
 
-        return $this->reservationRepository->findBy(['customer' => $user]);
+        if (in_array('ROLE_PRESTA', $user->getRoles())) {
+            return $this->getPrestaReservations($user);
+        }
+
+        if (in_array('ROLE_CUSTOMER', $user->getRoles())) {
+            return $this->getCustomerReservations($user);
+        }
+
+        return [];
+    }
+    
+    private function getPrestaReservations($user): array
+    {
+        $studios = $user->getCompany()->getStudios();
+        $reservationsCollection = [];
+        foreach ($studios as $studi) {
+            foreach ($studi->getReservations() as $reservation) {
+                $reservationsCollection[] = $reservation;
+            }
+        }
+        return $reservationsCollection;
+    }
+
+    private function getCustomerReservations($user): array
+    {
+        return $user->getReservations();
     }
 }
