@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\WorkHour;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
+
 
 /**
  * @extends ServiceEntityRepository<WorkHour>
@@ -46,6 +48,31 @@ class WorkHourRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findByEmployeeAndDateRange(User $employee, \DateTime $startDate, \DateTime $endDate)
+    {
+        return $this->createQueryBuilder('wh')
+            ->where('wh.employee = :employee')
+            ->andWhere('wh.startTime BETWEEN :start AND :end')
+            ->setParameter('employee', $employee)
+            ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
+            ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByEmployeeAndDate(User $employee, \DateTime $date)
+    {
+        return $this->createQueryBuilder('wh')
+            ->where('wh.employee = :employee')
+            ->andWhere('wh.startTime BETWEEN :start AND :end')
+            ->setParameter('employee', $employee)
+            ->setParameter('start', $date->format('Y-m-d 00:00:00'))
+            ->setParameter('end', $date->format('Y-m-d 23:59:59'))
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return WorkHour[] Returns an array of WorkHour objects
 //     */
