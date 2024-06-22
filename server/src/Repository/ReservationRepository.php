@@ -27,11 +27,11 @@ class ReservationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->where('r.employee = :employee')
             ->andWhere('r.date BETWEEN :start AND :end')
-            ->andWhere('r.status = :status')
+            // ->andWhere('r.status = :status')
             ->setParameter('employee', $employee)
             ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
             ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
-            ->setParameter('status', 'RESERVED')
+            // ->setParameter('status', 'RESERVED')
             ->getQuery()
             ->getResult();
     }
@@ -41,11 +41,11 @@ class ReservationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->where('r.employee = :employee')
             ->andWhere('r.date BETWEEN :start AND :end')
-            ->andWhere('r.status = :status')
+            // ->andWhere('r.status = :status')
             ->setParameter('employee', $employee)
             ->setParameter('start', $date->format('Y-m-d 00:00:00'))
             ->setParameter('end', $date->format('Y-m-d 23:59:59'))
-            ->setParameter('status', 'RESERVED')
+            // ->setParameter('status', 'RESERVED')
             ->getQuery()
             ->getResult();
     }

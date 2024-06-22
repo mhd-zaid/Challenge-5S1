@@ -26,11 +26,11 @@ use App\Validator\AvailableSlot;
         securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
         securityPostDenormalizeMessage: "Only the customer can create a reservation.",
         denormalizationContext: ['reservation:create']
-    ),
+        ),
         new Patch(securityPostDenormalize: "is_granted('EDIT', object)",
         denormalizationContext: ['groups' => ['reservation:update']],    
-    ),
-    new Delete(security: "is_granted('EDIT', object)"),
+        ),
+        new Delete(security: "is_granted('EDIT', object)"),
         new GetCollection(),
     ]
 )]
