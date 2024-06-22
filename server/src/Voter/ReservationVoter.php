@@ -32,11 +32,11 @@ class ReservationVoter extends Voter
             return false;
         }
 
-        $workHour = $subject;
+        $reservation = $subject;
 
         switch ($attribute) {
             case self::AUTHORIZE:
-                return $this->canAuthorize($workHour, $user);
+                return $this->canAuthorize($reservation, $user);
         }
 
         return false;

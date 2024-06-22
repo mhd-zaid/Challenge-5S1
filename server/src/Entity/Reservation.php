@@ -23,6 +23,7 @@ use App\Validator\AvailableSlot;
         new Patch(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
         new GetCollection(),
     ]
+    
 )]
 
 #[StudioHasService]
@@ -45,7 +46,7 @@ class Reservation
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'CANCELED', 'COMPLETED'])]
     #[Groups(['reservation:read'])]
-    private $status;
+    private $status = 'RESERVED';
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
