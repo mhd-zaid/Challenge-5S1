@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
 use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
+use App\Validator\AvailableSlot;
 
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
@@ -26,6 +27,7 @@ use App\Validator\EmployeeBelongsToStudio;
 )]
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
+#[AvailableSlot]
 class Reservation
 {
     use Traits\BlameableTrait;
