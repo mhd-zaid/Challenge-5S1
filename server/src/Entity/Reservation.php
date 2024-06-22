@@ -47,6 +47,9 @@ use ApiPlatform\Metadata\GetCollection;
     #[ORM\JoinColumn(nullable: false)]
     private ?User $employee = null;
 
+    #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
+    private ?Feedback $feedback = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -96,6 +99,23 @@ use ApiPlatform\Metadata\GetCollection;
     public function setEmployee(?User $employee): static
     {
         $this->employee = $employee;
+
+        return $this;
+    }
+
+    public function getFeedback(): ?Feedback
+    {
+        return $this->feedback;
+    }
+
+    public function setFeedback(Feedback $feedback): static
+    {
+        // set the owning side of the relation if necessary
+        if ($feedback->getReservation() !== $this) {
+            $feedback->setReservation($this);
+        }
+
+        $this->feedback = $feedback;
 
         return $this;
     }
