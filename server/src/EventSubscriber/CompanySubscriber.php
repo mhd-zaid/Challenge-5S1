@@ -11,7 +11,7 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use App\Service\MailService;
 use Psr\Log\LoggerInterface;
 
-class CompanyCreationSubscriber implements EventSubscriberInterface
+class CompanySubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private MailService $emailService
@@ -23,6 +23,7 @@ class CompanyCreationSubscriber implements EventSubscriberInterface
     {
         return [
             Events::postPersist,
+            Events::postUpdate,
         ];
     }
 
@@ -34,7 +35,6 @@ class CompanyCreationSubscriber implements EventSubscriberInterface
 
 
         if ($object instanceof Company) {
-//            dd($object ,$adminList);
             foreach ($adminList as $admin) {
                 $this->emailService->sendEmail($admin
                     , 'Nouvelle demande de création de compte'
@@ -46,6 +46,23 @@ class CompanyCreationSubscriber implements EventSubscriberInterface
                     ]
                 );
             }
+        }
+    }
+
+    public function postUpdate(LifecycleEventArgs $args): void
+    {
+        $object = $args->getObject();
+        $frontendUrl = $_ENV['FRONTEND_URL'];
+
+        if ($object instanceof Company) {
+            $this->emailService->sendEmail($object->getOwner()
+                , 'Modification de compte'
+                , 'company_info_updated.html.twig'
+                , [
+                    'company' => $object
+                    , 'loginUrl' => $frontendUrl . '/auth/login'
+                ]
+            );
         }
     }
 

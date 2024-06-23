@@ -45,6 +45,16 @@ const Navbar = ({ onLogout, menus }) => {
         >
           Ajouter votre établissement
         </Button>
+        <Button
+          as={RouterLink}
+          to="/profile"
+          mr="10px"
+          bg="#f3f3f3"
+          color="black"
+          _hover={{ bg: '#e2e2e2' }}
+        >
+          Mon compte
+        </Button>
         {!user ? (
         <Button
           as={RouterLink}

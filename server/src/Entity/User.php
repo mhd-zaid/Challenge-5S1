@@ -103,6 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
+    #[Groups(['user:read'])]
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]

@@ -24,11 +24,15 @@ import {
   ModalFooter,
   FormControl,
   FormLabel,
-  Input,
+  Input, Flex, MenuItem, Menu, MenuButton, MenuList, IconButton,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import Pagination from '@/components/Pagination.jsx';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { Icon } from '@iconify/react';
+import FormCompany from '@/components/forms/FormCompany.jsx';
+import FormStudio from '@/components/forms/FormStudio.jsx';
+import FormUser from '@/components/forms/FormUser.jsx';
 
 const AdminControlCenterPage = () => {
   const { user, token } = useAuth();
@@ -62,7 +66,11 @@ const AdminControlCenterPage = () => {
       });
     const data = await response.json();
     if (type === 'companies') {
-      setCompanies(data['hydra:member']);
+      console.log("data", data['hydra:member'])
+      setCompanies(data['hydra:member'].map((company) => ({
+        ...company,
+        createdAt: new Date(company.createdAt).toLocaleDateString(),
+      })))
     } else if (type === 'studios') {
       setStudios(data['hydra:member']);
     } else if (type === 'users') {
@@ -74,6 +82,16 @@ const AdminControlCenterPage = () => {
       if (match) {
         setTotalPages(Number(match[1]));
       }
+    } else {
+      setTotalPages(1);
+    }
+  };
+
+  const handleFormSubmit = async (hasBeenUpdate) => {
+    if (hasBeenUpdate) {
+      await fetchData(dataType, currentPage);
+    } else {
+      onClose();
     }
   };
 
@@ -87,17 +105,12 @@ const AdminControlCenterPage = () => {
     onOpen();
   };
 
-  const handleSave = () => {
-    // Logique de sauvegarde
-    onClose();
-  };
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   return (
-    <Box p={4}>
+    <Box p={4} maxW={"7xl"} mx={"auto"}>
       <Heading mb={4}>Control Center</Heading>
       <Tabs onChange={(index) => setDataType(['companies', 'studios', 'users'][index])}>
         <TabList>
@@ -106,6 +119,7 @@ const AdminControlCenterPage = () => {
           <Tab>Utilisateurs</Tab>
         </TabList>
 
+        {/*Gestion des compagnies*/}
         <TabPanels>
           <TabPanel>
             <Button mb={4} onClick={handleAdd}>Ajouter une compagnie</Button>
@@ -114,6 +128,9 @@ const AdminControlCenterPage = () => {
                 <Tr>
                   <Th>Nom</Th>
                   <Th>Email</Th>
+                  <Th>Téléphone</Th>
+                  <Th>Vérifié</Th>
+                  <Th>Date d'inscription</Th>
                   <Th>Actions</Th>
                 </Tr>
               </Thead>
@@ -122,8 +139,36 @@ const AdminControlCenterPage = () => {
                   <Tr key={company.id}>
                     <Td>{company.name}</Td>
                     <Td>{company.email}</Td>
+                    <Td>{company.phone}</Td>
                     <Td>
-                      <Button colorScheme="blue" onClick={() => handleEdit(company)}>Modifier</Button>
+                      <Flex justifyContent={"center"}>
+                        {company.isVerified ? (
+                          <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
+                        ) : (
+                          <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                        )}
+                      </Flex>
+                    </Td>
+                    <Td>{company.createdAt}</Td>
+                    <Td>
+                      {/*<Flex gap={4}>*/}
+                      {/*  <Button colorScheme="blue" onClick={() => handleEdit(company)}>Modifier</Button>*/}
+                      {/*  <Button colorScheme="red" onClick={() => handleEdit(company)}>Supprimer</Button>*/}
+                      {/*</Flex>*/}
+                      <Td>
+                        <Menu>
+                          <MenuButton as={Flex} bg={"transparent"} cursor={"pointer"}>
+                            <Icon icon="system-uicons:menu-vertical" fontSize={30} style={{color: "black"}} />
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem onClick={() => handleEdit(company)}>Modifier les informations de la compagnie</MenuItem>
+                            <MenuItem onClick={() => handleEdit(company)}>Modifier les informations du propriétaire</MenuItem>
+                            <MenuItem onClick={() => handleEdit(company)}>Modifier le propriétaire</MenuItem>
+                            <MenuItem onClick={() => handleDelete(company)}>Supprimer</MenuItem>
+                            {/* Ajoutez ici d'autres actions si nécessaire */}
+                          </MenuList>
+                        </Menu>
+                      </Td>
                     </Td>
                   </Tr>
                 ))}
@@ -132,6 +177,7 @@ const AdminControlCenterPage = () => {
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </TabPanel>
 
+          {/*Gestion des studios*/}
           <TabPanel>
             <Button mb={4} onClick={handleAdd}>Ajouter un studio</Button>
             <Table variant="simple">
@@ -157,6 +203,7 @@ const AdminControlCenterPage = () => {
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </TabPanel>
 
+          {/*Gestion des utilisateurs*/}
           <TabPanel>
             <Button mb={4} onClick={handleAdd}>Ajouter un utilisateur</Button>
             <Table variant="simple">
@@ -188,25 +235,18 @@ const AdminControlCenterPage = () => {
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent maxW={"4xl"}>
           <ModalHeader>{editData ? 'Modifier' : 'Ajouter'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <FormControl mb={4}>
-              <FormLabel>Nom</FormLabel>
-              <Input placeholder="Nom" defaultValue={editData?.name} />
-            </FormControl>
-            <FormControl mb={4}>
-              <FormLabel>Email</FormLabel>
-              <Input placeholder="Email" defaultValue={editData?.email} />
-            </FormControl>
+            {dataType === 'companies' ? (
+              <FormCompany company={editData} onSubmitForm={handleFormSubmit}/>
+            ) : dataType === 'studios' ? (
+              <FormStudio studio={editData} />
+            ) : dataType === 'users' ? (
+              <FormUser user={editData} />
+            ) : null}
           </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSave}>
-              Enregistrer
-            </Button>
-            <Button variant="outline" onClick={onClose}>Annuler</Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>

@@ -10,15 +10,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const EmployeeProfile = ({user}) => {
-  const navigate = useNavigate();
 
   return (
     <Box
-      maxW="7xl"
-      mx="auto"
-      p={6}
-      pt="80px" // Ajout de padding-top pour éviter que la navbar masque le contenu
-      bg={useColorModeValue('gray.100', 'gray.900')}
+      pt="80px"
       minH="100vh"
     >
       <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" mb={6}>

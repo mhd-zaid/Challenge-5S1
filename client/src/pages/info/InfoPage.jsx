@@ -1,7 +1,5 @@
 import { Box, Button, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
-import FormCompany from '@/components/forms/FormCompany.jsx';
-import { apiService } from '@/services/apiService.js';
-import { useEffect, useState } from 'react';
+import FormCompanyRquest from '@/components/forms/FormCompanyRequest.jsx';
 
 const InfoPage = () => {
 
@@ -20,7 +18,7 @@ const InfoPage = () => {
         alignItems="center"
         p={4}
       >
-        <FormCompany />
+        <FormCompanyRquest />
       </Box>
       <Box
         h='100vh'

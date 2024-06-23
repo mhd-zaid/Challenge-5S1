@@ -132,6 +132,7 @@ class Fixtures extends Fixture
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
                 'socialMedia'=> '<url()>',
                 'website'=> '<url()>',
+                'isVerified'=> '<boolean()>',
                 'owner'=> '@user*',
             ],
         ];
