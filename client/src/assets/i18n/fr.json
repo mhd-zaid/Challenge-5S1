@@ -12,5 +12,15 @@
     "about": "À propos du studio",
     "opening-hours": "Horaires d'ouverture",
     "closed": "Fermé"
+  },
+  "auth": {
+    "login":{
+      "password": "Mot de passe",
+      "email": "Email",
+      "submit": "Se connecter",
+      "forgot-password": "Mot de passe oublié ?",
+      "no-account": "Pas de compte ?",
+      "create-account": "Créer un compte"
+    }
   }
 }

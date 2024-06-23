@@ -18,6 +18,7 @@ import { BiShowAlt, BiHide  } from "react-icons/bi";
 import AuthService from '@/services/AuthService';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { set } from 'react-hook-form';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -147,7 +148,7 @@ const LoginPage = () => {
           
           </FormControl>
           <Link to="/auth/forgetpassword">
-            <Button mt={4}>Mot de passe oublié</Button>
+          <Text textAlign="left" mt={4} fontSize="lg" as="u">Mot de passe oublié ?</Text>
           </Link>
           <Button type="submit" bg="black" size="lg" color="white">
             {isLoading ? <Spinner size="sm" color="white" /> : "Se connecter"}
@@ -155,21 +156,26 @@ const LoginPage = () => {
         </Stack>
       </form>
       {error.api && (
-        <Text color="red.500" mb={4} textAlign="center">
-          {error.api}
-          {error.api === 'Votre email n\'a pas encore été validé. Veuillez vérifier votre boîte de réception et valider votre compte.' && (
-            <Button variant="link" onClick={handleResendEmail} disabled={isResendingEmail}>
-              {isResendingEmail ? <Spinner size="sm" color="blue.500" /> : "Renvoyer l'email de validation"}
-            </Button>
-          )}
-        </Text>
+        <Box mt={4} p={4} bg="red.100" color="red.500" borderRadius="md">
+
+          <Text color="red.500" mb={4} mt={4} textAlign="center">
+            {error.api}
+            {error.api === 'Votre email n\'a pas encore été validé. Veuillez vérifier votre boîte de réception et valider votre compte.' && (
+              <Button mt={4}  onClick={handleResendEmail} disabled={isResendingEmail}>
+                {isResendingEmail ? <Spinner size="sm"/> : "Renvoyer l'email de validation"}
+              </Button>
+            )}
+          </Text>
+        </Box>
       )}
-      <Text textAlign="center" mt={4}>
-        Pas encore de compte ?
-      </Text>
-      <Link to="/auth/login">
-        <Button size="lg" mt={4}>Créer un compte</Button>
-      </Link>
+
+      <Box mt={4} pt={4}>
+        <Link to="/auth/forgetpassword">
+          <Text textAlign="left" fontSize="lg" as="u">
+            Pas encore de compte ?
+          </Text>
+        </Link>
+      </Box>
     </Box>
   );
 };
