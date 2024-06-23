@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: 'utilisateur')]
 #[ApiResource(
     operations: [
         new Get(),
@@ -60,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -70,7 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -101,7 +101,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
-    #[Groups(['user:read', 'company:read'])]
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]

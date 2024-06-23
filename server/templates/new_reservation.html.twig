@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle Réservation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        .details {
+            margin-top: 20px;
+        }
+        .details dt {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .details dd {
+            margin: 0;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nouvelle Réservation</h1>
+        <p>Bonjour,</p>
+        <p>Une nouvelle réservation a été effectuée. Voici les détails :</p>
+
+        <dl class="details">
+            <dt>Nom du client :</dt>
+            <dd>{{ reservation.customer.firstname }} {{ reservation.customer.lastname }}</dd>
+
+            <dt>Email du client :</dt>
+            <dd>{{ reservation.customer.email }}</dd>
+
+            <dt>Date de réservation :</dt>
+            <dd>{{ reservation.date|date('d/m/Y H:i') }}</dd>
+        </dl>
+
+        <p>Merci,</p>
+        <p>L'équipe de réservation</p>
+    </div>
+</body>
+</html>
