@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom'; // Import du composant Link pour créer un lien
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -11,17 +11,19 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
+import { useForm } from 'react-hook-form';
 import AuthService from '@/services/AuthService';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
   const [isValidToken, setIsValidToken] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordReset, setIsPasswordReset] = useState(false);
   const toast = useToast();
+
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const newPassword = watch('newPassword');
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -40,20 +42,11 @@ const ResetPasswordPage = () => {
     verifyToken();
   }, [token]);
 
-  const handleResetPassword = async (e) => {
-    e.preventDefault();
-    if (!newPassword || !confirmPassword) {
-      setError('Veuillez remplir tous les champs.');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas.');
-      return;
-    }
+  const handleResetPassword = async (data) => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await AuthService.reset_password(newPassword, token);
+      const response = await AuthService.reset_password(data.newPassword, token);
       if (response.status === 200) {
         toast({
           title: 'Mot de passe réinitialisé',
@@ -74,7 +67,7 @@ const ResetPasswordPage = () => {
 
   if (!isValidToken) {
     return (
-      <Box p={4} maxWidth="400px" mx="auto">
+      <Box p={4} py={24} maxWidth="400px" mx="auto">
         <Text color="red.500" textAlign="center">{error}</Text>
       </Box>
     );
@@ -82,36 +75,55 @@ const ResetPasswordPage = () => {
 
   if (isPasswordReset) {
     return (
-      <Box p={4} maxWidth="400px" mx="auto">
+      <Box p={8} py={24} maxWidth="400px" mx="auto">
         <Heading as="h2" size="lg" textAlign="center" mb={6}>Mot de passe réinitialisé</Heading>
         <Text color="green.500" textAlign="center">Votre mot de passe a été réinitialisé avec succès.</Text>
         <Box textAlign="center" mt={4}>
-          <Button colorScheme="blue" as={Link} to="/auth/login">Retour à la connexion</Button>
+        <Link to="/auth/login">
+          <Text textAlign="left" mr={6} fontSize="lg" as="u">
+          Retour à la connexion          
+          </Text>
+        </Link>      
         </Box>
       </Box>
     );
   }
 
   return (
-    <Box p={4} maxWidth="400px" mx="auto">
+    <Box p={4} py={24} maxWidth="400px" mx="auto">
       <Heading as="h2" size="lg" textAlign="center" mb={6}>Réinitialisation du mot de passe</Heading>
-      <form onSubmit={handleResetPassword}>
+      <form onSubmit={handleSubmit(handleResetPassword)}>
         <Stack spacing={4}>
-          <FormControl>
+          <FormControl isInvalid={errors.newPassword}>
             <FormLabel>Nouveau mot de passe</FormLabel>
             <Input
               type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder='Nouveau mot de passe'
+              {...register('newPassword', {
+                required: 'Le nouveau mot de passe est obligatoire',
+                minLength: {
+                  value: 8,
+                  message: 'Le mot de passe doit contenir au moins 8 caractères'
+                },
+                pattern: {
+                  value: /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                  message: 'Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial'
+                }
+              })}
             />
+            {errors.newPassword && <Text color="red.500" mt={2}>{errors.newPassword.message}</Text>}
           </FormControl>
-          <FormControl>
+          <FormControl isInvalid={errors.confirmPassword}>
             <FormLabel>Confirmer le nouveau mot de passe</FormLabel>
             <Input
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder='Confirmer le nouveau mot de passe'
+              {...register('confirmPassword', {
+                required: 'Veuillez confirmer le nouveau mot de passe',
+                validate: value => value === newPassword || 'Les mots de passe ne correspondent pas'
+              })}
             />
+            {errors.confirmPassword && <Text color="red.500" mt={2}>{errors.confirmPassword.message}</Text>}
           </FormControl>
           <Button type="submit" colorScheme="blue" size="lg" isLoading={isLoading}>
             Réinitialiser le mot de passe
@@ -121,8 +133,12 @@ const ResetPasswordPage = () => {
       {error && (
         <Text color="red.500" mt={4} textAlign="center">{error}</Text>
       )}
-      <Box textAlign="center" mt={4}>
-        <Button colorScheme="blue" as={Link} to="/auth/login">Retour à la connexion</Button>
+      <Box  mt={4}>
+        <Link to="/auth/login">
+          <Text textAlign="left" mr={6} fontSize="lg" as="u">
+          Retour à la connexion          
+          </Text>
+        </Link>      
       </Box>
     </Box>
   );

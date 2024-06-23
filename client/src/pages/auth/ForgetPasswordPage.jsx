@@ -74,7 +74,7 @@ const ForgetPasswordPage = () => {
           </Text>
         </Link>
 
-        <Link to="/auth/signup">
+        <Link to="/auth/register">
         <Text textAlign="left" fontSize="lg" as="u">
           Créer un compte          
         </Text>

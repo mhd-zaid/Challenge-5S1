@@ -170,7 +170,7 @@ const LoginPage = () => {
       )}
 
       <Box mt={4} pt={4}>
-        <Link to="/auth/forgetpassword">
+        <Link to="/auth/register">
           <Text textAlign="left" fontSize="lg" as="u">
             Pas encore de compte ?
           </Text>
