@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -11,20 +11,20 @@ import {
   Spinner
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import AuthService from '@/services/AuthService';
 
 const ForgetPasswordPage = () => {
-  const [email, setEmail] = useState('');
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isEmailSent, setIsEmailSent] = useState(false); // Nouvel état pour suivre l'état de l'envoi de l'e-mail
+  const [isEmailSent, setIsEmailSent] = useState(false);
 
-  const handleSendEmail = async (e) => {
-    e.preventDefault();
+  const handleSendEmail = async (data) => {
     setIsLoading(true);
     setError('');
     try {
-      const response = await AuthService.forget_password(email);
+      const response = await AuthService.forget_password(data.email);
       if (response.status === 200) {
         setIsEmailSent(true);
       }
@@ -36,18 +36,25 @@ const ForgetPasswordPage = () => {
   };
 
   return (
-    <Box p={4} maxWidth="400px" mx="auto">
-      <Heading as="h2" size="lg" textAlign="center" mb={6}>Réinitialiser le mot de passe</Heading>
+    <Box p={8} py={24} maxWidth="400px" mx="auto">
+      <Heading as="h2" size="lg" textAlign="center" mb={2}>Réinitialiser le mot de passe</Heading>
       {!isEmailSent ? (
-        <form onSubmit={handleSendEmail}>
+        <form onSubmit={handleSubmit(handleSendEmail)}>
           <Stack spacing={4}>
-            <FormControl>
-              <FormLabel>Adresse e-mail</FormLabel>
+            <FormControl isInvalid={errors.email}>
+              <FormLabel>Email</FormLabel>
               <Input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                {...register('email', {
+                  required: 'Email obligatoire',
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: 'Adresse e-mail invalide'
+                  }
+                })}
               />
+              {errors.email && <Text color="red.500" mt={2}>{errors.email.message}</Text>}
             </FormControl>
             <Button type="submit" colorScheme="blue" size="lg" disabled={isLoading}>
               {isLoading ? <Spinner size="sm" color="white" /> : "Envoyer l'e-mail de réinitialisation"}
@@ -55,14 +62,23 @@ const ForgetPasswordPage = () => {
           </Stack>
         </form>
       ) : (
-        <Text color="green.500" textAlign="center" mt={4}>Un e-mail de réinitialisation a été envoyé à {email}. Veuillez vérifier votre boîte de réception.</Text>
+        <Text color="green.500" textAlign="center" mt={4}>Un e-mail de réinitialisation a été envoyé. Veuillez vérifier votre boîte de réception.</Text>
       )}
       {error && (
         <Text color="red.500" mt={4} textAlign="center">{error}</Text>
       )}
-      <Box textAlign="center" mt={6}>
-        <Button as={Link} to="/auth/login" variant="link">Retour à la connexion</Button>
-        <Button as={Link} to="/auth/signup" variant="link" ml={2}>Créer un compte</Button>
+      <Box mt={4} pt={4}>
+        <Link to="/auth/login">
+          <Text textAlign="left" mr={6} fontSize="lg" as="u">
+          Retour à la connexion          
+          </Text>
+        </Link>
+
+        <Link to="/auth/signup">
+        <Text textAlign="left" fontSize="lg" as="u">
+          Créer un compte          
+        </Text>
+        </Link>
       </Box>
     </Box>
   );
