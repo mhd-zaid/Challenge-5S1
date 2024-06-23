@@ -2,7 +2,7 @@ import { Box, Flex, Heading, Text } from '@chakra-ui/react';
 
 const NotFoundPage = () => {
   return (
-    <Flex w="full" h="" justifyContent="center" alignItems="center">
+    <Flex w="full" h="full" justifyContent="center" alignItems="center">
       <Box>
         <Heading>Page non trouvée</Heading>
         <Text textAlign="center">

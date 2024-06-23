@@ -131,8 +131,7 @@ const StudioPage = () => {
                 >
                   <Text>{service.name}</Text>
                   <Flex alignItems={'center'}>
-                    <Text>{/* service.duration */}60min</Text>{' '}
-                    {/* TODO: change when duration is integer */}
+                    <Text>1h</Text>
                     <Box
                       w={1}
                       h={1}

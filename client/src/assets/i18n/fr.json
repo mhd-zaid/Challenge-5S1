@@ -9,7 +9,9 @@
     "register": "Créer un compte",
     "pwd": "Mot de passe",
     "forgot-pwd": "Mot de passe oublié ?",
-    "no-account": "Pas encore de compte ?"
+    "no-account": "Pas encore de compte ?",
+    "new-user": "Nouveau sur Instant Studio ?",
+    "already-account": "Vous avez déjà utilisé Instant Studio ?"
   },
   "studio": {
     "select-studio": "Sélectionner un studio",
@@ -22,6 +24,9 @@
     "opening-hours": "Horaires d'ouverture",
     "closed": "Fermé",
     "more-info": "Plus d'informations",
-    "no-results": "Aucun résultat trouvé"
+    "no-results": "Aucun résultat trouvé",
+    "chosen-presta": "Prestation séléctionnée",
+    "chosen-date": "Date et heure séléctionnées",
+    "auth-required": "Vous devez être connecté pour réserver une prestation"
   }
 }

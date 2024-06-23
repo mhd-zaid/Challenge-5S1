@@ -183,9 +183,12 @@ const StudioSearchPage = () => {
                     {t('studio.more-info')}
                   </Link>
 
-                  <Link href={`/studios/${studio.id}#prestation-choice`}>
+                  <Button
+                    as={Link}
+                    href={`/studios/${studio.id}#prestation-choice`}
+                  >
                     {t('studio.reservation-btn')}
-                  </Link>
+                  </Button>
                 </Flex>
                 {index === studios.length - 1 ? null : (
                   <Divider

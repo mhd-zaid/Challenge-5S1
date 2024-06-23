@@ -39,6 +39,7 @@ class AvailableSlotProvider implements ProviderInterface
                 'start' => $slot['start'],
                 'end' => $slot['end'],
                 'userId' => $slot['userId'],
+                'fullname' => $slot['fullname']
             ];
         }
         $formattedAvailabilities[$date] = $formattedSlots;
