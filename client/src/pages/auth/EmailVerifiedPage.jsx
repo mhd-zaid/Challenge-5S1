@@ -30,14 +30,16 @@ const EmailVerifiedPage = () => {
         <Heading mb={4}>Email Verification</Heading>
         {verificationStatus === 'pending' && <Spinner size="xl" color="blue.500" />}
         {verificationStatus === 'success' && (
-          <Text color="green.600">Your email has been successfully verified!</Text>
+          <Text textAlign="center" color="green.600">Email vérifié !</Text>
         )}
         {verificationStatus === 'error' && (
-          <Text color="red.600">An error occurred while verifying your email.</Text>
+          <Text textAlign="center" color="red.600">Une erreur s'est produite durant la vérification.</Text>
         )}
         {verificationStatus !== 'pending' && (
           <Link to="/auth/login">
-            <Button mt={4}>Go to Login</Button>
+            <Text textAlign="center" as='u' mt={4}>
+              Page de connexion
+            </Text>
           </Link>
         )}
       </Box>
