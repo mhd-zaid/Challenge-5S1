@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
-const CustomerProfile = ({user}) => {
+const CustomerProfile = ({ user }) => {
   const navigate = useNavigate();
 
   return (
@@ -22,7 +22,12 @@ const CustomerProfile = ({user}) => {
       bg={useColorModeValue('gray.100', 'gray.900')}
       minH="100vh"
     >
-      <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" mb={6}>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        align="center"
+        justify="space-between"
+        mb={6}
+      >
         <Box>
           <Avatar
             size="xl"
@@ -42,8 +47,11 @@ const CustomerProfile = ({user}) => {
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Informations générales
-          </Heading>>
-          <Text>Nom: {user.firstname} {user.lastname}</Text>
+          </Heading>
+          &gt;
+          <Text>
+            Nom: {user.firstname} {user.lastname}
+          </Text>
           <Text>Email: {user.email}</Text>
           <Text>Téléphone: {user.phone}</Text>
         </Box>

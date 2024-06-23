@@ -105,7 +105,7 @@ const StudioPage = () => {
       </Flex>
       <Box mt={4} h={60}>
         <Image
-          src={studio.image}
+          src={studio.image || 'https://picsum.photos/1000/400'}
           alt={studio.name}
           bgColor={'gray'}
           w={'full'}
@@ -183,19 +183,6 @@ const StudioPage = () => {
           </Box>
         </Flex>
       </Flex>
-      {/* <Flex flexDir={'column'} flex={7}>
-        <Heading size={'sm'}>{t('studio.person')}</Heading>
-        <Box bgColor={'white'} p={4}>
-          <Card maxW="3xs">
-            <CardBody>
-              <Image src="" bgColor={'gray'} w="full" h={40} />
-              <Text fontWeight={'bold'} size="sm" textAlign={'center'} mt={4}>
-                Josh
-              </Text>
-            </CardBody>
-          </Card>
-        </Box>
-      </Flex> */}
 
       {studio.description && (
         <Flex flexDir={'column'} flex={7}>

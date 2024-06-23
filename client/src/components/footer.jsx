@@ -8,9 +8,31 @@ import {
   Heading,
   Icon,
   Divider,
+  Button,
+  Menu,
+  MenuButton,
+  Image,
+  Flex,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
 import { FaInstagram, FaTiktok } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+
 function Footer() {
+  const { i18n } = useTranslation();
+
+  const getLanguageName = languageCode => {
+    switch (languageCode) {
+      case 'fr':
+        return 'Français';
+      case 'en':
+        return 'English';
+      default:
+        return 'Français';
+    }
+  };
+
   return (
     <Box bg="black" color="white">
       <Container as={Stack} maxW={'6xl'} py={10}>
@@ -57,16 +79,45 @@ function Footer() {
           </Stack>
         </SimpleGrid>
         <Divider marginTop={'2em'} />
-        <Text
-          display="flex"
-          align={'flex-start'}
-          pt={6}
-          fontSize={'sm'}
-          textAlign={'center'}
-          py={6}
-        >
-          © 2024 Instant Studio. All rights reserved
-        </Text>
+        <Flex justifyContent="space-between">
+          <Text
+            display="flex"
+            align={'flex-start'}
+            pt={6}
+            fontSize={'sm'}
+            textAlign={'center'}
+            py={6}
+          >
+            © 2024 Instant Studio. All rights reserved
+          </Text>
+          <Menu>
+            <MenuButton as={Button} variant={'bezel'}>
+              <Flex alignItems="center">
+                <Image src={`/lang/${i18n.language}.png`} w={4} h={4} mr={2} />
+                <Text>{getLanguageName(i18n.language)}</Text>
+              </Flex>
+            </MenuButton>
+            <MenuList color={'black'}>
+              {i18n.options.supportedLngs.map(language => {
+                if (language === 'cimode') return;
+                return (
+                  <MenuItem
+                    as={Button}
+                    key={language}
+                    onClick={() => i18n.changeLanguage(language)}
+                    variant={'unstyled'}
+                    h={'fit-content'}
+                  >
+                    <Flex alignItems="center">
+                      <Image src={`/lang/${language}.png`} w={4} h={4} mr={2} />
+                      <Text>{getLanguageName(language)}</Text>
+                    </Flex>
+                  </MenuItem>
+                );
+              })}
+            </MenuList>
+          </Menu>
+        </Flex>
       </Container>
     </Box>
   );

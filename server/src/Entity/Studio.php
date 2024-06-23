@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
 use App\Repository\StudioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,6 +21,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             paginationItemsPerPage: 15,
             security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
         ),
+        new GetCollection(),
+        new Get()
     ],
     stateless: false,
     normalizationContext: ['groups' => ['studio:read']]
@@ -36,6 +39,7 @@ class Studio
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['studio:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

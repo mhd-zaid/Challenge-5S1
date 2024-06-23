@@ -52,8 +52,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
               <Route path="admin">
                 <Route index element={<AdminPage />} />
-                <Route path="prestataires-demandes" element={<AdminPrestataireRequests />} />
-                <Route path="control-center" element={<AdminControlCenterPage />} />
+                <Route
+                  path="prestataires-demandes"
+                  element={<AdminPrestataireRequests />}
+                />
+                <Route
+                  path="control-center"
+                  element={<AdminControlCenterPage />}
+                />
               </Route>
             </Route>
 
@@ -65,7 +71,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                 element={<ReservationPage />}
               />
             </Route>
-
 
             <Route path="info" element={<InfoPage />} />
 

@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { Box, Heading, Button } from '@chakra-ui/react';
+import { Box, Heading, Button, Link } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = ({ onLogout, menus }) => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
 
   return (
@@ -20,7 +22,13 @@ const Navbar = ({ onLogout, menus }) => {
       zIndex="100"
     >
       <Box>
-        <Heading as="h1" fontSize="24px" fontWeight="bold" color="#333">
+        <Heading
+          as={Link}
+          href="/"
+          fontSize="24px"
+          fontWeight="bold"
+          color="#333"
+        >
           Instant Studio
         </Heading>
       </Box>
@@ -34,36 +42,31 @@ const Navbar = ({ onLogout, menus }) => {
             color="black"
             _hover={{ bg: '#e2e2e2' }}
           >
-            Centre de contrôle
+            {t('global.control-center')}
           </Button>
         )}
-        <Button
-          mr="10px"
-          bg="#f3f3f3"
-          color="black"
-          _hover={{ bg: '#e2e2e2' }}
-        >
-          Ajouter votre établissement
+        <Button mr="10px" bg="#f3f3f3" color="black" _hover={{ bg: '#e2e2e2' }}>
+          {t('global.add-presta')}
         </Button>
         {!user ? (
-        <Button
-          as={RouterLink}
-          to="/auth/login"
-          bg="black"
-          color="white"
-          _hover={{ bg: '#333' }}
-        >
-          Se connecter
-        </Button>
+          <Button
+            as={RouterLink}
+            to="/auth/login"
+            bg="black"
+            color="white"
+            _hover={{ bg: '#333' }}
+          >
+            {t('auth.connect')}
+          </Button>
         ) : (
-        <Button
-          onClick={logout}
-          bg="black"
-          color="white"
-          _hover={{ bg: '#333' }}
-        >
-          Se déconnecter
-        </Button>
+          <Button
+            onClick={logout}
+            bg="black"
+            color="white"
+            _hover={{ bg: '#333' }}
+          >
+            Se déconnecter
+          </Button>
         )}
       </Box>
     </Box>

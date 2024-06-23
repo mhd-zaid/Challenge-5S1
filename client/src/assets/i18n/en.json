@@ -1,6 +1,27 @@
 {
-  "greeting": "Hello, World!",
-  "homepage": {
-    "main-title": "Welcome on our site!"
+  "global": {
+    "filters": "Filters",
+    "control-center": "Control center",
+    "add-presta": "Add your company"
+  },
+  "auth": {
+    "connect": "Sign in",
+    "register": "Create an account",
+    "pwd": "Password",
+    "forgot-pwd": "Forgot password",
+    "no-account": "No account yet ?"
+  },
+  "studio": {
+    "select-studio": "Select a studio",
+    "reservation-btn": "Book now",
+    "book": "Book",
+    "prestation-choice": "Prestation choice",
+    "location": "Where is the studio located ?",
+    "person": "Photographers of the studio",
+    "about": "About the studio",
+    "opening-hours": "Opening hours",
+    "closed": "Closed",
+    "more-info": "More information",
+    "no-results": "No results found"
   }
 }

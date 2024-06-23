@@ -1,9 +1,18 @@
 {
-  "greeting": "Bonjour, Monde!",
-  "homepage": {
-    "main-title": "Bienvenue à notre site!"
+  "global": {
+    "filters": "Filtres",
+    "control-center": "Centre de contrôle",
+    "add-presta": "Ajouter votre établissement"
+  },
+  "auth": {
+    "connect": "Se connecter",
+    "register": "Créer un compte",
+    "pwd": "Mot de passe",
+    "forgot-pwd": "Mot de passe oublié ?",
+    "no-account": "Pas encore de compte ?"
   },
   "studio": {
+    "select-studio": "Sélectionner un studio",
     "reservation-btn": "Prendre RDV",
     "book": "Réserver",
     "prestation-choice": "Choix de la prestation",
@@ -11,6 +20,8 @@
     "person": "Photographes du studio",
     "about": "À propos du studio",
     "opening-hours": "Horaires d'ouverture",
-    "closed": "Fermé"
+    "closed": "Fermé",
+    "more-info": "Plus d'informations",
+    "no-results": "Aucun résultat trouvé"
   }
 }
