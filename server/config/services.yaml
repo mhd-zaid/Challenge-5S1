@@ -19,18 +19,25 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-#    App\Naming\CompanyDirectoryNamer:
-#        tags: [vich_uploader.namer_directory_namer]
-    App\EventListener\VichUploaderPreUploadListener:
-        tags:
-            - { name: kernel.event_listener, event: vich_uploader.pre_upload, method: preUpload }
+
     'App\ContextBuilder\UnavailabilityHourContextBuilder':
         decorates: 'api_platform.serializer.context_builder'
         arguments: [ '@App\ContextBuilder\UnavailabilityHourContextBuilder.inner' ]
         autoconfigure: false
-    'App\Serializer\CompanyContextBuilder':
-      decorates: 'api_platform.serializer.context_builder'
-      arguments: [ '@App\Serializer\CompanyContextBuilder.inner']
-      autoconfigure: false
+
+    'App\ContextBuilder\CompanyContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\ContextBuilder\CompanyContextBuilder.inner' ]
+        autoconfigure: false
+
+    'App\ContextBuilder\UserContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\ContextBuilder\UserContextBuilder.inner' ]
+        autoconfigure: false
+
+    App\EventListener\VichUploaderPreUploadListener:
+        tags:
+            - { name: kernel.event_listener, event: vich_uploader.pre_upload, method: preUpload }
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -23,7 +23,7 @@ class CompanyPostStateProcessor implements ProcessorInterface
     {}
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
-        if($operation->getUriTemplate() === '/companies' && $operation instanceof Post && $data instanceof Company) {
+        if($operation instanceof Post && $data instanceof Company) {
             $request = $context['request'];
             if($request->files->has('file')) {
                 $file = $request->files->get('file');
@@ -46,6 +46,12 @@ class CompanyPostStateProcessor implements ProcessorInterface
             $this->em->persist($mediaObject);
 
             $data->setOwner($user);
+            $data->setName($params['name']);
+            $data->setEmail($params['email']);
+            $data->setPhone($params['phone']);
+            $data->setZipCode($params['zipCode']);
+            $data->setCity($params['city']);
+            $data->setSiren($params['siren']);
             $data->setKbis($mediaObject);
             $this->em->persist($data);
 

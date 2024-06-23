@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Heading, SimpleGrid, Text } from '@chakra-ui/react';
-import FormCompany from '@/pages/info/FormCompany.jsx';
+import FormCompany from '@/components/forms/FormCompany.jsx';
 import { apiService } from '@/services/apiService.js';
 import { useEffect, useState } from 'react';
 

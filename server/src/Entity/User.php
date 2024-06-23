@@ -22,19 +22,22 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
-    normalizationContext: ['groups' => ['user:read']],
-    denormalizationContext: ['groups' => ['user:input']],
     operations: [
         new Get(),
         new Post(),
         new Patch(),
         new Delete(),
-        new GetCollection(),
+        new GetCollection(
+            paginationItemsPerPage: 15,
+            security: "is_granted('ROLE_ADMIN')",
+        ),
         new Get(
             uriTemplate: '/me',
             name: 'me',
         ),
     ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:input']],
 )]
 
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -57,7 +60,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -67,7 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -98,7 +101,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
-    #[Groups(['company:read'])]
+    #[Groups(['user:read', 'company:read'])]
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
@@ -124,8 +127,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->workHours = new ArrayCollection();
         $this->unavailabilityHours = new ArrayCollection();
-        $this->createdAt = new \DateTime('now');
-        $this->updatedAt = new \DateTime('now');
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
         $this->reservations = new ArrayCollection();
     }
 

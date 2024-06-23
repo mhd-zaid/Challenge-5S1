@@ -37,7 +37,6 @@ class Fixtures extends Fixture
         $manager->flush();
         $this->realUser($manager);
         $this->addUserToCompany($manager);
-        $this->addCompanyAndUserToStudio($manager);
         $this->loadServiceFixture($manager);
         $this->loadStudioOpeningTimeFixture($manager);
     }
@@ -81,16 +80,10 @@ class Fixtures extends Fixture
      */
     private function addCompanyAndUserToStudio(ObjectManager $manager): void
     {
-        $companies = $manager->getRepository(Company::class)->findAll();
         $studios = $manager->getRepository(Studio::class)->findAll();
-        $i = 0;
-        foreach ($companies as $company) {
-            $studio = $studios[$i];
-            $studio->setName($company->getName() . " - Studio");
-            $studio->setCompany($company);
+        foreach ($studios as $studio) {
+            $studio->setName($studio->getCompany()->getName() . " - Studio ");
             $manager->persist($studio);
-            $manager->persist($company);
-            $i++;
         }
 
         $manager->flush();
@@ -128,14 +121,17 @@ class Fixtures extends Fixture
         return [
             'company{1..4}' => [
                 'name'=> '<company()>',
+                'siren'=> '<randomElement(["123456789"])>',
+                'email'=> '<email()>',
                 'phone'=> '<numerify("01########")>',
-                'country'=> 'FRANCE',
-                'address'=> '<address()>',
-                'siren'=> '<randomElement(["12345678901234"])>',
-                'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
+                'zipCode'=> '<postcode()>',
+                'city'=> '<city()>',
+                'description'=> '<text()>',
+                'createdAt'=> '<dateTimeBetween("-10 year", "-1 year")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
-                'socialMedia'=> 'https://www.facebook.com',
-                'website'=> 'https://www.google.com',
+                'socialMedia'=> '<url()>',
+                'website'=> '<url()>',
+                'owner'=> '@user*',
             ],
         ];
     }
@@ -148,13 +144,15 @@ class Fixtures extends Fixture
     private function studioFixture() : array
     {
         return [
-            'studio{1..4}' => [
-                'name'=> ' - Studio',
+            'studio{1..15}' => [
+                'name'=> '<company()> - Studio <word()>',
                 'phone'=> '<numerify("09########")>',
                 'country'=> 'FRANCE',
                 'address'=> '<address()>',
+                'description'=> '<text()>',
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
-                'updatedAt'=> '<dateTimeBetween("now", "now")>'
+                'updatedAt'=> '<dateTimeBetween("now", "now")>',
+                'company'=> '@company*'
             ],
         ];
     }
@@ -186,10 +184,10 @@ class Fixtures extends Fixture
     {
         if($object instanceof Company) {
             $email = 'administration@' . str_replace([" ","."],"",strtolower($object->getName())) . '.com';
+            $address = $this->fetchAddress(rand(1, 50));
             $object->setEmail($email);
-            //$object->setFile(new File('srv/app/files/kbis/juin.pdf'));
             $object = $this->addressHandler($object);
-            $object->setSiren($this->fetchSiren($object->getAddress()));
+            $object->setSiren($this->fetchSiren($address['address']));
         }
 
         $manager->persist($object);
@@ -213,7 +211,6 @@ class Fixtures extends Fixture
     private function addressHandler($object): object
     {
         $address = $this->fetchAddress(rand(1, 50));
-        $object->setAddress($address['address']);
         $object->setZipCode($address['zipCode']);
         $object->setCity($address['city']);
 
@@ -333,7 +330,7 @@ class Fixtures extends Fixture
                 'email' => 'zaid@mail.fr',
                 'password' => 'Motdepasse123!',
                 'isValidated' => true,
-                'roles' => ['ROLE_CUSTOMER'],
+                'roles' => ['ROLE_PRESTA'],
                 'phone' => '0607080910',
                 'createdAt' => new \DateTime(),
                 'updatedAt' => new \DateTime()
@@ -352,7 +349,7 @@ class Fixtures extends Fixture
             [
                 'lastName' => 'Kamissoko',
                 'firstName' => 'Makan',
-                'email' => 'mak@mail.fr',
+                'email' => 'makan.kamissoko@hotmail.fr',
                 'password' => 'Motdepasse123!',
                 'isValidated' => true,
                 'roles' => ['ROLE_ADMIN'],
@@ -414,6 +411,6 @@ class Fixtures extends Fixture
         $companies = json_decode(file_get_contents("https://recherche-entreprises.api.gouv.fr/near_point?lat=$lat&long=$lon&radius=20&limite_matching_etablissements=10&minimal=true&include=siege%2Ccomplements&page=1&per_page=20"));
         $random = rand(0,15);
 
-        return $companies->results[$random]->siege->siren;
+        return $companies->results[$random]->siren;
     }
 }

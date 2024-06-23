@@ -1,0 +1,25 @@
+{# templates/emails/new_provider_request.html.twig #}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle demande de prestataire</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 0;">
+<div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 24px; color: #333; margin-bottom: 20px;">Nouvelle demande de prestataire</h2>
+    <p>Bonjour {{ recipient.firstname }},</p>
+    <p>Nous avons reçu une nouvelle demande pour devenir prestataire sur notre plateforme. Veuillez trouver les détails de l'entreprise ci-dessous :</p>
+    <p><strong>Nom de l'entreprise :</strong> {{ company.name }}</p>
+    <p><strong>Nom du contact :</strong> {{ company.owner.firstname }} {{ company.owner.lastname }}</p>
+    <p><strong>Email du contact :</strong> {{ company.email }}</p>
+    <p><strong>Numéro de téléphone :</strong> {{ company.phone }}</p>
+    <p>Pour valider cette demande, veuillez cliquer sur le lien ci-dessous et vérifier les informations fournies :</p>
+    <p style="text-align: center; margin-top: 20px;"><a href="{{ verificationUrl }}" style="display: inline-block; padding: 10px 20px; background-color: #28a745; color: #fff; text-decoration: none; border-radius: 3px;">Vérifier et valider la demande</a></p>
+    <p>Merci de votre diligence.</p>
+    <p>Cordialement,<br>L'équipe de notre site</p>
+</div>
+</body>
+</html>

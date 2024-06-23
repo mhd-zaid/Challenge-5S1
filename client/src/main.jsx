@@ -8,7 +8,6 @@ import './index.css';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import App from './App.jsx';
 import Home from './pages/HomePage';
-import Profile from './pages/ProfilePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
@@ -23,6 +22,8 @@ import ReservationPage from './pages/ReservationPage.jsx';
 import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
 import Unavailability from './pages/Unavailability.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
+import ProfilePage from '@/pages/profile/ProfilePage.jsx';
+import AdminControlCenterPage from '@/pages/admin/AdminControlCenterPage.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -45,9 +46,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             </Route>
 
             <Route element={<AuthGuard />}>
-              <Route path="profile" element={<Profile />} />
+              <Route path="profile" element={<ProfilePage />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="my-absences" element={<Unavailability />} />
+
+              <Route path="admin">
+                <Route index element={<AdminPage />} />
+                <Route path="prestataires-demandes" element={<AdminPrestataireRequests />} />
+                <Route path="control-center" element={<AdminControlCenterPage />} />
+              </Route>
             </Route>
 
             <Route path="studios">
@@ -59,13 +66,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               />
             </Route>
 
-            <Route path="admin">
-              <Route index element={<AdminPage />} />
-              <Route
-                path="prestataires-demandes"
-                element={<AdminPrestataireRequests />}
-              />
-            </Route>
 
             <Route path="info" element={<InfoPage />} />
 

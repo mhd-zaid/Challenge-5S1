@@ -9,13 +9,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class CompanyVoter extends Voter
 {
+
+    const CREATE = 'CREATE';
+    const READ = 'READ';
     const UPDATE = 'UPDATE';
     const DELETE = 'DELETE';
     protected function supports(string $attribute, mixed $subject): bool
     {
-        if(!in_array($attribute, [ self::UPDATE, self::DELETE])){
+        if(!in_array($attribute, [ self::CREATE, self::READ, self::UPDATE, self::DELETE ])){
             return false;
         }
+
 
         if(!$subject instanceof Company){
             return false;
@@ -28,7 +32,12 @@ class CompanyVoter extends Voter
     {
         $user = $token->getUser();
 
+
         $company = $subject;
+
+        if($attribute === self::READ){
+            return $this->canRead($company, $user);
+        }
 
         if($attribute === self::UPDATE){
             return $this->canUpdate($company, $user);

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240621174808 extends AbstractMigration
+final class Version20240621215552 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -27,9 +27,9 @@ final class Version20240621174808 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE studio_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE studio_opening_time_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE unavailability_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE SEQUENCE utilisateur_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE "user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE work_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE company (id INT NOT NULL, kbis_id INT DEFAULT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, siret VARCHAR(14) NOT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, country VARCHAR(255) DEFAULT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, is_verified BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE company (id INT NOT NULL, kbis_id INT DEFAULT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, siren VARCHAR(9) DEFAULT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, is_verified BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, website VARCHAR(255) DEFAULT NULL, social_media VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_4FBF094F25496F5C ON company (kbis_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094F7E3C61F9 ON company (owner_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094FB03A8386 ON company (created_by_id)');
@@ -60,11 +60,11 @@ final class Version20240621174808 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_6B4423308C03F15C ON unavailability_hour (employee_id)');
         $this->addSql('CREATE INDEX IDX_6B442330B03A8386 ON unavailability_hour (created_by_id)');
         $this->addSql('CREATE INDEX IDX_6B442330896DBBDE ON unavailability_hour (updated_by_id)');
-        $this->addSql('CREATE TABLE utilisateur (id INT NOT NULL, company_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, roles JSON NOT NULL, phone VARCHAR(25) DEFAULT NULL, token TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_1D1C63B3E7927C74 ON utilisateur (email)');
-        $this->addSql('CREATE INDEX IDX_1D1C63B3979B1AD6 ON utilisateur (company_id)');
-        $this->addSql('CREATE INDEX IDX_1D1C63B3B03A8386 ON utilisateur (created_by_id)');
-        $this->addSql('CREATE INDEX IDX_1D1C63B3896DBBDE ON utilisateur (updated_by_id)');
+        $this->addSql('CREATE TABLE "user" (id INT NOT NULL, company_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, roles JSON NOT NULL, phone VARCHAR(25) DEFAULT NULL, token TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)');
+        $this->addSql('CREATE INDEX IDX_8D93D649979B1AD6 ON "user" (company_id)');
+        $this->addSql('CREATE INDEX IDX_8D93D649B03A8386 ON "user" (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_8D93D649896DBBDE ON "user" (updated_by_id)');
         $this->addSql('CREATE TABLE work_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, studio_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_89DDA0768C03F15C ON work_hour (employee_id)');
         $this->addSql('CREATE INDEX IDX_89DDA076446F285F ON work_hour (studio_id)');
@@ -86,35 +86,35 @@ final class Version20240621174808 extends AbstractMigration
         $this->addSql('DROP TRIGGER IF EXISTS notify_trigger ON messenger_messages;');
         $this->addSql('CREATE TRIGGER notify_trigger AFTER INSERT OR UPDATE ON messenger_messages FOR EACH ROW EXECUTE PROCEDURE notify_messenger_messages();');
         $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F25496F5C FOREIGN KEY (kbis_id) REFERENCES media_object (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F7E3C61F9 FOREIGN KEY (owner_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094FB03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE media_object ADD CONSTRAINT FK_14D43132B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE media_object ADD CONSTRAINT FK_14D43132896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C849559395C3F3 FOREIGN KEY (customer_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C849558C03F15C FOREIGN KEY (employee_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C84955B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C84955896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE service ADD CONSTRAINT FK_E19D9AD2B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE service ADD CONSTRAINT FK_E19D9AD2896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F7E3C61F9 FOREIGN KEY (owner_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094FB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE company ADD CONSTRAINT FK_4FBF094F896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE media_object ADD CONSTRAINT FK_14D43132B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE media_object ADD CONSTRAINT FK_14D43132896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C849559395C3F3 FOREIGN KEY (customer_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C849558C03F15C FOREIGN KEY (employee_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C84955B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE reservation ADD CONSTRAINT FK_42C84955896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE service ADD CONSTRAINT FK_E19D9AD2B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE service ADD CONSTRAINT FK_E19D9AD2896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE service_studio ADD CONSTRAINT FK_74EC0280ED5CA9E6 FOREIGN KEY (service_id) REFERENCES service (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE service_studio ADD CONSTRAINT FK_74EC0280446F285F FOREIGN KEY (studio_id) REFERENCES studio (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57446F285F FOREIGN KEY (studio_id) REFERENCES studio (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B4423308C03F15C FOREIGN KEY (employee_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B442330B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B442330896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE utilisateur ADD CONSTRAINT FK_1D1C63B3979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE utilisateur ADD CONSTRAINT FK_1D1C63B3B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE utilisateur ADD CONSTRAINT FK_1D1C63B3896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA0768C03F15C FOREIGN KEY (employee_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE studio_opening_time ADD CONSTRAINT FK_8C015D57896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B4423308C03F15C FOREIGN KEY (employee_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B442330B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE unavailability_hour ADD CONSTRAINT FK_6B442330896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE "user" ADD CONSTRAINT FK_8D93D649979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE "user" ADD CONSTRAINT FK_8D93D649B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE "user" ADD CONSTRAINT FK_8D93D649896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA0768C03F15C FOREIGN KEY (employee_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA076446F285F FOREIGN KEY (studio_id) REFERENCES studio (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA076B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA076896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA076B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE work_hour ADD CONSTRAINT FK_89DDA076896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void
@@ -128,7 +128,7 @@ final class Version20240621174808 extends AbstractMigration
         $this->addSql('DROP SEQUENCE studio_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE studio_opening_time_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE unavailability_hour_id_seq CASCADE');
-        $this->addSql('DROP SEQUENCE utilisateur_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE "user_id_seq" CASCADE');
         $this->addSql('DROP SEQUENCE work_hour_id_seq CASCADE');
         $this->addSql('ALTER TABLE company DROP CONSTRAINT FK_4FBF094F25496F5C');
         $this->addSql('ALTER TABLE company DROP CONSTRAINT FK_4FBF094F7E3C61F9');
@@ -153,9 +153,9 @@ final class Version20240621174808 extends AbstractMigration
         $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B4423308C03F15C');
         $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B442330B03A8386');
         $this->addSql('ALTER TABLE unavailability_hour DROP CONSTRAINT FK_6B442330896DBBDE');
-        $this->addSql('ALTER TABLE utilisateur DROP CONSTRAINT FK_1D1C63B3979B1AD6');
-        $this->addSql('ALTER TABLE utilisateur DROP CONSTRAINT FK_1D1C63B3B03A8386');
-        $this->addSql('ALTER TABLE utilisateur DROP CONSTRAINT FK_1D1C63B3896DBBDE');
+        $this->addSql('ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649979B1AD6');
+        $this->addSql('ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649B03A8386');
+        $this->addSql('ALTER TABLE "user" DROP CONSTRAINT FK_8D93D649896DBBDE');
         $this->addSql('ALTER TABLE work_hour DROP CONSTRAINT FK_89DDA0768C03F15C');
         $this->addSql('ALTER TABLE work_hour DROP CONSTRAINT FK_89DDA076446F285F');
         $this->addSql('ALTER TABLE work_hour DROP CONSTRAINT FK_89DDA076B03A8386');
@@ -168,7 +168,7 @@ final class Version20240621174808 extends AbstractMigration
         $this->addSql('DROP TABLE studio');
         $this->addSql('DROP TABLE studio_opening_time');
         $this->addSql('DROP TABLE unavailability_hour');
-        $this->addSql('DROP TABLE utilisateur');
+        $this->addSql('DROP TABLE "user"');
         $this->addSql('DROP TABLE work_hour');
         $this->addSql('DROP TABLE messenger_messages');
     }

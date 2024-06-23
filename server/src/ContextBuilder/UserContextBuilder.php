@@ -4,11 +4,12 @@ namespace App\ContextBuilder;
 
 use ApiPlatform\Serializer\SerializerContextBuilderInterface;
 use App\Entity\Company;
+use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-final class CompanyContextBuilder implements SerializerContextBuilderInterface
+final class UserContextBuilder implements SerializerContextBuilderInterface
 {
 
     public function __construct(
@@ -23,24 +24,18 @@ final class CompanyContextBuilder implements SerializerContextBuilderInterface
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-//        if ($request->getMethod() === 'POST' || $request->getMethod() === 'PUT') {
-//            dd($context);
-//        }
-
-        if ($resourceClass === Company::class && isset($context['groups'])){
+        if (($resourceClass === User::class) && isset($context['groups'])){
+//            dd($context['groups']);
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-                $context['groups'] = ['company:read:admin'];
+                $context['groups'][] = 'user:read:presta';
             } elseif ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
-                $context['groups'] = ['company:read:presta'];
+                $context['groups'][] = 'user:read:presta';
             } elseif ($this->authorizationChecker->isGranted('ROLE_EMPLOYEE')) {
-                $context['groups'] = ['company:read:employee'];
+                $context['groups'][] = 'user:read:presta';
             } elseif ($this->authorizationChecker->isGranted('ROLE_CUSTOMER')) {
-                $context['groups'] = ['company:read:customer'];
+                $context['groups'][] = 'user:read:presta';
             }
         }
-
-//        dd($context['groups']);
-
         return $context;
     }
 }
