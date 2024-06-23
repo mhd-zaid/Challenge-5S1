@@ -46,7 +46,7 @@ class UserRepository extends ServiceEntityRepository
      */
     public function findByRole(string $role): array
     {
-        $sql = 'SELECT * FROM "user" WHERE roles::jsonb @> :role';
+        $sql = 'SELECT * FROM "utilisateur" WHERE roles::jsonb @> :role';
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue('role', json_encode([$role]));
 
