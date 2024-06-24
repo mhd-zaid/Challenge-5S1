@@ -30,7 +30,7 @@ class AvailableSlotValidator extends ConstraintValidator
             return;
         }
 
-        if(!$this->slotService->isReservationPossible($employee, $date, $value)) {
+        if(!$this->slotService->isReservationPossible($value)) {
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }
