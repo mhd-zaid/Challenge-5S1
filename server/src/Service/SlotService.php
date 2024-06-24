@@ -7,6 +7,7 @@ use App\Repository\UnavailabilityHourRepository;
 use App\Repository\WorkHourRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Reservation;
+use App\Entity\Studio;
 
 class SlotService {
 
@@ -17,34 +18,50 @@ class SlotService {
         private EntityManagerInterface $entityManager
     ){}
 
-    public function calculateUserAvailability(\DateTime $startDate, \DateTime $endDate): array {
-        $users = $this->entityManager->getRepository(User::class)->findAll();
+    public function calculateUserAvailability(\DateTime $startDate, \DateTime $endDate, Studio $studio): array {
+        $users = $studio->getCompany()->getUsers();
+            
+        $availabilityByDateAndSlot = [];
         
-        $availabilityByDate = [];
-    
         foreach ($users as $user) {
-            $userAvailability = $this->getUserAvailabilityForPeriod($user, $startDate, $endDate);
+            $userAvailability = $this->getUserAvailabilityForPeriod($user, $startDate, $endDate, $studio);
             
             foreach ($userAvailability as $date => $slots) {
-                if (!isset($availabilityByDate[$date])) {
-                    $availabilityByDate[$date] = [];
+                if (!isset($availabilityByDateAndSlot[$date])) {
+                    $availabilityByDateAndSlot[$date] = [];
                 }
                 
                 foreach ($slots as $slot) {
-                    $availabilityByDate[$date][] = [
-                        'start' => $slot['start']->format('H:i'),
-                        'end' => $slot['end']->format('H:i'),
-                        'userId' => '/api/users/' . $user->getId(),
-                    ];
-                }
+                    $start = $slot['start']->format('H:i');
+                    $end = $slot['end']->format('H:i');
+                    
+                    if (!isset($availabilityByDateAndSlot[$date]["$start-$end"])) {
+                        $availabilityByDateAndSlot[$date]["$start-$end"] = [
+                            'start' => $start,
+                            'end' => $end,
+                            'users' => [],
+                        ];
+                    }
+                    
+                    $availabilityByDateAndSlot[$date]["$start-$end"]['users'][] = [
+                        'id' => '/api/users/' . $user->getId(),
+                        'fullname' => $user->getFirstname() . ' ' . $user->getLastname(),
+                    ];                }
             }
         }
-    
+        
+        $availabilityByDate = [];
+        foreach ($availabilityByDateAndSlot as $date => $slots) {
+            foreach ($slots as $slot) {
+                $availabilityByDate[$date][] = $slot;
+            }
+        }
+        
         return $availabilityByDate;
     }
     
-    private function getUserAvailabilityForPeriod(User $user, \DateTime $startDate, \DateTime $endDate): array {
-        $workHours = $this->workHourRepo->findByEmployeeAndDateRange($user, $startDate, $endDate);
+    private function getUserAvailabilityForPeriod(User $user, \DateTime $startDate, \DateTime $endDate, Studio $studio): array {
+        $workHours = $this->workHourRepo->findByEmployeeAndDateRange($user, $startDate, $endDate, $studio);
         $unavailabilityHours = $this->unavailabilityHourRepo->findByEmployeeAndDateRange($user, $startDate, $endDate);
         $reservations = $this->reservationRepo->findByEmployeeAndDateRange($user, $startDate, $endDate);
     
@@ -61,6 +78,7 @@ class SlotService {
     
         return $availabilities;
     }
+    
     
     private function getDailyAvailability(array $workHours, array $unavailabilityHours, array $reservations, \DateTime $date): array {
         $dailyWorkHours = array_filter($workHours, function($wh) use ($date) {
@@ -104,12 +122,16 @@ class SlotService {
         return $availableSlots;
     }
 
-    public function isReservationPossible(User $employee,\DateTime $desiredStartTime, ?Reservation $currentReservation = null): bool
+    public function isReservationPossible(Reservation $currentReservation): bool
     {
 
-        $workHours = $this->workHourRepo->findByEmployeeAndDate($employee, $desiredStartTime);
-        $unavailabilityHours = $this->unavailabilityHourRepo->findByEmployeeAndDate($employee, $desiredStartTime);
-        $reservations = $this->reservationRepo->findByEmployeeAndDate($employee, $desiredStartTime);
+        $employee = $currentReservation->getEmployee();
+
+        $time = $currentReservation->getDate();
+
+        $workHours = $this->workHourRepo->findByEmployeeAndDateRange($employee, $time, $time, $currentReservation->getStudio());
+        $unavailabilityHours = $this->unavailabilityHourRepo->findByEmployeeAndDateRange($employee, $time, $time);
+        $reservations = $this->reservationRepo->findByEmployeeAndDateRange($employee, $time, $time);
 
         foreach ($reservations as $key => $reservation) {
             if ($currentReservation && $reservation->getId() === $currentReservation->getId()) {
@@ -118,9 +140,9 @@ class SlotService {
             }
         }
         
-        $dailySlots = $this->getDailyAvailability($workHours, $unavailabilityHours, $reservations, $desiredStartTime);
+        $dailySlots = $this->getDailyAvailability($workHours, $unavailabilityHours, $reservations, $time);
 
-        $desiredStartTime = clone $desiredStartTime;
+        $desiredStartTime = clone $time;
         $desiredEndTime = (clone $desiredStartTime)->modify('+1 hour');
 
         foreach ($dailySlots as $slot) {
