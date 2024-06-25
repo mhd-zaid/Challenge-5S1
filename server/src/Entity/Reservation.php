@@ -10,8 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
+use App\Operation\SoftDelete;
 use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
 use App\Validator\AvailableSlot;
@@ -32,7 +32,7 @@ use App\State\ReservationStateProvider;
         new Patch(securityPostDenormalize: "is_granted('EDIT', object)",
         denormalizationContext: ['groups' => ['reservation:update']],    
         ),
-        new Delete(security: "is_granted('EDIT', object)"),
+        new SoftDelete(security: "is_granted('EDIT', object)"),
         new GetCollection(provider: ReservationStateProvider::class, normalizationContext: ['groups' => ['reservation:read']]),
     ]
 )]
@@ -43,7 +43,8 @@ class Reservation
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
-
+    use Traits\SoftDeleteableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -147,6 +148,8 @@ class Reservation
         }
 
         $this->feedback = $feedback;
+
+        return $this;
     }
 
     public function getService(): ?Service
