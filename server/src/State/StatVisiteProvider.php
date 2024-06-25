@@ -5,7 +5,6 @@ namespace App\State;
 use ApiPlatform\Metadata\Operation;
 use App\Repository\StatRepository;
 use ApiPlatform\State\ProviderInterface;
-use Doctrine\Common\Collections\Collection;
 
 Class StatVisiteProvider implements ProviderInterface
 {
@@ -35,8 +34,7 @@ Class StatVisiteProvider implements ProviderInterface
             if (!isset($counts[$year])) {
                 $counts[$year] = ['year' => $year, 'total' => 0, 'months' => array_fill_keys($monthNames, 0)];
             }
-    
-            // Increment counters
+            
             $counts[$year]['total']++;
             $counts[$year]['months'][$monthNames[$monthIndex]]++;
         }
