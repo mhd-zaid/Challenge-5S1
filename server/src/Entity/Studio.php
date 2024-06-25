@@ -36,6 +36,7 @@ class Studio
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['stat:studio:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -106,12 +107,19 @@ class Studio
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Reservation::class)]
     private Collection $reservations;
 
+    /**
+     * @var Collection<int, Stat>
+     */
+    #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Stat::class)]
+    private Collection $stats;
+
     public function __construct()
     {
         $this->studioOpeningTimes = new ArrayCollection();
         $this->workHours = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->reservations = new ArrayCollection();
+        $this->stats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -331,6 +339,36 @@ class Studio
             // set the owning side to null (unless already changed)
             if ($reservation->getStudio() === $this) {
                 $reservation->setStudio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Stat>
+     */
+    public function getStats(): Collection
+    {
+        return $this->stats;
+    }
+
+    public function addStat(Stat $stat): static
+    {
+        if (!$this->stats->contains($stat)) {
+            $this->stats->add($stat);
+            $stat->setStudio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStat(Stat $stat): static
+    {
+        if ($this->stats->removeElement($stat)) {
+            // set the owning side to null (unless already changed)
+            if ($stat->getStudio() === $this) {
+                $stat->setStudio(null);
             }
         }
 
