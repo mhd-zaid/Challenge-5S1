@@ -6,10 +6,10 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
+use App\Operation\SoftDelete;
 use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(),
         new GetCollection(),
         new Get(),
-        new Delete(),
+        new SoftDelete(),
     ]
 )]
 #[ApiFilter(
@@ -36,7 +36,8 @@ class Service
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
-
+    use Traits\SoftDeleteableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

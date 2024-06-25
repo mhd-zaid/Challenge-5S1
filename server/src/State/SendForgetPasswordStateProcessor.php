@@ -25,7 +25,7 @@ class SendForgetPasswordStateProcessor implements ProcessorInterface
         $user = $this->userRepository->findOneBy(['email' => $data->getEmail()]);
 
         if (!$user) {
-            return new Response('User not found', Response::HTTP_NOT_FOUND);
+            return new Response('Mail forget password sent!', Response::HTTP_OK);
         }
         $token = $this->tokenService->generateToken();
         $user->setToken($token);

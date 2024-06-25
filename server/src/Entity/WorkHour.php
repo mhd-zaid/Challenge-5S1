@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
+use App\Operation\SoftDelete;
 use App\Repository\WorkHourRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -29,7 +29,7 @@ use App\Validator\WorkHourInStudioOpeningHours;
             denormalizationContext: ['groups' => ['workHour:write']],
             securityPostDenormalize: "is_granted('EDIT', object)",
         ),
-        new Delete(
+        new SoftDelete(
             denormalizationContext: ['groups' => ['workHour:delete']],
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         )
@@ -41,6 +41,7 @@ class WorkHour
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
+    use Traits\SoftDeleteableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

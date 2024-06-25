@@ -73,14 +73,11 @@ const AuthService = {
   },
   check_token: async (token) => {
     try {
-      const response = await fetch(`${url}/check-token`, {
-        method: 'PATCH',
+      const response = await fetch(`${url}/check-token/${token}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/merge-patch+json',
-        },
-        body: JSON.stringify({
-          token: token,
-        }),
+        }
       });
       return response;
     } catch (error) {

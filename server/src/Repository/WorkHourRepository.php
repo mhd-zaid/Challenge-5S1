@@ -6,6 +6,7 @@ use App\Entity\WorkHour;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\User;
+use App\Entity\Studio;
 
 
 /**
@@ -49,26 +50,16 @@ class WorkHourRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findByEmployeeAndDateRange(User $employee, \DateTime $startDate, \DateTime $endDate)
+    public function findByEmployeeAndDateRange(User $employee, \DateTime $startDate, \DateTime $endDate, Studio $studio)
     {
         return $this->createQueryBuilder('wh')
             ->where('wh.employee = :employee')
+            ->andWhere('wh.studio = :studio')
             ->andWhere('wh.startTime BETWEEN :start AND :end')
             ->setParameter('employee', $employee)
             ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
             ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findByEmployeeAndDate(User $employee, \DateTime $date)
-    {
-        return $this->createQueryBuilder('wh')
-            ->where('wh.employee = :employee')
-            ->andWhere('wh.startTime BETWEEN :start AND :end')
-            ->setParameter('employee', $employee)
-            ->setParameter('start', $date->format('Y-m-d 00:00:00'))
-            ->setParameter('end', $date->format('Y-m-d 23:59:59'))
+            ->setParameter('studio', $studio)
             ->getQuery()
             ->getResult();
     }

@@ -3,10 +3,10 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Operation\SoftDelete;
 use App\Repository\UnavailabilityHourRepository;
 use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
@@ -26,7 +26,7 @@ use App\State\UnavailabilityHourStateProvider;
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
             security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
         ),
-        new Delete(
+        new SoftDelete(
             securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
             security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
         )    
@@ -36,7 +36,8 @@ class UnavailabilityHour
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
-
+    use Traits\SoftDeleteableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

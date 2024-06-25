@@ -18,6 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableTrait;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Operation\SoftDelete;
+use Doctrine\ORM\EntityManagerInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'utilisateur')]
@@ -26,7 +28,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
         new Get(),
         new Post(),
         new Patch(),
-        new Delete(),
+        new SoftDelete(),
         new GetCollection(
             paginationItemsPerPage: 15,
             security: "is_granted('ROLE_ADMIN')",
@@ -45,6 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     use Traits\BlameableTrait;
     use TimestampableTrait;
+    use Traits\SoftDeleteableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

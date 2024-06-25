@@ -27,29 +27,12 @@ class ReservationRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('r')
             ->where('r.employee = :employee')
             ->andWhere('r.date BETWEEN :start AND :end')
-            // ->andWhere('r.status = :status')
             ->setParameter('employee', $employee)
             ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
             ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
-            // ->setParameter('status', 'RESERVED')
             ->getQuery()
             ->getResult();
     }
-
-    public function findByEmployeeAndDate(User $employee, \DateTime $date)
-    {
-        return $this->createQueryBuilder('r')
-            ->where('r.employee = :employee')
-            ->andWhere('r.date BETWEEN :start AND :end')
-            // ->andWhere('r.status = :status')
-            ->setParameter('employee', $employee)
-            ->setParameter('start', $date->format('Y-m-d 00:00:00'))
-            ->setParameter('end', $date->format('Y-m-d 23:59:59'))
-            // ->setParameter('status', 'RESERVED')
-            ->getQuery()
-            ->getResult();
-    }
-    
 
 //    /**
 //     * @return Reservation[] Returns an array of Reservation objects
