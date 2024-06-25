@@ -1,20 +1,45 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import AuthService from '@/services/AuthService';
 
-const AuthContext = createContext();
+export const AuthContext = createContext({
+  user: null,
+  setUser: () => {},
+  token: null,
+  login: () => {},
+  logout: () => {},
+});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
+  console.log(user);
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
-    }
+    const fetchData = async () => {
+      try {
+        if (token) {
+          const response = await AuthService.me(token);
+          if (response.status === 200) {
+            const user = await response.json();
+            setUser(user);
+          } else {
+            logout();
+            setUser(null);
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération de l'utilisateur:",
+          error,
+        );
+        logout();
+      }
+    };
+
+    fetchData();
   }, [token]);
 
-  const login = (authToken) => {
+  const login = authToken => {
     setToken(authToken);
   };
 
