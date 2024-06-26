@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\StudioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -17,9 +19,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations: [
         new GetCollection(
-            paginationItemsPerPage: 15,
-            security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
+            paginationItemsPerPage: 10,
+//            security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
         ),
+        new Post(),
+        new Patch()
     ],
     stateless: false,
     normalizationContext: ['groups' => ['studio:read']]
@@ -60,7 +64,7 @@ class Studio
     #[Groups(['studio:read', 'user:read:presta'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:2,max: 10)]
-    private ?string $country = null;
+    private ?string $country = 'France';
 
     #[ORM\Column(length: 255)]
     #[Groups(['studio:read', 'user:read:presta'])]
@@ -71,7 +75,7 @@ class Studio
     #[ORM\Column(length: 255)]
     #[Groups(['studio:read', 'user:read:presta'])]
     #[Assert\NotBlank]
-    #[Assert\Length(min:5,max: 255)]
+    #[Assert\Length(min:2,max: 255)]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]

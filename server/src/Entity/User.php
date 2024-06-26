@@ -29,7 +29,7 @@ use App\Operation\SoftDelete;
         new Patch(),
         new SoftDelete(),
         new GetCollection(
-            paginationItemsPerPage: 15,
+            paginationItemsPerPage: 10,
             security: "is_granted('ROLE_ADMIN')",
         ),
         new Get(

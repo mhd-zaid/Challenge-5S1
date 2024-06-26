@@ -15,7 +15,6 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import EmailVerifiedPage from './pages/auth/EmailVerifiedPage.jsx';
 import StudioSearchPage from './pages/StudioSearchPage.jsx';
 import InfoPage from '@/pages/info/InfoPage.jsx';
-import AdminPage from '@/pages/admin/AdminPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
 import StudioPage from './pages/StudioPage.jsx';
 import ReservationPage from './pages/ReservationPage.jsx';
@@ -49,9 +48,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="profile" element={<ProfilePage />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="my-absences" element={<Unavailability />} />
-
               <Route path="admin">
-                <Route index element={<AdminPage />} />
                 <Route path="prestataires-demandes" element={<AdminPrestataireRequests />} />
                 <Route path="control-center" element={<AdminControlCenterPage />} />
               </Route>

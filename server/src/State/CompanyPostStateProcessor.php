@@ -11,7 +11,7 @@ use App\Entity\MediaObject;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use function PHPUnit\Framework\isInstanceOf;
+use Symfony\Component\HttpFoundation\Response;
 
 class CompanyPostStateProcessor implements ProcessorInterface
 {
@@ -32,6 +32,11 @@ class CompanyPostStateProcessor implements ProcessorInterface
             }
 
             $params = $request->request->all();
+            $user = $this->em->getRepository(User::class)->findOneBy(['email' => $params['ownerEmail']]);
+            if($user) {
+                return new Response('Cet e-mail déjà associé à un compte. Veuillez en saisir un nouveau ou vous conneecter avec votre compte.', Response::HTTP_BAD_REQUEST);
+            }
+
             $user = new User();
             $user->setLastname($params['ownerName']);
             $user->setFirstname($params['ownerFirstname']);

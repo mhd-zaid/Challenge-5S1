@@ -16,7 +16,7 @@ const CompanyService = {
         console.error("An error occurred during getting all plans:", error);
         throw error;
         }
-    }
+    },
 
 };
 

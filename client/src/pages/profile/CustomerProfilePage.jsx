@@ -38,7 +38,7 @@ const CustomerProfile = ({user}) => {
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Informations générales
-          </Heading>>
+          </Heading>
           <Text>Nom: {user.firstname} {user.lastname}</Text>
           <Text>Email: {user.email}</Text>
           <Text>Téléphone: {user.phone}</Text>

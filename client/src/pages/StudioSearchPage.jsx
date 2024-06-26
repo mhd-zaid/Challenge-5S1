@@ -58,7 +58,7 @@ const StudioSearchPage = () => {
     });
     const data = await response.json();
 
-    for (let i = 0; i < data['hydra:member'].length; i++) {
+    for (let i = 0; i < data['hydra:member']?.length; i++) {
       const coords = await getCoordinates(data['hydra:member'][i].fullAddress);
       if (coords !== null) {
         data['hydra:member'][i].coords = coords;

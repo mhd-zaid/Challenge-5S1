@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
-const FormCompany = () => {
+const FormCompanyRequest = () => {
   const [listIxServices, setListIxServices] = useState([]);
   const {
     handleSubmit,
@@ -82,20 +82,7 @@ const FormCompany = () => {
   return (
     <>
       <Box
-        p={10}
-        borderWidth='1px'
-        borderRadius='lg'
-        boxShadow='lg'
-        bg='white'
-        w='100%'
-        maxW='45%'
-        mx='auto'
-        mt={8}
-        rounded='md'
       >
-        <Text fontSize='xl' mb={10} textAlign={"center"}>
-          Vous êtes un professionnel de l'image et vous souhaitez rejoindre notre réseau de photographes et vidéastes ?
-        </Text>
         <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
 
           {step === 1 && (
@@ -510,4 +497,4 @@ const FormCompany = () => {
   )
 }
 
-export default FormCompany;
+export default FormCompanyRequest

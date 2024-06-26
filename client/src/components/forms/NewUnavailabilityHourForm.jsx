@@ -22,7 +22,6 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
       status: user.roles.includes('ROLE_PRESTA') ? 'Accepted' : 'Pending',
     };
 
-    console.log(formValues);
     await onSubmit(formValues);
     reset();
     setIsSubmittingForm(false);

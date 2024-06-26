@@ -6,6 +6,8 @@ use App\Entity\Company;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use App\Service\MailService;
@@ -13,17 +15,21 @@ use Psr\Log\LoggerInterface;
 
 class CompanySubscriber implements EventSubscriberInterface
 {
+    private ?Company $updatedCompany = null;
+    private ?string $updatedField = null;
+    private ?bool $isVerified = null;
+
     public function __construct(
         private MailService $emailService
         , private EntityManagerInterface $em
-    )
-    {}
+    ){}
 
     public function getSubscribedEvents(): array
     {
         return [
             Events::postPersist,
-            Events::postUpdate,
+            Events::preUpdate,
+            Events::postFlush,
         ];
     }
 
@@ -49,21 +55,57 @@ class CompanySubscriber implements EventSubscriberInterface
         }
     }
 
-    public function postUpdate(LifecycleEventArgs $args): void
+    public function preUpdate(PreUpdateEventArgs $args): void
     {
         $object = $args->getObject();
-        $frontendUrl = $_ENV['FRONTEND_URL'];
 
         if ($object instanceof Company) {
-            $this->emailService->sendEmail($object->getOwner()
-                , 'Modification de compte'
-                , 'company_info_updated.html.twig'
-                , [
-                    'company' => $object
-                    , 'loginUrl' => $frontendUrl . '/auth/login'
-                ]
-            );
+            $this->updatedCompany = $object;
+
+            if ($args->hasChangedField('isVerified')) {
+                $this->isVerified = $args->getNewValue('isVerified');
+            }
         }
     }
 
+    public function postFlush(PostFlushEventArgs $args): void
+    {
+        if ($this->updatedCompany) {
+            $frontendUrl = $_ENV['FRONTEND_URL'];
+
+            if ($this->isVerified !== null) {
+                if ($this->isVerified) {
+                    $this->emailService->sendEmail($this->updatedCompany->getOwner()
+                        , 'Votre compte a été vérifié'
+                        , 'company_verified.html.twig'
+                        , [
+                            'company' => $this->updatedCompany
+                            , 'loginUrl' => $frontendUrl . '/auth/login'
+                        ]
+                    );
+                } else {
+                    $this->emailService->sendEmail($this->updatedCompany->getOwner()
+                        , 'Votre compte n\'est plus vérifié'
+                        , 'company_unverified.html.twig'
+                        , [
+                            'company' => $this->updatedCompany
+                            , 'loginUrl' => $frontendUrl . '/auth/login'
+                        ]
+                    );
+                }
+            } else {
+                $this->emailService->sendEmail($this->updatedCompany->getOwner()
+                    , 'Modification de compte'
+                    , 'company_info_updated.html.twig'
+                    , [
+                        'company' => $this->updatedCompany
+                        , 'loginUrl' => $frontendUrl . '/auth/login'
+                    ]
+                );
+            }
+
+            $this->updatedCompany = null;
+            $this->isVerified = null;
+        }
+    }
 }

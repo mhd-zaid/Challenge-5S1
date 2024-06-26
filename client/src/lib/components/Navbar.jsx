@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { Box, Heading, Button } from '@chakra-ui/react';
+import { Box, Heading, Button, MenuButton, Menu, MenuList, MenuGroup, MenuItem, MenuDivider } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
-
+import { Icon } from '@iconify/react';
 const Navbar = ({ onLogout, menus }) => {
-  const { user, logout } = useAuth();
+  const { user, logout, isAdministrator, isPrestataire } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -24,56 +25,40 @@ const Navbar = ({ onLogout, menus }) => {
           Instant Studio
         </Heading>
       </Box>
-      <Box>
-        {user && user.roles.includes('ROLE_ADMIN') && (
+      <Box mx={4}>
+        {user ? (
+          <Menu>
+            <MenuButton as={Button} colorScheme='pink'>
+              <Icon icon="material-symbols:menu" fontSize={25} style={{color: "white"}} />
+            </MenuButton>
+            <MenuList>
+              <MenuGroup title='Administration'>
+                <MenuItem onClick={() => {navigate('/admin/control-center');}} display={isAdministrator ? 'block' : 'none'}>Centre de contrôle</MenuItem>
+                <MenuItem onClick={() => {navigate('/calendar');}} display={isPrestataire ? 'block' : 'none'}>Plannings</MenuItem>
+                <MenuItem onClick={() => {
+                  user.roles.includes('ROLE_ADMIN') ? navigate('/admin/control-center'):
+                  navigate('/info');
+                }}>Ajouter votre établissement</MenuItem>
+                <MenuItem display={isAdministrator ? 'block' : 'none'}>Statistiques</MenuItem>
+                <MenuItem onClick={() => {navigate('/admin/prestataires-demandes');}} display={isAdministrator ? 'block' : 'none'}>Demandes de Prestataires</MenuItem>
+              </MenuGroup>
+              <MenuDivider />
+              <MenuGroup title='Profil'>
+                <MenuItem onClick={() => {navigate('/profile');}}>Mon compte</MenuItem>
+                <MenuItem onClick={logout}>Se déconnecter</MenuItem>
+              </MenuGroup>
+            </MenuList>
+          </Menu>
+        ) : (
           <Button
             as={RouterLink}
-            to="/admin/control-center"
-            mr="10px"
-            bg="#f3f3f3"
-            color="black"
-            _hover={{ bg: '#e2e2e2' }}
+            to="/auth/login"
+            bg="black"
+            color="white"
+            _hover={{ bg: '#333' }}
           >
-            Centre de contrôle
+            Se connecter
           </Button>
-        )}
-        <Button
-          mr="10px"
-          bg="#f3f3f3"
-          color="black"
-          _hover={{ bg: '#e2e2e2' }}
-        >
-          Ajouter votre établissement
-        </Button>
-        <Button
-          as={RouterLink}
-          to="/profile"
-          mr="10px"
-          bg="#f3f3f3"
-          color="black"
-          _hover={{ bg: '#e2e2e2' }}
-        >
-          Mon compte
-        </Button>
-        {!user ? (
-        <Button
-          as={RouterLink}
-          to="/auth/login"
-          bg="black"
-          color="white"
-          _hover={{ bg: '#333' }}
-        >
-          Se connecter
-        </Button>
-        ) : (
-        <Button
-          onClick={logout}
-          bg="black"
-          color="white"
-          _hover={{ bg: '#333' }}
-        >
-          Se déconnecter
-        </Button>
         )}
       </Box>
     </Box>
