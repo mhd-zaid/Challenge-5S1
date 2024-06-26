@@ -21,7 +21,7 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  Flex, MenuItem, Menu, MenuButton, MenuList,
+  Flex, MenuItem, Menu, MenuButton, MenuList, Text,
 } from '@chakra-ui/react';
 import Pagination from '@/components/Pagination.jsx';
 import { useAuth } from '@/context/AuthContext.jsx';
@@ -87,12 +87,6 @@ const AdminControlCenterPage = () => {
   };
 
   const handleView = (data) => {
-    // if(dataType === 'companies') {
-    //   CompanyService.get_company_detail(token, data.id).then(response => response.json()).then(data => {
-    //     setEditData(data);
-    //     onOpen();
-    //   });
-    // }
     setEditData(data);
     onOpen();
   }
@@ -126,7 +120,7 @@ const AdminControlCenterPage = () => {
                   <Th>Nom</Th>
                   <Th>Email</Th>
                   <Th>Téléphone</Th>
-                  <Th>Vérifié</Th>
+                  <Th>Vérifiée</Th>
                   <Th>Date d'inscription</Th>
                   <Th>Actions</Th>
                 </Tr>
@@ -139,10 +133,14 @@ const AdminControlCenterPage = () => {
                     <Td>{company.phone}</Td>
                     <Td>
                       <Flex justifyContent={"center"}>
-                        {company.isVerified ? (
-                          <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
-                        ) : (
+                        {!company.isActive ? (
+                          <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                        ) : company.isRejected ? (
                           <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                        ) : !company.isVerified && !company.isRejected ? (
+                          <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
+                        ) : (
+                          <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
                         )}
                       </Flex>
                     </Td>
@@ -166,6 +164,24 @@ const AdminControlCenterPage = () => {
               </Tbody>
             </Table>
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <Box my={4}>
+              <Flex gap={4}>
+                <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                <Text>Entreprise Désactive</Text>
+              </Flex>
+              <Flex gap={4}>
+                <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                <Text>Entreprise Rejetée</Text>
+              </Flex>
+              <Flex gap={4}>
+                <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
+                <Text>En attente de vérification</Text>
+              </Flex>
+              <Flex gap={4}>
+                <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
+                <Text>Entreprise Vérifiée</Text>
+              </Flex>
+            </Box>
           </TabPanel>
 
           {/*Gestion des studios*/}

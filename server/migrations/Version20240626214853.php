@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240623101918 extends AbstractMigration
+final class Version20240626214853 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -29,7 +29,7 @@ final class Version20240623101918 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE unavailability_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE utilisateur_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE work_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE company (id INT NOT NULL, kbis_id INT DEFAULT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, siren VARCHAR(9) DEFAULT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, is_verified BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, website VARCHAR(255) DEFAULT NULL, social_media VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE company (id INT NOT NULL, kbis_id INT DEFAULT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, siren VARCHAR(9) DEFAULT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, is_verified BOOLEAN NOT NULL, is_rejected BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, website VARCHAR(255) DEFAULT NULL, social_media VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_4FBF094F25496F5C ON company (kbis_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094F7E3C61F9 ON company (owner_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094FB03A8386 ON company (created_by_id)');

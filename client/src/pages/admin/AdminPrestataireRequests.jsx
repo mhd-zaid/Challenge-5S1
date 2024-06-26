@@ -206,21 +206,25 @@ const AdminPrestataireRequests = () => {
   };
 
   // Filtrage des demandes approuvées et non approuvées
-  const approvedRequests = requests.filter(req => req.isVerified);
-  const unapprovedRequests = requests.filter(req => !req.isVerified);
+  const approvedRequests = requests.filter(req => req.isVerified && !req.isRejected && req.isActive);
+  const waitingRequests = requests.filter(req => !req.isVerified && !req.isRejected && req.isActive);
+  const rejectedRequests = requests.filter(req => req.isRejected);
+  const disabledRequests = requests.filter(req => !req.isActive);
 
   return (
-    <Box py={10} mx={"auto"} maxW={"80%"}>
+    <Box py={24} mx={"auto"} maxW={"80%"}>
       <Heading mb={5}>Gestion des demandes de prestataires</Heading>
       <Tabs isLazy variant="soft-rounded" index={tabIndex} onChange={index => setTabIndex(index)}>
         <TabList>
           <Tab>Demandes en attente</Tab>
-          <Tab>Demandes approuvées</Tab>
+          <Tab>Etablissements approuvées</Tab>
+          <Tab>Etablissements refusées</Tab>
+          <Tab>Etablissements désactivés</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
             <SimpleGrid columns={3} spacing={10}>
-              {unapprovedRequests.map((request) => (
+              {waitingRequests.map((request) => (
                 <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
                   <CardHeader borderBottom="1px" borderColor="gray.700">
                     <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -264,6 +268,86 @@ const AdminPrestataireRequests = () => {
           <TabPanel>
             <SimpleGrid columns={3} spacing={10}>
               {approvedRequests.map((request) => (
+                <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
+                  <CardHeader borderBottom="1px" borderColor="gray.700">
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <Heading size="md">{request.name}</Heading>
+                      <Text fontSize="sm" color="gray.400">Fait le : {request.createdAt}</Text>
+                    </Box>
+                  </CardHeader>
+                  <CardBody>
+                    <List spacing={2}>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Adresse: </Text>
+                        {request.address || "N/A"}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Email: </Text>
+                        {request.email}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Téléphone: </Text>
+                        {request.phone}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Site web: </Text>
+                        {request.website || "N/A"}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Kbis:</Text>
+                        <Text as="span"> Cliquez </Text>
+                        <Link as="span" textDecoration="underline" color="teal.300" onClick={() => downloadKbis(request.kbis.contentUrl)}>ici</Link>
+                        <Text as="span"> pour consulter le fichier</Text>
+                      </ListItem>
+                    </List>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={3} spacing={10}>
+              {rejectedRequests.map((request) => (
+                <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
+                  <CardHeader borderBottom="1px" borderColor="gray.700">
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <Heading size="md">{request.name}</Heading>
+                      <Text fontSize="sm" color="gray.400">Fait le : {request.createdAt}</Text>
+                    </Box>
+                  </CardHeader>
+                  <CardBody>
+                    <List spacing={2}>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Adresse: </Text>
+                        {request.address || "N/A"}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Email: </Text>
+                        {request.email}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Téléphone: </Text>
+                        {request.phone}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Site web: </Text>
+                        {request.website || "N/A"}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">Kbis:</Text>
+                        <Text as="span"> Cliquez </Text>
+                        <Link as="span" textDecoration="underline" color="teal.300" onClick={() => downloadKbis(request.kbis.contentUrl)}>ici</Link>
+                        <Text as="span"> pour consulter le fichier</Text>
+                      </ListItem>
+                    </List>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={3} spacing={10}>
+              {disabledRequests.map((request) => (
                 <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
                   <CardHeader borderBottom="1px" borderColor="gray.700">
                     <Box display="flex" justifyContent="space-between" alignItems="center">

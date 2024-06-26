@@ -155,6 +155,13 @@ class Company
         , 'company:update:admin'
         , 'company:create:admin'
     ])]
+    private ?bool $isRejected = false;
+
+    #[ORM\Column]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin'
+        , 'company:create:admin'
+    ])]
     private ?bool $isActive = false;
 
     private ?string $fullAddress = null;
@@ -353,6 +360,18 @@ class Company
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getIsRejected(): ?bool
+    {
+        return $this->isRejected;
+    }
+
+    public function setIsRejected(bool $isRejected): static
+    {
+        $this->isRejected = $isRejected;
 
         return $this;
     }

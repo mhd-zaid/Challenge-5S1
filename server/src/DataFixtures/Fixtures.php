@@ -133,6 +133,8 @@ class Fixtures extends Fixture
                 'socialMedia'=> '<url()>',
                 'website'=> '<url()>',
                 'isVerified'=> '<boolean()>',
+                'isActive'=> '<boolean()>',
+                'isRejected'=> '<boolean()>',
                 'owner'=> '@user*',
             ],
         ];
