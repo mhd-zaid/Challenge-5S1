@@ -9,7 +9,7 @@ use App\Entity\Reservation;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final readonly class UnavailabilityHourExtension implements QueryCollectionExtensionInterface
+final readonly class ReservationExtension implements QueryCollectionExtensionInterface
 {
     public function __construct(
         private Security $security,

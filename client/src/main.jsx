@@ -67,10 +67,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="info" element={<InfoPage />} />
 
             <Route path="studio" element={<StudioSearchPage />} />
-            <Route element={<AuthGuard />}>
-              <Route path="calendar" element={<CalendarPage />} />
-              <Route path="my-absences" element={<Unavailability />} />
-            </Route>
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

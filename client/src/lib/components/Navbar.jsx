@@ -21,7 +21,7 @@ const Navbar = ({ onLogout, menus }) => {
       zIndex="100"
     >
       <Box>
-        <Heading as="h1" fontSize="24px" fontWeight="bold" color="#333">
+        <Heading as="h1" fontSize="24px" fontWeight="bold" color="#333" cursor={"pointer"} onClick={() => navigate('/')}>
           Instant Studio
         </Heading>
       </Box>

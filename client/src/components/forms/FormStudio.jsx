@@ -35,7 +35,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/companies`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/ld+json',
           'Authorization': 'Bearer ' + token,
         },
       });

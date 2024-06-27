@@ -6,7 +6,7 @@ const create_unavailability = async (token, formData) => {
   const response = await fetch(`${url}/unavailability_hours`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify(formData)
@@ -22,7 +22,7 @@ const get_unavailabilities = async (token, statuses = []) => {
 
   const response = await fetch(fullUrl, {
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`
     },
   });
@@ -34,7 +34,7 @@ const delete_unavailability = async (token, id) => {
   const response = await fetch(`${url}/unavailability_hours/${id}`, {
     method: 'DELETE',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`
     }
   });

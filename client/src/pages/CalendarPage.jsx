@@ -74,7 +74,7 @@ const CalendarPage = () => {
     : plannings;
 
   return (
-    <Box pt="4" bg="white" color="black" py="4" px="6" width="60%">
+    <Box pt="4" bg="white" color="black" py="4" px="6" width="100%">
       <h1>Calendar</h1>
       {user.roles.includes('ROLE_PRESTA') && (
         <FilterCalendar studios={studios} selectedFilterStudio={selectedFilterStudio} setSelectedFilterStudio={setSelectedFilterStudio} />

@@ -35,6 +35,6 @@ class UserDenormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return User::class === $type;
+        return User::class === $type && (strtoupper($context['operation']->getMethod()) === 'POST' || strtoupper($context['operation']->getMethod()) === 'PATCH') && "/api/users" === $context['request_uri'];
     }
 }

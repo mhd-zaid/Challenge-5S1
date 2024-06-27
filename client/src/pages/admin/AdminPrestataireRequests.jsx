@@ -52,7 +52,7 @@ const AdminPrestataireRequests = () => {
     const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/ld+json',
         'Authorization': `Bearer ${token}`,
       },
     });
@@ -168,7 +168,7 @@ const AdminPrestataireRequests = () => {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/companies/${selectedRequest.id}`, {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/ld+json',
             'Authorization': `Bearer ${token}`,
           },
         });

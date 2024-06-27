@@ -8,6 +8,8 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import CalendarPage from '@/pages/CalendarPage.jsx';
+import Unavailability from '@/pages/Unavailability.jsx';
 
 const EmployeeProfile = ({user}) => {
 
@@ -43,16 +45,19 @@ const EmployeeProfile = ({user}) => {
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Horaire de travail
+            Planning
           </Heading>
-          <Text>Lundi - Vendredi: 9h00 - 17h00</Text>
-          <Text>Samedi: 9h00 - 13h00</Text>
+          <Flex justifyContent={"center"}>
+            <CalendarPage />
+          </Flex>
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Indisponibilités
           </Heading>
-          <Text>Indisponible le 25 juin 2024 (Congés)</Text>
+          <Flex justifyContent={"center"}>
+            <Unavailability />
+          </Flex>
         </Box>
       </Stack>
     </Box>

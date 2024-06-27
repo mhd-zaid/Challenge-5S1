@@ -53,7 +53,7 @@ const StudioSearchPage = () => {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/ld+json',
       },
     });
     const data = await response.json();
@@ -74,7 +74,7 @@ const StudioSearchPage = () => {
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/ld+json',
         },
       });
 

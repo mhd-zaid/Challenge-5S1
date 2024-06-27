@@ -8,6 +8,6 @@ api_platform:
     version: 1.0.0
     show_webby: false
     use_symfony_listeners: false
-    # formats:
-    #   jsonld: ['application/ld+json']
-    #   multipart: ['multipart/form-data']
+    formats:
+        jsonld: ['application/ld+json', 'application/merge-patch+json']
+        multipart: ['multipart/form-data']

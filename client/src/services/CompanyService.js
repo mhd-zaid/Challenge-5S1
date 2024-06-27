@@ -7,7 +7,7 @@ const CompanyService = {
         const response = await fetch(`${url}/companies/${id}`, {
             method: 'GET',
             headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/ld+json',
             Authorization: `Bearer ${token}`,
             },
         });

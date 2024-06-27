@@ -135,7 +135,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {event?.start}
+          {event?.start && new Date(event.start).toLocaleDateString()}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>

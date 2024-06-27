@@ -8,6 +8,8 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import CalendarPage from '@/pages/CalendarPage.jsx';
+import Unavailability from '@/pages/Unavailability.jsx';
 
 const PrestaProfile = ({user}) => {
 
@@ -60,6 +62,7 @@ const PrestaProfile = ({user}) => {
             </>
           )}
         </Box>
+
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Etablissement(s)
@@ -78,6 +81,24 @@ const PrestaProfile = ({user}) => {
               </Box>
             ))
           )}
+        </Box>
+
+        <Box p={4} bg="white" shadow="md" borderRadius="md">
+          <Heading as="h2" size="md" mb={2}>
+            Indisponibilités
+          </Heading>
+          <Flex justifyContent={"center"}>
+            <Unavailability />
+          </Flex>
+        </Box>
+
+        <Box p={4} bg="white" shadow="md" borderRadius="md">
+          <Heading as="h2" size="md" mb={2}>
+            Planning
+          </Heading>
+            <Flex justifyContent={"center"}>
+              <CalendarPage />
+            </Flex>
         </Box>
       </Stack>
     </Box>

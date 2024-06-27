@@ -192,8 +192,7 @@ const Unavailability = () => {
           <Spinner size="xl" />
         </Flex>
       ) : (
-        <Box p={4} py={24} maxWidth="600px" mx="auto">
-          <Heading mb="7">Absences</Heading>
+        <Box p={4} w={"100%"}>
           <Tabs>
             <TabList>
               <Tab>Nouvelle demande</Tab>

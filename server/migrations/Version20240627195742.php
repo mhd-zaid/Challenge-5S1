@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240626214853 extends AbstractMigration
+final class Version20240627195742 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,12 +24,13 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE media_object_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE reservation_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE service_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE stat_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE studio_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE studio_opening_time_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE unavailability_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE utilisateur_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE work_hour_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE company (id INT NOT NULL, kbis_id INT DEFAULT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, siren VARCHAR(9) DEFAULT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, is_verified BOOLEAN NOT NULL, is_rejected BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, website VARCHAR(255) DEFAULT NULL, social_media VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE company (id INT NOT NULL, kbis_id INT DEFAULT NULL, owner_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, siren VARCHAR(9) DEFAULT NULL, email VARCHAR(255) NOT NULL, phone VARCHAR(10) NOT NULL, zip_code VARCHAR(5) NOT NULL, city VARCHAR(255) DEFAULT NULL, is_verified BOOLEAN NOT NULL, is_rejected BOOLEAN NOT NULL, is_active BOOLEAN NOT NULL, description VARCHAR(255) DEFAULT NULL, website VARCHAR(255) DEFAULT NULL, social_media VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_4FBF094F25496F5C ON company (kbis_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094F7E3C61F9 ON company (owner_id)');
         $this->addSql('CREATE INDEX IDX_4FBF094FB03A8386 ON company (created_by_id)');
@@ -40,19 +41,21 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('CREATE TABLE media_object (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, file_path VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_14D43132B03A8386 ON media_object (created_by_id)');
         $this->addSql('CREATE INDEX IDX_14D43132896DBBDE ON media_object (updated_by_id)');
-        $this->addSql('CREATE TABLE reservation (id INT NOT NULL, customer_id INT NOT NULL, employee_id INT NOT NULL, service_id INT NOT NULL, studio_id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE reservation (id INT NOT NULL, customer_id INT NOT NULL, employee_id INT NOT NULL, service_id INT NOT NULL, studio_id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_42C849559395C3F3 ON reservation (customer_id)');
         $this->addSql('CREATE INDEX IDX_42C849558C03F15C ON reservation (employee_id)');
         $this->addSql('CREATE INDEX IDX_42C84955ED5CA9E6 ON reservation (service_id)');
         $this->addSql('CREATE INDEX IDX_42C84955446F285F ON reservation (studio_id)');
         $this->addSql('CREATE INDEX IDX_42C84955B03A8386 ON reservation (created_by_id)');
         $this->addSql('CREATE INDEX IDX_42C84955896DBBDE ON reservation (updated_by_id)');
-        $this->addSql('CREATE TABLE service (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) DEFAULT NULL, cost INT NOT NULL, duration TIME(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE service (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) DEFAULT NULL, cost INT NOT NULL, duration TIME(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E19D9AD2B03A8386 ON service (created_by_id)');
         $this->addSql('CREATE INDEX IDX_E19D9AD2896DBBDE ON service (updated_by_id)');
         $this->addSql('CREATE TABLE service_studio (service_id INT NOT NULL, studio_id INT NOT NULL, PRIMARY KEY(service_id, studio_id))');
         $this->addSql('CREATE INDEX IDX_74EC0280ED5CA9E6 ON service_studio (service_id)');
         $this->addSql('CREATE INDEX IDX_74EC0280446F285F ON service_studio (studio_id)');
+        $this->addSql('CREATE TABLE stat (id INT NOT NULL, studio_id INT DEFAULT NULL, ip VARCHAR(255) NOT NULL, date TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_20B8FF21446F285F ON stat (studio_id)');
         $this->addSql('CREATE TABLE studio (id INT NOT NULL, company_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, description VARCHAR(255) DEFAULT NULL, phone VARCHAR(255) NOT NULL, country VARCHAR(255) NOT NULL, zip_code VARCHAR(255) NOT NULL, city VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_4A2B07B6979B1AD6 ON studio (company_id)');
         $this->addSql('CREATE INDEX IDX_4A2B07B6B03A8386 ON studio (created_by_id)');
@@ -61,16 +64,16 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_8C015D57446F285F ON studio_opening_time (studio_id)');
         $this->addSql('CREATE INDEX IDX_8C015D57B03A8386 ON studio_opening_time (created_by_id)');
         $this->addSql('CREATE INDEX IDX_8C015D57896DBBDE ON studio_opening_time (updated_by_id)');
-        $this->addSql('CREATE TABLE unavailability_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE unavailability_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, status VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_6B4423308C03F15C ON unavailability_hour (employee_id)');
         $this->addSql('CREATE INDEX IDX_6B442330B03A8386 ON unavailability_hour (created_by_id)');
         $this->addSql('CREATE INDEX IDX_6B442330896DBBDE ON unavailability_hour (updated_by_id)');
-        $this->addSql('CREATE TABLE utilisateur (id INT NOT NULL, company_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, roles JSON NOT NULL, phone VARCHAR(25) DEFAULT NULL, token TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE utilisateur (id INT NOT NULL, company_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, roles JSON NOT NULL, phone VARCHAR(25) DEFAULT NULL, token TEXT DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1D1C63B3E7927C74 ON utilisateur (email)');
         $this->addSql('CREATE INDEX IDX_1D1C63B3979B1AD6 ON utilisateur (company_id)');
         $this->addSql('CREATE INDEX IDX_1D1C63B3B03A8386 ON utilisateur (created_by_id)');
         $this->addSql('CREATE INDEX IDX_1D1C63B3896DBBDE ON utilisateur (updated_by_id)');
-        $this->addSql('CREATE TABLE work_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, studio_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE work_hour (id INT NOT NULL, employee_id INT DEFAULT NULL, studio_id INT DEFAULT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, start_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, end_time TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_89DDA0768C03F15C ON work_hour (employee_id)');
         $this->addSql('CREATE INDEX IDX_89DDA076446F285F ON work_hour (studio_id)');
         $this->addSql('CREATE INDEX IDX_89DDA076B03A8386 ON work_hour (created_by_id)');
@@ -107,6 +110,7 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('ALTER TABLE service ADD CONSTRAINT FK_E19D9AD2896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE service_studio ADD CONSTRAINT FK_74EC0280ED5CA9E6 FOREIGN KEY (service_id) REFERENCES service (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE service_studio ADD CONSTRAINT FK_74EC0280446F285F FOREIGN KEY (studio_id) REFERENCES studio (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE stat ADD CONSTRAINT FK_20B8FF21446F285F FOREIGN KEY (studio_id) REFERENCES studio (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6979B1AD6 FOREIGN KEY (company_id) REFERENCES company (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6B03A8386 FOREIGN KEY (created_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE studio ADD CONSTRAINT FK_4A2B07B6896DBBDE FOREIGN KEY (updated_by_id) REFERENCES utilisateur (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -133,6 +137,7 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('DROP SEQUENCE media_object_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE reservation_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE service_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE stat_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE studio_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE studio_opening_time_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE unavailability_hour_id_seq CASCADE');
@@ -155,6 +160,7 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('ALTER TABLE service DROP CONSTRAINT FK_E19D9AD2896DBBDE');
         $this->addSql('ALTER TABLE service_studio DROP CONSTRAINT FK_74EC0280ED5CA9E6');
         $this->addSql('ALTER TABLE service_studio DROP CONSTRAINT FK_74EC0280446F285F');
+        $this->addSql('ALTER TABLE stat DROP CONSTRAINT FK_20B8FF21446F285F');
         $this->addSql('ALTER TABLE studio DROP CONSTRAINT FK_4A2B07B6979B1AD6');
         $this->addSql('ALTER TABLE studio DROP CONSTRAINT FK_4A2B07B6B03A8386');
         $this->addSql('ALTER TABLE studio DROP CONSTRAINT FK_4A2B07B6896DBBDE');
@@ -177,6 +183,7 @@ final class Version20240626214853 extends AbstractMigration
         $this->addSql('DROP TABLE reservation');
         $this->addSql('DROP TABLE service');
         $this->addSql('DROP TABLE service_studio');
+        $this->addSql('DROP TABLE stat');
         $this->addSql('DROP TABLE studio');
         $this->addSql('DROP TABLE studio_opening_time');
         $this->addSql('DROP TABLE unavailability_hour');
