@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button,
-  FormControl, FormLabel, Input, Select, Box
+  FormControl, FormLabel, Input, Select, Box, Text
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import WorkHourService from '../../services/WorkHourService';
 
 const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, studios, get_plannings, toast }) => {
-  const { register, handleSubmit, setValue, reset, getValues, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, reset, getValues, watch, formState: { errors } } = useForm();
 
   const [isLoading, setIsLoading] = useState(false);
+  const selectedStudio = watch('studio');
 
   useEffect(() => {
     if (event && event.startStr) {
@@ -19,10 +20,12 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
       setValue('employee', event.extendedProps.employee);
       setValue('studio', event.extendedProps.studio);
     } else {
-      reset(); // Reset form if no event is selected
+      reset(); 
     }
   }, [event, setValue, reset]);
 
+  const studioOpeningTimes = studios.find(studio => studio['@id'] === selectedStudio)?.studioOpeningTimes.find(time => time.day === new Date(event?.start).getDay());
+  const hoursOpeningTime = studioOpeningTimes ? `Ouvert de ${studioOpeningTimes.startTime.split('T')[1].slice(0, 5)} à ${studioOpeningTimes.endTime.split('T')[1].slice(0, 5)}` : 'Studio fermé ce jour-là';
   const onSubmit = async (data) => {
     setIsLoading(true);
     const startDay = event && event.startStr ? getValues('day') : event.start.split('T')[0] ;
@@ -36,7 +39,6 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
     const studio = studios.find(studio => studio['@id'] === data.studio);
     const dayOfWeek = new Date(startDay).getDay();
     const openingTime = studio.studioOpeningTimes.find(time => time.day === dayOfWeek);
-
 
     if (!openingTime) {
       toast({
@@ -132,7 +134,9 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Work Hour</ModalHeader>
+        <ModalHeader>
+          {event?.start}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -186,6 +190,11 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
                   </option>
                 ))}
               </Select>
+              {selectedStudio && (
+            <Text>
+              {hoursOpeningTime}
+            </Text>
+      )}
               {errors.studio && <p>{errors.studio.message}</p>}
             </FormControl>
             <ModalFooter>

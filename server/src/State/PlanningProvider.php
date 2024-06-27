@@ -35,8 +35,7 @@ class PlanningProvider implements ProviderInterface
         if (!$user instanceof User) {
             throw new BadRequestHttpException('User not found');
         }
-        if(in_array('ROLE_ADMIN', $user->getRoles()))
-            return $this->getAdminPlanning($user);
+        
         if(in_array('ROLE_PRESTA', $user->getRoles()))
             return $this->getPrestaPlanning($user);
         
@@ -130,51 +129,6 @@ class PlanningProvider implements ProviderInterface
                 'end' => $unavailabilityHour->getEndTime(),
                 'employee' => $unavailabilityHour->getEmployee(),
                 'idEvent' => $unavailabilityHour->getId(),
-            ];
-        }
-
-        return $planning;
-    }
-
-    /**
-     * Récupère le planning de tout les employés de tout les studios de tout les entreprise
-     * @param User $user
-     * @return array
-     */
-    private function getAdminPlanning(User $user): array
-    {
-        $studios = $this->em->getRepository(Studio::class)->findAll();
-        $users = $this->em->getRepository(User::class)->findAll();
-        $workHours = new ArrayCollection();
-        foreach ($studios as $studio) {
-            foreach ($studio->getWorkHours() as $workHour) {
-                $workHours->add($workHour);
-            }
-        }
-        $unavailabilityHours = new ArrayCollection();
-        foreach ($users as $user) {
-            foreach ($user->getUnavailabilityHours() as $unavailabilityHour) {
-                $unavailabilityHours->add($unavailabilityHour);
-            }
-        }
-
-        $planning = [];
-
-        foreach ($workHours as $workHour) {
-            $planning[] = [
-                'type' => 'workHour',
-                'start' => $workHour->getStartTime(),
-                'end' => $workHour->getEndTime(),
-                'studio' => $workHour->getStudio(),
-            ];
-        }
-
-        foreach ($unavailabilityHours as $unavailabilityHour) {
-            $planning[] = [
-                'type' => 'unavailabilityHour',
-                'start' => $unavailabilityHour->getStartTime(),
-                'end' => $unavailabilityHour->getEndTime(),
-                'studio' => $unavailabilityHour->getStudio(),
             ];
         }
 

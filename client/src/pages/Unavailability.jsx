@@ -24,7 +24,8 @@ import ConfirmationDialog from '../components/Modal/ConfirmationDialog';
 
 const Unavailability = () => {
   const { token, user } = useAuth();
-  const [requests, setRequests] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [historyRequests, setHistoryRequests] = useState([]);
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [currentAction, setCurrentAction] = useState(null);
@@ -35,21 +36,29 @@ const Unavailability = () => {
   const [isRequestLoading, setIsRequestLoading] = useState(true);
 
   useEffect(() => {
-    fetchRequests();
+    fetchPendingRequests();
+    fetchHistoryRequests();
     getCompanyDetail();
   }, []);
 
-  const fetchRequests = async () => {
-    const response = await UnavailabilityService.get_unavailabilities(token);
+  const fetchPendingRequests = async () => {
+    const response = await UnavailabilityService.get_unavailabilities(token, ['Pending']);
     const data = await response.json();
-    setRequests(data['hydra:member']);
+    setPendingRequests(data['hydra:member']);
+    setIsRequestLoading(false);
+  };
+
+  const fetchHistoryRequests = async () => {
+    const response = await UnavailabilityService.get_unavailabilities(token, ['Accepted', 'Rejected']);
+    const data = await response.json();
+    setHistoryRequests(data['hydra:member']);
     setIsRequestLoading(false);
   };
 
   const getCompanyDetail = async () => {
     const response = await CompanyService.get_company_detail(
       token,
-      user.company.split('/')[3],
+      user.company.id,
     );
     const data = await response.json();
     setUsers(data.users['hydra:member']);
@@ -62,20 +71,20 @@ const Unavailability = () => {
     );
     if (response.status === 201) {
       toast({
-        title: 'Absence request submitted successfully',
+        title: 'Congés accepté',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } else {
       toast({
-        title: 'An error occurred',
+        title: 'Une erreur est survenue',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     }
-    fetchRequests();
+    fetchPendingRequests();
   };
 
   const handleActionClick = (action, requestId) => {
@@ -116,7 +125,7 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchRequests().then(() => {
+    fetchPendingRequests().then(() => {
       setIsLoading(false);
       onClose();
     });
@@ -130,20 +139,20 @@ const Unavailability = () => {
     );
     if (response.status === 200) {
       toast({
-        title: 'Absence request accepted successfully',
+        title: 'Congés acceptés avec succès',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } else {
       toast({
-        title: 'An error occurred',
+        title: 'Une erreur est survenue',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     }
-    fetchRequests().then(() => {
+    fetchPendingRequests().then(() => {
       setIsLoading(false);
       onClose();
     });
@@ -157,31 +166,24 @@ const Unavailability = () => {
     );
     if (response.status === 200) {
       toast({
-        title: 'Absence request rejected successfully',
+        title: 'Congés refusés avec succès',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } else {
       toast({
-        title: 'An error occurred',
+        title: 'Une erreur est survenue',
         status: 'error',
         duration: 3000,
         isClosable: true,
       });
     }
-    fetchRequests().then(() => {
+    fetchPendingRequests().then(() => {
       setIsLoading(false);
       onClose();
     });
   };
-
-  const pendingRequests = requests.filter(
-    request => request.status === 'Pending',
-  );
-  const historyRequests = requests.filter(request =>
-    ['Accepted', 'Rejected'].includes(request.status),
-  );
 
   return (
     <>
@@ -190,7 +192,7 @@ const Unavailability = () => {
           <Spinner size="xl" />
         </Flex>
       ) : (
-        <Box>
+        <Box p={4} py={24} maxWidth="600px" mx="auto">
           <Heading mb="7">Absences</Heading>
           <Tabs>
             <TabList>

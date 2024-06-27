@@ -110,7 +110,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Box p={4} maxWidth="400px" mx="auto">
+    <Box p={4} py={24} maxWidth="400px" mx="auto">
       <Heading as="h2" size="lg" textAlign="center" mb={6}>Connexion</Heading>
       <form onSubmit={handleLogin}>
         <Stack spacing={4}>
