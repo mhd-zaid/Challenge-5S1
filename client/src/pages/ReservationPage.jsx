@@ -7,10 +7,10 @@ import {
   Divider,
   Flex,
   Heading,
-  Image,
   Link,
   Spinner,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,16 +21,18 @@ import { CiLocationOn } from 'react-icons/ci';
 import { useAuth } from '@/context/AuthContext.jsx';
 
 const ReservationPage = () => {
+  const toast = useToast();
   const { t } = useTranslation();
   const { id, service_id } = useParams();
   const d = useCustomDate();
-  const { user, token } = useAuth();
+  const { user, token, authLoading } = useAuth();
 
   const [studio, setStudio] = useState();
   const [service, setService] = useState();
   const [availableHours, setAvailableHours] = useState([]); // {"2024-06-24": [{"start":"10:00", "end": "11:00", "userId": 46, "fullname": "John Doe"}, {"start":"11:00", "end": "12:00", "userId": 46, "fullname": "John Doe"].....}
   const [selectedWeek, setSelectedWeek] = useState(0);
   const [selectedDayHour, setSelectedDayHour] = useState();
+  const [selectedEmployee, setSelectedEmployee] = useState(); // {"id": 46, "fullname": "John Doe"}
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -100,11 +102,15 @@ const ReservationPage = () => {
   const getAvailableHoursForDay = day => {
     const daySlots = availableHours[day];
     if (!daySlots) return [];
+    // Sort the slots by start time
+    daySlots.sort((a, b) => {
+      return a.start.localeCompare(b.start);
+    });
     return daySlots;
   };
 
   const createReservation = async () => {
-    if (!user || !selectedDayHour) return;
+    if (!user || !studio || !selectedDayHour || !selectedEmployee) return;
     setIsLoading(true);
     await fetch(import.meta.env.VITE_BACKEND_URL + `/reservations`, {
       method: 'POST',
@@ -113,10 +119,10 @@ const ReservationPage = () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        customer_id: user.id,
-        employee_id: selectedDayHour.userId,
-        service_id: service_id,
-        studio_id: id,
+        customer: `/api/users/${user.id}`,
+        employee: selectedEmployee.id,
+        service: service['@id'],
+        studio: studio['@id'],
         date: selectedDayHour.date,
       }),
     })
@@ -125,7 +131,20 @@ const ReservationPage = () => {
         return res.json();
       })
       .then(data => {
+        toast({
+          title: t('studio.reservation-success'),
+          description:
+            service.name +
+            ' - ' +
+            d(selectedDayHour.date).format('DD/MM HH:mm'),
+          status: 'success',
+          duration: 10000,
+          isClosable: true,
+        });
         console.log(data);
+        setSelectedDayHour();
+        setSelectedEmployee();
+        getAvailableHours();
       })
       .catch(err => console.error(err))
       .finally(() => setIsLoading(false));
@@ -165,7 +184,7 @@ const ReservationPage = () => {
           </Flex>
         </Flex>
       </Box>
-      <Box mt={8}>
+      <Flex flexDir={'column'} mt={8}>
         <Heading size={'sm'}>{t('studio.chosen-date')}</Heading>
         <Flex alignItems="center" p={2}>
           <Button
@@ -214,7 +233,22 @@ const ReservationPage = () => {
                         key={i}
                         display={'flex'}
                         variant={'unstyled'}
-                        bgColor={'gray.100'}
+                        bgColor={
+                          selectedDayHour?.date ===
+                          d(day)
+                            .hour(hour.start.split(':')[0])
+                            .format('YYYY-MM-DD HH:mm:ss')
+                            ? 'black'
+                            : 'gray.100'
+                        }
+                        color={
+                          selectedDayHour?.date ===
+                          d(day)
+                            .hour(hour.start.split(':')[0])
+                            .format('YYYY-MM-DD HH:mm:ss')
+                            ? 'white'
+                            : 'black'
+                        }
                         _hover={{ bgColor: 'gray.200' }}
                         w={'full'}
                         h={10}
@@ -239,33 +273,72 @@ const ReservationPage = () => {
             );
           })}
         </Flex>
-      </Box>
-      <Box mt={8}>
-        {!user ? (
-          <>
-            <Heading size={'xs'} textAlign={'center'}>
-              {t('studio.auth-required')}
-            </Heading>
-            <Container bg={'white'}>
-              <Flex p={4} flexDir={'column'}>
-                <Text textAlign={'center'}>{t('auth.new-user')}</Text>
-                <Button as={Link} href={`/auth/login`} mt={4}>
-                  {t('auth.register')}
-                </Button>
-              </Flex>
-              <Divider />
-              <Flex p={4} flexDir={'column'}>
-                <Text textAlign={'center'}>{t('auth.already-account')}</Text>
-                <Button as={Link} href={`/auth/login`} mt={4}>
-                  {t('auth.connect')}
-                </Button>
-              </Flex>
-            </Container>
-          </>
-        ) : (
-          <></>
+        {selectedDayHour && (
+          <Heading mt={8} size={'xs'} textAlign={'center'}>
+            {t('studio.choose-within-employees')}
+          </Heading>
         )}
-      </Box>
+        <Flex justifyContent={'center'} wrap={'wrap'}>
+          {selectedDayHour &&
+            selectedDayHour.users.map((employee, i) => {
+              return (
+                <Card key={i} mx={4}>
+                  <CardBody>
+                    <Heading size={'xs'} textAlign={'center'}>
+                      {employee.fullname}
+                    </Heading>
+                    <Button
+                      onClick={() => setSelectedEmployee(employee)}
+                      isDisabled={selectedEmployee?.id === employee.id}
+                    >
+                      {t('studio.choose-employee')}
+                    </Button>
+                  </CardBody>
+                </Card>
+              );
+            })}
+        </Flex>
+      </Flex>
+      <Flex mt={8} flexDir={'column'} alignItems={'center'}>
+        {!authLoading ? (
+          !user ? (
+            <>
+              <Heading size={'xs'} textAlign={'center'}>
+                {t('studio.auth-required')}
+              </Heading>
+              <Container bg={'white'}>
+                <Flex p={4} flexDir={'column'}>
+                  <Text textAlign={'center'}>{t('auth.new-user')}</Text>
+                  <Button as={Link} href={`/auth/login`} mt={4}>
+                    {t('auth.register')}
+                  </Button>
+                </Flex>
+                <Divider />
+                <Flex p={4} flexDir={'column'}>
+                  <Text textAlign={'center'}>{t('auth.already-account')}</Text>
+                  <Button as={Link} href={`/auth/login`} mt={4}>
+                    {t('auth.connect')}
+                  </Button>
+                </Flex>
+              </Container>
+            </>
+          ) : (
+            <Flex flexDir={'column'}>
+              <Button
+                isDisabled={!selectedDayHour || !selectedEmployee}
+                onClick={createReservation}
+              >
+                {t('studio.book')}
+              </Button>
+              <Link href={`/profile`} mt={4}>
+                {t('studio.my-reservations')}
+              </Link>
+            </Flex>
+          )
+        ) : (
+          <Spinner />
+        )}
+      </Flex>
     </Box>
   );
 };

@@ -27,6 +27,10 @@
     "no-results": "Aucun résultat trouvé",
     "chosen-presta": "Prestation séléctionnée",
     "chosen-date": "Date et heure séléctionnées",
-    "auth-required": "Vous devez être connecté pour réserver une prestation"
+    "auth-required": "Vous devez être connecté pour réserver une prestation",
+    "choose-within-employees": "Choisissez parmi les photographes disponibles",
+    "choose-employee": "Choisir ce photographe",
+    "reservation-success": "Votre réservation a bien été prise en compte",
+    "my-reservations": "Voir mes réservations"
   }
 }
