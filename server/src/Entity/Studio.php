@@ -39,7 +39,7 @@ class Studio
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['stat:studio:read'])]
+    #[Groups(['stat:studio:read', 'studio:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

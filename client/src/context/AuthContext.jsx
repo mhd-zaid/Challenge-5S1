@@ -16,10 +16,13 @@ export const AuthProvider = ({ children }) => {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchData = async () => {
       try {
         if (token) {
-          const response = await AuthService.me(token);
+          const response = await AuthService.me(token, signal);
           if (response.status === 200) {
             const user = await response.json();
             setUser(user);
@@ -30,15 +33,17 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération de l'utilisateur:",
-          error,
-        );
-        logout();
+        if (error.name === 'AbortError') {
+          console.info('Fetch aborted');
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      controller.abort();
+    };
   }, [token]);
 
   const login = authToken => {
