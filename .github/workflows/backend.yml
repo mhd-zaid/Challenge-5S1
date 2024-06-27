@@ -56,6 +56,12 @@ jobs:
         with:
           php-version: "8.2.18"
 
+      - name: Restore env file
+        uses: actions/cache@v2
+        with:
+          path: ./server/.env.local
+          key: env-${{ runner.os }}
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./server
