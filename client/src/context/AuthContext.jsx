@@ -7,12 +7,13 @@ export const AuthContext = createContext({
   token: null,
   login: () => {},
   logout: () => {},
+  authLoading: true,
 });
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token') || null);
-  console.log(user);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,9 +23,10 @@ export const AuthProvider = ({ children }) => {
           if (response.status === 200) {
             const user = await response.json();
             setUser(user);
+            localStorage.setItem('token', token);
+            setAuthLoading(false);
           } else {
             logout();
-            setUser(null);
           }
         }
       } catch (error) {
@@ -40,16 +42,21 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = authToken => {
+    setAuthLoading(true);
     setToken(authToken);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
+    setUser(null);
+    setAuthLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, setUser, token, login, logout, authLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );
