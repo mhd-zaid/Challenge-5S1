@@ -5,8 +5,8 @@ on:
 
 jobs:
   prepare-env-file:
-    runs-on: ubuntu-latest
     environment: BACK_END
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -16,10 +16,7 @@ jobs:
       
       - name: Add git env variables
         run: |
-          echo APP_ENV=${{ secrets.APP_ENV }} >> ./server.env.local
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> ./server.env.local
-      - name: Display env file
-        run: cat ./server.env.local
+          echo APP_ENV=${{ env.APP_ENV }} >> ./server.env.local
 
 
   install-back-dependencies:
