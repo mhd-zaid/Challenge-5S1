@@ -5,21 +5,47 @@ on:
 
 jobs:
   prepare-env-file:
-    environment: BACK_END
+    env:
+      APP_ENV: test
+      DATABASE_URL: postgresql://user:password@localhost:5432/testdb?serverVersion=13&charset=utf8
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+      JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+      JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+      JWT_PASSPHRASE: ""
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Create .env file
-        run: touch ./server.env.local
+        run: touch ./server/.env.local
       
       - name: Add git env variables
         run: |
           echo APP_ENV=${{ env.APP_ENV }} >> ./server.env.local
-
+          echo DATABASE_URL=${{ env.DATABASE_URL }} >> ./server.env.local
+          echo CORS_ALLOW_ORIGIN=${{ env.CORS_ALLOW_ORIGIN }} >> ./server.env.local
+          echo JWT_SECRET_KEY=${{ env.JWT_SECRET_KEY }} >> ./server.env.local
+          echo JWT_PUBLIC_KEY=${{ env.JWT_PUBLIC_KEY }} >> ./server.env.local
+          echo JWT_PASSPHRASE=${{ env.JWT_PASSPHRASE }} >> ./server.env.local
+          echo MESSENGER_TRANSPORT_DSN=${{ env.MESSENGER_TRANSPORT_DSN }} >> ./server.env.local
+          echo APP_SECRET=${{ secret.APP_SECRET }} >> ./server.env.local
+          echo INSEE_API_KEY=${{ secret.INSEE_API_KEY }} >> ./server.env.local
+          echo INSEE_API_URL=${{ secret.INSEE_API_URL }} >> ./server.env.local
+          echo MAILER_DSN=${{ secret.MAILER_DSN }} >> ./server.env.local
+      
+      - name: Cache env file
+        uses: actions/cache@v2
+        with:
+          path: ./server/.env.local
+          key: env-${{ runner.os }}
+          restore-keys: |
+            env-${{ runner.os }}
 
   install-back-dependencies:
+    needs: prepare-env-file
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -98,8 +124,25 @@ jobs:
           path: ./server/config/jwt
           key: jwt-${{ runner.os }}
 
+      - name : Use env cache
+        uses: actions/cache@v2
+        with:
+          path: ./server/.env.local
+          key: env-${{ runner.os }}
+      
+      - name: copy env to env.test file
+        run: cp ./server/.env.local ./server/.env.test.local
+
+      - name: Create test database
+        run: php bin/console d:d:c --env=test
+        working-directory: ./server
+      
       - name: Run migrations
-        run: php bin/console d:m:m --no-interaction
+        run: php bin/console d:m:m --no-interaction --env=test
+        working-directory: ./server
+      
+      - name: Load fixtures
+        run: php bin/console d:f:l --no-interaction --env=test
         working-directory: ./server
 
       - name: Run tests
