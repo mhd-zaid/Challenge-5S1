@@ -14,13 +14,19 @@ const create_unavailability = async (token, formData) => {
   return response;
 };
 
-const get_unavailabilities = async (token) => {
-  const response = await fetch(`${url}/unavailability_hours`, {
+const get_unavailabilities = async (token, statuses = []) => {
+  const baseUrl = `${url}/unavailability_hours`;
+
+  const queryParams = statuses.map(status => `status[]=${encodeURIComponent(status)}`).join('&');
+  const fullUrl = `${baseUrl}?${queryParams}`;
+
+  const response = await fetch(fullUrl, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     },
   });
+
   return response;
 }
 

@@ -12,6 +12,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
 #[ApiResource(
@@ -62,6 +64,7 @@ class UnavailabilityHour
     #[ORM\Column]
     #[Assert\Choice(choices: ['Pending', 'Accepted', 'Rejected'], message: "Le champ 'status' doit être 'Pending', 'Accepted' ou 'Rejected'.")]
     #[Groups(['unavailabilityHour:presta:write', 'unavailabilityHour:read'])]
+    #[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
     private string $status = 'Pending';
     public function getId(): ?int
     {
