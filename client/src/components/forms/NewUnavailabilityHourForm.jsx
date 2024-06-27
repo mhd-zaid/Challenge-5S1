@@ -34,7 +34,7 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
       <FormControl mb="4" isInvalid={errors.startDate}>
         <FormLabel>Début de l'absence</FormLabel>
         <Input
-          type="datetime-local"
+          type="date"
           {...register('startDate', { required: 'La date de début est requise' })}
           placeholder="Select start date"
         />
@@ -46,7 +46,7 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
       <FormControl mb="4" isInvalid={errors.endDate}>
         <FormLabel>Fin de l'absence</FormLabel>
         <Input
-          type="datetime-local"
+          type="date"
           {...register('endDate', { required: 'La date de fin est requise' })}
           placeholder="Select end date"
         />

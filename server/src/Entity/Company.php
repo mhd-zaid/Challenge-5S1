@@ -56,7 +56,7 @@ class Company
 //    #[ApiProperty(identifier: false)]
     #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
         , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
+        , 'company:create:admin', 'user:read'
     ])]
     private ?int $id = null;
 

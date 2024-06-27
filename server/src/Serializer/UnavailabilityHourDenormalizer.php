@@ -21,7 +21,7 @@ class UnavailabilityHourDenormalizer implements DenormalizerInterface
     {
         $unavailability_hour = $this->normalizer->denormalize($data, $class, $format, $context);
         
-        if($this->security->isGranted('ROLE_ADMIN')) {
+        if($this->security->isGranted('ROLE_PRESTA')) {
             $unavailability_hour->setStatus('Accepted');
         } else {
             $unavailability_hour->setStatus('Pending');
@@ -39,6 +39,6 @@ class UnavailabilityHourDenormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return UnavailabilityHour::class === $type;
+        return UnavailabilityHour::class === $type && isset($data['startTime']) && isset($data['endTime']);
     }
 }

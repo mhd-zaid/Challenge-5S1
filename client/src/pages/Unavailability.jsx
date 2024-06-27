@@ -49,7 +49,7 @@ const Unavailability = () => {
   const getCompanyDetail = async () => {
     const response = await CompanyService.get_company_detail(
       token,
-      user.company.split('/')[3],
+      user.company.id,
     );
     const data = await response.json();
     setUsers(data.users['hydra:member']);
