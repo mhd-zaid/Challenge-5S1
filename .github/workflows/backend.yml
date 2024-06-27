@@ -4,6 +4,21 @@ on:
   workflow_call:
 
 jobs:
+  prepare-env-file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create .env file
+        run: touch ./server.env.local
+      
+      - name: Add git env variables
+        run:  echo APP_ENV=${{ vars.APP_ENV }} >> ./server.env.local
+      - name: Display env file
+        run:  cat ./server.env.local
+
+
   install-back-dependencies:
     runs-on: ubuntu-latest
     steps:
