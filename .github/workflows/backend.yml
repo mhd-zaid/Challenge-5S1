@@ -16,8 +16,8 @@ jobs:
       
       - name: Add git env variables
         run: |
-          echo APP_ENV=${{ env.APP_ENV }} >> ./server.env.local
-          echo DATABASE_URL=${{ env.DATABASE_URL }} >> ./server.env.local
+          echo APP_ENV=${{ secrets.APP_ENV }} >> ./server.env.local
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> ./server.env.local
       - name: Display env file
         run: cat ./server.env.local
 
