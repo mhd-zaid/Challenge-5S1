@@ -20,6 +20,7 @@ class WorkHourDenormalizer implements DenormalizerInterface
     public function denormalize($data, $class, $format = null, array $context = [])
     {
         $work_hour = $this->normalizer->denormalize($data, $class, $format, $context);
+        
         return $work_hour;
     }
 
