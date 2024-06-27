@@ -57,9 +57,10 @@ const CalendarPage = () => {
   };
 
   const get_company_detail = async () => {
-    await CompanyService.get_company_detail(token, user.company.split('/')[3]).then(response => response.json()).then(data => {
+    await CompanyService.get_company_detail(token, user.company.id).then(response => response.json()).then(data => {
       setUsers(data.users['hydra:member']);
       setStudios(data.studios['hydra:member']);
+      console.log("studios : ",data)
     });
   };
 

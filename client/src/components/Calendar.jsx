@@ -19,9 +19,8 @@ const Calendar = ({ user, plannings, setEvent, get_plannings }) => {
 
   const renderEventContent = (eventInfo) => (
     <>
-      <p>{eventInfo.event.extendedProps.employeeFullName}</p>
-      <p>{eventInfo.event.extendedProps.studioName}</p>
       <p>{eventInfo.event.extendedProps.startTime} - {eventInfo.event.extendedProps.endTime}</p>
+      <p>{eventInfo.event.extendedProps.studioName}</p>
     </>
   );
 

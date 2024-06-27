@@ -63,7 +63,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read', 'workHour:read'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read', 'workHour:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
