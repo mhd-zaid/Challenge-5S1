@@ -48,6 +48,7 @@ security:
     - { path: ^/api/available_slots, roles: PUBLIC_ACCESS, methods: GET }
     - { path: ^/api/companies, roles: PUBLIC_ACCESS, methods: POST }
     - { path: ^/api/users, roles: PUBLIC_ACCESS, methods: POST }
+    - { path: ^/api/stats, roles: PUBLIC_ACCESS, methods: POST }
     - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:

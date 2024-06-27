@@ -26,6 +26,7 @@ class Fixtures extends Fixture
             'App\Entity\User' => $this->UserFixture(),
             'App\Entity\Company' => $this->CompanyFixture(),
             'App\Entity\Studio' => $this->StudioFixture(),
+            'App\Entity\Stat' => $this->StatFixture()
         ]);
 
         foreach ($objectSet->getObjects() as $object) {
@@ -153,6 +154,17 @@ class Fixtures extends Fixture
                 'createdAt'=> '<dateTimeBetween("-1 year", "now")>',
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
                 'company'=> '@company*'
+            ],
+        ];
+    }
+
+    private function statFixture() : array
+    {
+        return [
+            'stat{1..300}' => [
+                'ip'=> '<ipv4()>',
+                'date'=> '<dateTimeBetween("-4 year", "now")>',
+                'studio'=> '@studio*'
             ],
         ];
     }
