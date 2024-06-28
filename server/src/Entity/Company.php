@@ -130,7 +130,7 @@ class Company
     #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee'
         , 'company:update:admin', 'company:update:presta'
         , 'company:create:admin', 'company:read'
-        , 'user:read:presta'
+        , 'user:read:presta', 'company:read:common'
     ])]
     private Collection $studios;
 

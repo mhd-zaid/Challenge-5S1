@@ -12,6 +12,7 @@ import {
   useDisclosure,
   Spinner,
   Flex,
+  Select,
 } from '@chakra-ui/react';
 import { useAuth } from '../context/AuthContext';
 import UnavailabilityService from '../services/UnavailabilityService';
@@ -35,24 +36,70 @@ const Unavailability = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRequestLoading, setIsRequestLoading] = useState(true);
 
+  const [pagePending, setPagePending] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
+  const [pageHistorical, setPageHistorical] = useState(1);
+  const [itemsPerPageHistorical, setItemsPerPageHistorical] = useState(10);
+  const [totalItemsHistorical, setTotalItemsHistorical] = useState(0);
+
+  const [selectedUser, setSelectedUser] = useState(null);
+
   useEffect(() => {
-    fetchPendingRequests();
-    fetchHistoryRequests();
+    fetchRequests();
     getCompanyDetail();
   }, []);
 
-  const fetchPendingRequests = async () => {
-    const response = await UnavailabilityService.get_unavailabilities(token, ['Pending']);
-    const data = await response.json();
-    setPendingRequests(data['hydra:member']);
-    setIsRequestLoading(false);
+  const fetchRequests = async () => {
+    try {
+      setIsRequestLoading(true);  
+      const [pendingResponse, historyResponse] = await Promise.all([
+        UnavailabilityService.get_unavailabilities(token, ['Pending'], pagePending, itemsPerPage, selectedUser),
+        UnavailabilityService.get_unavailabilities(token, ['Accepted', 'Rejected'], pageHistorical, itemsPerPageHistorical, selectedUser),
+      ]);
+  
+      const pendingData = await pendingResponse.json();
+      const historyData = await historyResponse.json();
+  
+      setPendingRequests(pendingData['hydra:member']);
+      setTotalItems(pendingData['hydra:totalItems']);
+  
+      setHistoryRequests(historyData['hydra:member']);
+      setTotalItemsHistorical(historyData['hydra:totalItems']);
+  
+    } catch (error) {
+      console.error('Failed to fetch requests:', error);
+    } finally {
+      setIsRequestLoading(false);
+    }
   };
 
-  const fetchHistoryRequests = async () => {
-    const response = await UnavailabilityService.get_unavailabilities(token, ['Accepted', 'Rejected']);
-    const data = await response.json();
-    setHistoryRequests(data['hydra:member']);
-    setIsRequestLoading(false);
+  useEffect(() => {
+    fetchRequests();
+  }, [pageHistorical, itemsPerPageHistorical, selectedUser, pagePending, itemsPerPage, selectedUser]);
+
+  const handlePageChange = (newPage) => {
+    setPagePending(newPage);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setPagePending(1);
+  };
+
+  const handlePageChangeHistorical = (newPage) => {
+    setPageHistorical(newPage);
+  };
+
+  const handleItemsPerPageChangeHistorical = (newItemsPerPage) => {
+    setItemsPerPageHistorical(newItemsPerPage);
+    setPageHistorical(1);
+  };
+
+  const handleUserChange = (e) => {
+    setSelectedUser(e.target.value);
+    setIsRequestLoading(true);
   };
 
   const getCompanyDetail = async () => {
@@ -71,7 +118,7 @@ const Unavailability = () => {
     );
     if (response.status === 201) {
       toast({
-        title: 'Congés accepté',
+        title: 'Congés crée',
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -84,7 +131,7 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchPendingRequests();
+    fetchRequests();
   };
 
   const handleActionClick = (action, requestId) => {
@@ -125,9 +172,9 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchPendingRequests().then(() => {
-      setIsLoading(false);
+    fetchRequests().then(() => {
       onClose();
+      setIsLoading(false);
     });
   };
 
@@ -152,7 +199,7 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchPendingRequests().then(() => {
+    fetchRequests().then(() => {
       setIsLoading(false);
       onClose();
     });
@@ -179,7 +226,7 @@ const Unavailability = () => {
         isClosable: true,
       });
     }
-    fetchPendingRequests().then(() => {
+    fetchRequests().then(() => {
       setIsLoading(false);
       onClose();
     });
@@ -193,11 +240,19 @@ const Unavailability = () => {
         </Flex>
       ) : (
         <Box p={4} w={"100%"}>
+            <Select placeholder="Tous" value={selectedUser} onChange={handleUserChange}>
+            {users.map((user) => (
+              <option key={user['@id']} value={user['@id']}>
+                {user.firstname} {user.lastname}
+              </option>
+            ))}
+          </Select>
           <Tabs>
             <TabList>
               <Tab>Nouvelle demande</Tab>
               <Tab>Demandes en attente</Tab>
               {user.roles.includes('ROLE_EMPLOYEE') && <Tab>Historique</Tab>}
+              {user.roles.includes('ROLE_PRESTA') && <Tab>Historique employés</Tab>}
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -215,11 +270,25 @@ const Unavailability = () => {
                     requests={pendingRequests}
                     onActionClick={handleActionClick}
                     user={user}
+                    itemsPerPage={itemsPerPage}
+                    page={pagePending}
+                    totalItems={totalItems}
+                    onPageChange={handlePageChange}
+                    onItemsPerPageChange={handleItemsPerPageChange}          
                   />
                 )}
               </TabPanel>
               <TabPanel>
-                <HistoryUnavailabilityHourTable requests={historyRequests} />
+                <HistoryUnavailabilityHourTable
+                requests={historyRequests}
+                user={user}
+                page={pageHistorical}
+                itemsPerPage={itemsPerPageHistorical}
+                totalItems={totalItemsHistorical}
+                onPageChange={handlePageChangeHistorical}
+                onItemsPerPageChange={handleItemsPerPageChangeHistorical}
+                onActionClick={handleActionClick}
+                 />
               </TabPanel>
             </TabPanels>
           </Tabs>

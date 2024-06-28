@@ -4,21 +4,14 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\Studio;
 use App\Entity\UnavailabilityHour;
 use App\Entity\User;
 use App\Entity\WorkHour;
-use App\Repository\StudioRepository;
-use App\Repository\UnavailabilityHourRepository;
-use App\Repository\UserRepository;
-use App\Repository\WorkHourRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Bundle\SecurityBundle\Security;
-use App\ApiResource\Planning;
 
 class PlanningProvider implements ProviderInterface
 {
@@ -36,59 +29,27 @@ class PlanningProvider implements ProviderInterface
             throw new BadRequestHttpException('User not found');
         }
         
-        if(in_array('ROLE_PRESTA', $user->getRoles()))
+        if (in_array('ROLE_PRESTA', $user->getRoles())) {
             return $this->getPrestaPlanning($user);
+        }
         
-        if(in_array('ROLE_EMPLOYEE', $user->getRoles()))
+        if (in_array('ROLE_EMPLOYEE', $user->getRoles())) {
             return $this->getEmployeePlanning($user);
-
-
+        }
+        
+        return [];
     }
-
-    /**
-     *  Récupère le planning d'un employé
-     * @param User $user
-     * @return array
-     */
-    
-     private function getEmployeePlanning(User $user): array
+    private function getEmployeePlanning(User $user): array
     {
-    $workHours = $this->em->getRepository(WorkHour::class)->findBy(['employee' => $user->getId()]);
-    $unavailabilityHours = $this->em->getRepository(UnavailabilityHour::class)->findBy([
-        'employee' => $user->getId(),
-        'status' => 'Accepted',
-    ]);
-        $planning = [];
+        $workHours = $this->em->getRepository(WorkHour::class)->findBy(['employee' => $user->getId()]);
+        $unavailabilityHours = $this->em->getRepository(UnavailabilityHour::class)->findBy([
+            'employee' => $user->getId(),
+            'status' => 'Accepted',
+        ]);
 
-        foreach ($workHours as $workHour) {
-            $planning[] = [
-                'type' => 'workHour',
-                'start' => $workHour->getStartTime(),
-                'end' => $workHour->getEndTime(),
-                'studio' => $workHour->getStudio(),
-                'employee' => $workHour->getEmployee(),
-                'idEvent' => $workHour->getId(),
-            ];
-        }
-
-        foreach ($unavailabilityHours as $unavailabilityHour) {
-            $planning[] = [
-                'type' => 'unavailabilityHour',
-                'start' => $unavailabilityHour->getStartTime(),
-                'end' => $unavailabilityHour->getEndTime(),
-                'employee' => $unavailabilityHour->getEmployee(),
-                'idEvent' => $unavailabilityHour->getId(),
-            ];
-        }
-
-        return $planning;
+        return $this->createPlanning($workHours, $unavailabilityHours);
     }
 
-    /**
-     * Récupère le planning de tout les employés d'une entreprise
-     * @param User $user
-     * @return array
-     */
     private function getPrestaPlanning(User $user): array
     {
         $studios = $user->getCompany()->getStudios();
@@ -99,7 +60,7 @@ class PlanningProvider implements ProviderInterface
                 $workHours->add($workHour);
             }
         }
-        
+
         $unavailabilityHours = new ArrayCollection();
         foreach ($users as $user) {
             foreach ($user->getUnavailabilityHours() as $unavailabilityHour) {
@@ -109,9 +70,21 @@ class PlanningProvider implements ProviderInterface
             }
         }
 
+        return $this->createPlanning($workHours, $unavailabilityHours);
+    }
+    private function createPlanning(iterable $workHours, iterable $unavailabilityHours): array
+    {
         $planning = [];
 
         foreach ($workHours as $workHour) {
+            $hasUnavailability = false;
+            foreach ($unavailabilityHours as $unavailabilityHour) {
+                if ($this->isOverlapping($workHour, $unavailabilityHour)) {
+                    $hasUnavailability = true;
+                    break;
+                }
+            }
+
             $planning[] = [
                 'type' => 'workHour',
                 'start' => $workHour->getStartTime(),
@@ -119,19 +92,16 @@ class PlanningProvider implements ProviderInterface
                 'studio' => $workHour->getStudio(),
                 'employee' => $workHour->getEmployee(),
                 'idEvent' => $workHour->getId(),
-            ];
-        }
-
-        foreach ($unavailabilityHours as $unavailabilityHour) {
-            $planning[] = [
-                'type' => 'unavailabilityHour',
-                'start' => $unavailabilityHour->getStartTime(),
-                'end' => $unavailabilityHour->getEndTime(),
-                'employee' => $unavailabilityHour->getEmployee(),
-                'idEvent' => $unavailabilityHour->getId(),
+                'hasUnavailabilityHours' => $hasUnavailability,
             ];
         }
 
         return $planning;
+    }
+    private function isOverlapping(WorkHour $workHour, UnavailabilityHour $unavailabilityHour): bool
+    {
+        return $workHour->getStartTime() < $unavailabilityHour->getEndTime() &&
+               $workHour->getEndTime() > $unavailabilityHour->getStartTime()
+               && $workHour->getEmployee() === $unavailabilityHour->getEmployee();
     }
 }
