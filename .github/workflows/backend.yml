@@ -3,8 +3,8 @@ name: Backend tests
 on:
   workflow_call:
 
-jobs:
-  prepare-env-file:
+jobs: 
+  install-back-dependencies:
     environment: BACK_END
     env:
       APP_ENV: test
@@ -14,38 +14,6 @@ jobs:
       JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
       JWT_PASSPHRASE: ""
       MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Create .env file
-        run: touch ./server/.env.local
-      
-      - name: Add git env variables
-        run: |
-          echo APP_ENV=$APP_ENV >> ./server/.env.local
-          echo DATABASE_URL=$DATABASE_URL >> ./server/.env.local
-          echo CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN >> ./server/.env.local
-          echo JWT_SECRET_KEY=$JWT_SECRET_KEY >> ./server/.env.local
-          echo JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY >> ./server/.env.local
-          echo JWT_PASSPHRASE=$JWT_PASSPHRASE  >> ./server/.env.local
-          echo MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN >> ./server/.env.local
-          echo APP_SECRET=${{ secrets.APP_SECRET }} >> ./server/.env.local
-          echo INSEE_API_KEY=${{ secrets.INSEE_API_KEY }} >> ./server/.env.local
-          echo INSEE_API_URL=${{ secrets.INSEE_API_URL }} >> ./server/.env.local
-          echo MAILER_DSN=${{ secrets.MAILER_DSN }} >> ./server/.env.local
-      
-      - name: Cache env file
-        uses: actions/cache@v2
-        with:
-          path: ./server/.env.local
-          key: env-${{ runner.os }}
-          restore-keys: |
-            env-${{ runner.os }}
-
-  install-back-dependencies:
     needs: prepare-env-file
     runs-on: ubuntu-latest
     steps:
@@ -56,12 +24,23 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2.18"
-
-      - name: Restore env file
-        uses: actions/cache@v2
-        with:
-          path: ./server/.env.local
-          key: env-${{ runner.os }}
+      
+      - name: Create .env file
+        run: touch ./server/.env.local
+      
+      - name: Add git env variables
+        run: |
+          echo APP_ENV=$APP_ENV >> ./server/.env.local
+          echo APP_SECRET=${{ secrets.APP_SECRET }} >> ./server/.env.local
+          echo DATABASE_URL=$DATABASE_URL >> ./server/.env.local
+          echo CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN >> ./server/.env.local
+          echo JWT_SECRET_KEY=$JWT_SECRET_KEY >> ./server/.env.local
+          echo JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY >> ./server/.env.local
+          echo JWT_PASSPHRASE=$JWT_PASSPHRASE  >> ./server/.env.local
+          echo MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN >> ./server/.env.local
+          echo INSEE_API_KEY=${{ secrets.INSEE_API_KEY }} >> ./server/.env.local
+          echo INSEE_API_URL=${{ secrets.INSEE_API_URL }} >> ./server/.env.local
+          echo MAILER_DSN=${{ secrets.MAILER_DSN }} >> ./server/.env.local
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
