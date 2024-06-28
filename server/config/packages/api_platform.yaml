@@ -1,4 +1,15 @@
 api_platform:
+    defaults:
+        pagination_enabled: true
+        pagination_items_per_page: 30
+
+        pagination_client_enabled: true
+        pagination_client_items_per_page: true
+    collection:
+            pagination:
+                enabled_parameter_name: pagination
+                items_per_page_parameter_name: itemsPerPage
+                page_parameter_name: page
     swagger:
         api_keys:
             apiKey:

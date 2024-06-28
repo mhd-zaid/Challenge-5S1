@@ -27,8 +27,8 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
             security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
         ),
         new SoftDelete(
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
-            security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
+            security: "is_granted('ROLE_PRESTA') or is_granred('ROLE_EMPLOYEE')",
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
         )    
     ],
 )]
@@ -59,6 +59,7 @@ class UnavailabilityHour
     #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
     #[Assert\NotNull(message: "Le champ 'employee' ne peut pas être nul.")]
     #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
+    #[ApiFilter(SearchFilter::class, properties: ['employee' => 'exact'])]
     private ?User $employee = null;
 
     #[ORM\Column]
