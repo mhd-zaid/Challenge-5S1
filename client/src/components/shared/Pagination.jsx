@@ -10,7 +10,7 @@ const Pagination = ({ page, itemsPerPage, totalItems, onPageChange, onItemsPerPa
   return (
     <Box mt={4} display="flex" justifyContent="space-between" alignItems="center">
       <Select value={itemsPerPage} onChange={(e) => onItemsPerPageChange(Number(e.target.value))} width="fit-content">
-        <option value={1}>1</option>
+        <option value={5}>5</option>
         <option value={10}>10</option>
         <option value={20}>20</option>
       </Select>

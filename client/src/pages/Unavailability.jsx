@@ -270,7 +270,7 @@ const Unavailability = () => {
                     requests={pendingRequests}
                     onActionClick={handleActionClick}
                     user={user}
-                    itemsPer={itemsPer}
+                    itemsPerPage={itemsPerPage}
                     page={pagePending}
                     totalItems={totalItems}
                     onPageChange={handlePageChange}

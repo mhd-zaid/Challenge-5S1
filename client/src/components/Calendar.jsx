@@ -7,9 +7,7 @@ import dayjs from 'dayjs';
 
 const Calendar = ({ user, plannings, setEvent, get_plannings }) => {
   const handleEventClick = (clickInfo) => {
-    if(clickInfo.event.extendedProps.type !== 'unavailabilityHour') {
       setEvent(clickInfo.event);
-    }
   };
 
   const handleDateSelect = (selectInfo) => {
@@ -34,7 +32,7 @@ const Calendar = ({ user, plannings, setEvent, get_plannings }) => {
         right: 'timeGridWeek,timeGridDay',
       }}
       allDaySlot={false}
-      eventClick={user.roles.includes('ROLE_PRESTA') ? handleEventClick : null}
+      eventClick={handleEventClick}
       eventContent={renderEventContent}
       dateClick={user.roles.includes('ROLE_PRESTA') ? handleDateSelect : null}
       selectMirror={true}

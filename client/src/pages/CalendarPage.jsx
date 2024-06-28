@@ -33,6 +33,7 @@ const CalendarPage = () => {
           extendedProps: {
             employeeFullName: `${planning.employee.firstname} ${planning.employee.lastname}`,
             studioName: `${planning.studio.name}`,
+            studioAdress: `${planning.studio.address}`,
             startTime: planning.start.split('T')[1].split('+')[0],
             endTime: planning.end.split('T')[1].split('+')[0],
             type: planning.type,
@@ -63,6 +64,7 @@ const CalendarPage = () => {
       const data = await response.json();
       setUsers(data.users['hydra:member']);
       setStudios(data.studios['hydra:member']);
+      console.log(data)
     } catch (error) {
       toast({
         title: 'Erreur de chargement',
@@ -107,7 +109,8 @@ const CalendarPage = () => {
             icon={<RepeatIcon />}
             aria-label="Recharger le planning"
             mb={4}
-          />          <Calendar
+          />
+          <Calendar
             user={user}
             plannings={filteredPlannings}
             setEvent={setEvent}

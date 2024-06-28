@@ -5,12 +5,14 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import WorkHourService from '../../services/WorkHourService';
+import { useAuth } from '../../context/AuthContext';
 
 const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, studios, get_plannings, toast }) => {
   const { register, handleSubmit, setValue, reset, getValues, watch, formState: { errors } } = useForm();
-
+  const {user} = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const selectedStudio = watch('studio');
+  const isEmployee = user.roles.includes('ROLE_EMPLOYEE');
 
   useEffect(() => {
     if (event && event.startStr) {
@@ -26,6 +28,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
 
   const studioOpeningTimes = studios.find(studio => studio['@id'] === selectedStudio)?.studioOpeningTimes.find(time => time.day === new Date(event?.start).getDay());
   const hoursOpeningTime = studioOpeningTimes ? `Ouvert de ${studioOpeningTimes.startTime.split('T')[1].slice(0, 5)} à ${studioOpeningTimes.endTime.split('T')[1].slice(0, 5)}` : 'Studio fermé ce jour-là';
+
   const onSubmit = async (data) => {
     setIsLoading(true);
     const startDay = event && event.startStr ? getValues('day') : event.start.split('T')[0] ;
@@ -158,74 +161,99 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
         <ModalCloseButton />
         <ModalBody>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <FormControl mb={4} isInvalid={errors.startTime}>
-              <FormLabel>Heure de début</FormLabel>
-              <Input
-                type="time"
-                {...register('startTime', { required: 'Heure de début est requise' })}
-              />
-              {errors.startTime && <p>{errors.startTime.message}</p>}
-            </FormControl>
-            <FormControl mb={4} isInvalid={errors.endTime}>
-              <FormLabel>Heure de fin</FormLabel>
-              <Input
-                type="time"
-                {...register('endTime', {
-                  required: 'Heure de fin est requise',
-                  validate: (value) => {
-                    const startTime = getValues('startTime');
-                    if (startTime && value <= startTime) {
-                      return "L'heure de fin doit être après l'heure de début";
-                    }
-                  }
-                })}
-              />
-              {errors.endTime && <p>{errors.endTime.message}</p>}
-            </FormControl>
-            <FormControl mb={4} isInvalid={errors.employee}>
-              <FormLabel>Utilisateur</FormLabel>
-              <Select
-                {...register('employee', { required: 'Utilisateur est requis' })}
-                placeholder="Sélectionnez un utilisateur"
-              >
-                {users.map((user) => (
-                  <option key={user['@id']} value={user['@id']}>
-                    {user.lastname} {user.firstname}
-                  </option>
-                ))}
-              </Select>
-              {errors.employee && <p>{errors.employee.message}</p>}
-            </FormControl>
-            <FormControl mb={4} isInvalid={errors.studio}>
-              <FormLabel>Studio</FormLabel>
-              <Select
-                {...register('studio', { required: 'Studio est requis' })}
-                placeholder="Sélectionnez un studio"
-              >
-                {studios.map((studio) => (
-                  <option key={studio.id} value={studio['@id']}>
-                    {studio.name}
-                  </option>
-                ))}
-              </Select>
-              {selectedStudio && (
-            <Text>
-              {hoursOpeningTime}
-            </Text>
-      )}
-              {errors.studio && <p>{errors.studio.message}</p>}
-            </FormControl>
+            {!isEmployee && (
+              <>
+                <FormControl mb={4} isInvalid={errors.startTime}>
+                  <FormLabel>Heure de début</FormLabel>
+                  <Input
+                    type="time"
+                    {...register('startTime', { required: 'Heure de début est requise' })}
+                  />
+                  {errors.startTime && <p>{errors.startTime.message}</p>}
+                </FormControl>
+                <FormControl mb={4} isInvalid={errors.endTime}>
+                  <FormLabel>Heure de fin</FormLabel>
+                  <Input
+                    type="time"
+                    {...register('endTime', {
+                      required: 'Heure de fin est requise',
+                      validate: (value) => {
+                        const startTime = getValues('startTime');
+                        if (startTime && value <= startTime) {
+                          return "L'heure de fin doit être après l'heure de début";
+                        }
+                      }
+                    })}
+                  />
+                  {errors.endTime && <p>{errors.endTime.message}</p>}
+                </FormControl>
+                <FormControl mb={4} isInvalid={errors.employee}>
+                  <FormLabel>Utilisateur</FormLabel>
+                  <Select
+                    {...register('employee', { required: 'Utilisateur est requis' })}
+                    placeholder="Sélectionnez un utilisateur"
+                  >
+                    {users.map((user) => (
+                      <option key={user['@id']} value={user['@id']}>
+                        {user.lastname} {user.firstname}
+                      </option>
+                    ))}
+                  </Select>
+                  {errors.employee && <p>{errors.employee.message}</p>}
+                </FormControl>
+                <FormControl mb={4} isInvalid={errors.studio}>
+                  <FormLabel>Studio</FormLabel>
+                  <Select
+                    {...register('studio', { required: 'Studio est requis' })}
+                    placeholder="Sélectionnez un studio"
+                  >
+                    {studios.map((studio) => (
+                      <option key={studio.id} value={studio['@id']}>
+                        {studio.name}
+                      </option>
+                    ))}
+                  </Select>
+                  {selectedStudio && (
+                    <Text>
+                      {hoursOpeningTime}
+                    </Text>
+                  )}
+                  {errors.studio && <p>{errors.studio.message}</p>}
+                </FormControl>
+              </>
+            )}
+            {isEmployee && (
+              <>
+                <Box mb={4}>
+                  <Text>Date de début : {event?.start && new Date(event.start).toLocaleDateString()}</Text>
+                </Box>
+                <Box mb={4}>
+                  <Text>Heure de début : {event?.extendedProps.startTime}</Text>
+                </Box>
+                <Box mb={4}>
+                  <Text>Heure de fin : {event?.extendedProps.endTime}</Text>
+                </Box>
+                <Box mb={4}>
+                  <Text>Studio : {event?.extendedProps.studioName}</Text>
+                </Box>
+                <Box mb={4}>
+                  <Text> Address : {event?.extendedProps.studioAdress}</Text>
+                </Box>
+              </>
+            )}
             <ModalFooter>
               <Button mr={3} onClick={onClose} isDisabled={isLoading}>
                 Fermer
               </Button>
-              <Button type="submit" isLoading={isLoading}>
-                {event?.extendedProps?.eventId ? 'Modifier' : 'Créer'}
-              </Button>
-              {event?.extendedProps?.eventId && (
+              {!isEmployee && (
+                <Button type="submit" isLoading={isLoading}>
+                  {event?.extendedProps?.eventId ? 'Modifier' : 'Créer'}
+                </Button>
+              )}
+              {event?.extendedProps?.eventId && !isEmployee && (
                 <Box ml="4">
                   <Button onClick={handleDeleteEvent} isLoading={isLoading}>
-                  Supprimer
+                    Supprimer
                   </Button>
                 </Box>
               )}
