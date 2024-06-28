@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, useToast } from '@chakra-ui/react';
+import { Box, background, border, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import PlanningService from '../services/planningService';
 import CompanyService from '../services/CompanyService';
@@ -21,36 +21,24 @@ const CalendarPage = () => {
   const get_plannings = async () => {
     await PlanningService.get_plannings(token).then(response => response.json())
       .then(data => {
+        console.log(data['hydra:member'])
         const mappedData = data['hydra:member'].map(planning => {
-            if (planning.type === 'unavailabilityHour') {
-              return {
-                start: planning.start.split('+')[0],
-                end: planning.end.split('+')[0],
-                extendedProps: {
-                  employeeFullName: `${planning.employee.firstname} ${planning.employee.lastname}`,
-                  startTime: planning.start.split('T')[1].split('+')[0],
-                  endTime: planning.end.split('T')[1].split('+')[0],
-                  type: planning.type,
-                  eventId: planning.idEvent,
-                  employee: planning.employee['@id'],
-                },
-              };
-            } else {
-              return {
-                start: planning.start.split('+')[0],
-                end: planning.end.split('+')[0],
-                extendedProps: {
-                    employeeFullName : `${planning.employee.firstname} ${planning.employee.lastname}`,
-                    studioName: `${planning.studio.name}`,
-                    startTime: planning.start.split('T')[1].split('+')[0],
-                    endTime: planning.end.split('T')[1].split('+')[0],
-                    type: planning.type,
-                    eventId: planning.idEvent,
-                    employee: planning.employee['@id'],
-                    studio: planning.studio['@id'],
-                }
-              };
+          return {
+            start: planning.start.split('+')[0],
+            end: planning.end.split('+')[0],
+            backgroundColor: planning.hasUnavailabilityHours ? 'red' : 'green',
+            borderColor: planning.hasUnavailabilityHours ? 'red' : 'green',
+            extendedProps: {
+              employeeFullName: `${planning.employee.firstname} ${planning.employee.lastname}`,
+              studioName: `${planning.studio.name}`,
+              startTime: planning.start.split('T')[1].split('+')[0],
+              endTime: planning.end.split('T')[1].split('+')[0],
+              type: planning.type,
+              eventId: planning.idEvent,
+              employee: planning.employee['@id'],
+              studio: planning.studio['@id'],
             }
+          };
           })
         setPlannings(mappedData);
       });

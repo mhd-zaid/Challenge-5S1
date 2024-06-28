@@ -44,7 +44,7 @@ class Studio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'company:read', 'planning:read', 'user:read:presta', 'reservation:read', 'company:read:presta'])]
+    #[Groups(['studio:read', 'company:read', 'planning:read', 'user:read:presta', 'reservation:read', 'company:read:presta', 'workHour:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $name = null;

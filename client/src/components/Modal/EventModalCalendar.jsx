@@ -67,7 +67,8 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
 
     if (event?.extendedProps?.eventId) {
       await WorkHourService.update_work_hour(token, event.extendedProps.eventId, formData)
-        .then(response => {
+        .then(async (response) => {
+          const res = await response.json()
           if (response.status === 200) {
             toast({
               title: 'Work hour updated successfully',
@@ -75,7 +76,15 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
               duration: 3000,
               isClosable: true,
             });
-          } else {
+          } else if(response.status === 422) {
+            toast({
+              title: res['hydra:description'],
+              status: 'error',
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+          else {
             toast({
               title: 'An error occurred',
               status: 'error',
@@ -86,7 +95,8 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
         }).then(get_plannings).then(onClose);
     } else {
       await WorkHourService.create_work_hour(token, formData)
-        .then(response => {
+        .then(async (response) => {
+          const res = await response.json()
           if (response.status === 201) {
             toast({
               title: 'Work hour created successfully',
@@ -94,7 +104,15 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
               duration: 3000,
               isClosable: true,
             });
-          } else {
+          }else if(response.status === 422) {
+            toast({
+              title: res['hydra:description'],
+              status: 'error',
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+           else {
             toast({
               title: 'An error occurred',
               status: 'error',

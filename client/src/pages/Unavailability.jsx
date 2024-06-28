@@ -53,10 +53,7 @@ const Unavailability = () => {
 
   const fetchRequests = async () => {
     try {
-      setIsRequestLoading(true);
-
-      console.log(selectedUser)
-  
+      setIsRequestLoading(true);  
       const [pendingResponse, historyResponse] = await Promise.all([
         UnavailabilityService.get_unavailabilities(token, ['Pending'], pagePending, itemsPerPage, selectedUser),
         UnavailabilityService.get_unavailabilities(token, ['Accepted', 'Rejected'], pageHistorical, itemsPerPageHistorical, selectedUser),
@@ -112,7 +109,6 @@ const Unavailability = () => {
     );
     const data = await response.json();
     setUsers(data.users['hydra:member']);
-    console.log(data.users['hydra:member'])
   };
 
   const handleSubmit = async formData => {
