@@ -27,7 +27,7 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
             security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
         ),
         new SoftDelete(
-            security: "is_granted('ROLE_PRESTA') or is_granred('ROLE_EMPLOYEE')",
+            security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_EMPLOYEE')",
             securityPostDenormalize: "is_granted('AUTHORIZE', object)"
         )    
     ],
