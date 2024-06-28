@@ -18,6 +18,7 @@ jobs:
       INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
       INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
       MAILER_DSN: "${{ secrets.MAILER_DSN }}"
+      FRONTEND_URL: "${{ vars.FRONTEND_URL }}"
 
     runs-on: ubuntu-latest
     steps:
@@ -45,6 +46,7 @@ jobs:
           echo INSEE_API_KEY=$INSEE_API_KEY
           echo INSEE_API_URL=$INSEE_API_URL
           echo MAILER_DSN=$MAILER_DSN
+          echo FRONTEND_URL=$FRONTEND_URL >> ./server/.env.local
       
       - name: copy .env.local to .env.test.local & .env
         run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env
@@ -87,6 +89,7 @@ jobs:
       INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
       INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
       MAILER_DSN: "${{ secrets.MAILER_DSN }}"
+      FRONTEND_URL: "${{ vars.FRONTEND_URL }}"
 
     needs: install-back-dependencies
     runs-on: ubuntu-latest
@@ -123,6 +126,7 @@ jobs:
           echo INSEE_API_KEY=$INSEE_API_KEY
           echo INSEE_API_URL=$INSEE_API_URL
           echo MAILER_DSN=$MAILER_DSN
+          echo FRONTEND_URL=$FRONTEND_URL >> ./server/.env.local
       
       - name: copy .env.local to .env.test.local & .env
         run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env
