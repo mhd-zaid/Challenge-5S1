@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Spinner, useToast } from '@chakra-ui/react';
+import { Box, Spinner, useToast, IconButton } from '@chakra-ui/react';
+import { RepeatIcon } from '@chakra-ui/icons';
 import PlanningService from '../services/planningService';
 import CompanyService from '../services/CompanyService';
 import { useAuth } from '../context/AuthContext';
@@ -101,8 +102,12 @@ const CalendarPage = () => {
               setSelectedFilterUser={setSelectedFilterUser}
             />
           )}
-          <Button onClick={get_plannings} mb={4}>Recharger le planning</Button>
-          <Calendar
+          <IconButton
+            onClick={get_plannings}
+            icon={<RepeatIcon />}
+            aria-label="Recharger le planning"
+            mb={4}
+          />          <Calendar
             user={user}
             plannings={filteredPlannings}
             setEvent={setEvent}
