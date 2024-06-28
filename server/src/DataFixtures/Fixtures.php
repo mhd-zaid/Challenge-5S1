@@ -226,6 +226,9 @@ class Fixtures extends Fixture
     private function addressHandler($object): object
     {
         $address = $this->fetchAddress(rand(1, 50));
+        if(!$object instanceof Company) {
+            $object->setAddress($address['address']);
+        }
         $object->setZipCode($address['zipCode']);
         $object->setCity($address['city']);
 
