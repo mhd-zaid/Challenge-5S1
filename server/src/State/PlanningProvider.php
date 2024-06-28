@@ -4,21 +4,14 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\Studio;
 use App\Entity\UnavailabilityHour;
 use App\Entity\User;
 use App\Entity\WorkHour;
-use App\Repository\StudioRepository;
-use App\Repository\UnavailabilityHourRepository;
-use App\Repository\UserRepository;
-use App\Repository\WorkHourRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Entity;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Bundle\SecurityBundle\Security;
-use App\ApiResource\Planning;
 
 class PlanningProvider implements ProviderInterface
 {
