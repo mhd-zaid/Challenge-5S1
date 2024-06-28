@@ -4,10 +4,8 @@ namespace App\Tests;
 
 use App\Entity\Company;
 use App\Entity\User;
-use App\EventSubscriber\CompanyCreationSubscriber;
-use Doctrine\Common\EventSubscriber;
+use App\EventSubscriber\CompanySubscriber;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CompanyUnitTest extends KernelTestCase
 {
@@ -21,7 +19,7 @@ class CompanyUnitTest extends KernelTestCase
 
     public function testCreateCompany(): void
     {
-        $this->createMock(CompanyCreationSubscriber::class);
+        $this->createMock(CompanySubscriber::class);
         $company = new Company();
         $company->setName('Test Company');
         $company->setEmail('test@example.com');
