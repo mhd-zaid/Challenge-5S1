@@ -49,6 +49,24 @@ jobs:
       - name: copy .env.local to .env.test.local & .env
         run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env
 
+      - name: cache env
+        uses: actions/cache@v2
+        with:
+          path: ./server/.env
+          key: env-${{ runner.os }}
+
+      - name: cache env.local
+        uses: actions/cache@v2
+        with:
+          path: ./server/.env.local
+          key: env.local-${{ runner.os }}
+
+      - name: cache env.test.local
+        uses: actions/cache@v2
+        with:
+          path: ./server/.env.test.local
+          key: env.test.local-${{ runner.os }}
+
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
         working-directory: ./server
