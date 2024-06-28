@@ -147,15 +147,6 @@ jobs:
           path: ./server/config/jwt
           key: jwt-${{ runner.os }}
 
-      - name : Use env cache
-        uses: actions/cache@v2
-        with:
-          path: ./server/.env.local
-          key: env-${{ runner.os }}
-      
-      - name: copy env to env.test file
-        run: cp ./server/.env.local ./server/.env.test.local
-
       - name: Create test database
         run: php bin/console d:d:c --env=test
         working-directory: ./server
