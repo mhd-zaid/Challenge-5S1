@@ -14,7 +14,7 @@ jobs:
       JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
       JWT_PASSPHRASE: ""
       MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
-    needs: prepare-env-file
+      
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -40,7 +40,7 @@ jobs:
           echo MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN >> ./server/.env.local
           echo INSEE_API_KEY=${{ secrets.INSEE_API_KEY }} >> ./server/.env.local
           echo INSEE_API_URL=${{ secrets.INSEE_API_URL }} >> ./server/.env.local
-          echo MAILER_DSN=${{ secrets.MAILER_DSN }} >> ./server/.env.local
+          echo "MAILER_DSN=${{ secrets.MAILER_DSN }}" >> ./server/.env.local
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
