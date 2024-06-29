@@ -10,9 +10,9 @@ import {
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
 import ManageAccount from '../../components/Modal/ManageAccount';
+import LineChart from '../../components/LineChart';
 
 const EmployeeProfile = ({user}) => {
-
   return (
     <Box
       pt="80px"
@@ -36,6 +36,9 @@ const EmployeeProfile = ({user}) => {
         </Box>
       </Flex>
       <Stack spacing={4}>
+        <Box p={4} bg="white" shadow="md" borderRadius="md">
+          <LineChart />
+        </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Informations générales

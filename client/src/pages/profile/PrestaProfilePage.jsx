@@ -10,6 +10,7 @@ import {
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
+import BarChart from '@/components/BarChart.jsx';
 
 const PrestaProfile = ({user}) => {
 
@@ -78,6 +79,9 @@ const PrestaProfile = ({user}) => {
                 <Text>Code postal : {studio.zipCode}</Text>
                 <Text>Pays : {studio.country}</Text>
                 <Text>Tel : {studio.phone}</Text>
+                <Box m={4} p={4} bg="white" shadow="md" borderRadius="md">
+                  <BarChart studio={studio} />
+                </Box>
               </Box>
             ))
           )}
