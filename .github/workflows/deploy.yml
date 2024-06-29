@@ -19,9 +19,9 @@ jobs:
       MESSENGER_TRANSPORT_DSN: "${{ vars.MESSENGER_TRANSPORT_DSN }}"
       MAILER_DSN: "${{ secrets.MAILER_DSN }}"
       CORS_ALLOW_ORIGIN: ${{ vars.CORS_ALLOW_ORIGIN }}
-      JWT_SECRET_KEY: "${{ secrets.JWT_SECRET }}"
-      JWT_PUBLIC_KEY: "${{ secrets.JWT_PUBLIC_KEY }}"
-      JWT_PASSPHRASE": ""
+      JWT_SECRET_KEY: "${{ vars.JWT_SECRET }}"
+      JWT_PUBLIC_KEY: "${{ vars.JWT_PUBLIC_KEY }}"
+      JWT_PASSPHRASE: ""
       FRONTEND_URL: ${{ vars.FRONTEND_URL }}
       INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
       INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
