@@ -83,6 +83,28 @@ const FormUser = ({ user, onSubmitForm }) => {
     });
 }
 
+  const handleDelete = async () => {
+    const confirmAction = confirm('Etes-vous sûr de vouloir supprimer cet utilisateur ?');
+    if (!confirmAction) {
+      return;
+    }
+    await fetch(BASE_URL + '/users/' + user['@id'].split('/')[3], {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+      },
+    }).then(() => {
+      onSubmitForm(false);
+      toast({
+        title: 'Utilisateur supprimé',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    });
+
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
@@ -203,6 +225,12 @@ const FormUser = ({ user, onSubmitForm }) => {
           <Flex p={4} gap={4} justifyContent={"end"}>
             <Button bg="black" color='white' isLoading={isSubmitting} type='submit'>
               Enregistrer
+            </Button>
+            <Button bg="black" isLoading={isSubmitting} color='white' onClick={() => {
+              onSubmitForm(true);
+              handleDelete();
+            }}>
+              Supprimer
             </Button>
             <Button variant={"outline"} onClick={() => onSubmitForm(false)}>
               Annuler
