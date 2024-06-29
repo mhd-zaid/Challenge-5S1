@@ -48,7 +48,7 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
   }, []);
 
   async function upsertStudio(data) {
-    const url = studioOpeningTime ? import.meta.env.VITE_BACKEND_BASE_URL + studioOpeningTime['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studio_opening_times`;
+    const url = studioOpeningTime ? import.meta.env.VITE_BACKEND_URL + studioOpeningTime['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studio_opening_times`;
     const method = studioOpeningTime ? 'PATCH' : 'POST';
     const contentType = studioOpeningTime ? 'application/merge-patch+json' : 'application/ld+json';
     const response = await fetch(url, {

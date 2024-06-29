@@ -5,11 +5,11 @@ import {
   Avatar,
   Stack,
   Flex,
-  useColorModeValue,
+  Modal,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
+import ManageAccount from '../../components/Modal/ManageAccount';
 
 const EmployeeProfile = ({user}) => {
 
@@ -32,6 +32,7 @@ const EmployeeProfile = ({user}) => {
           <Text fontSize="lg" color="gray.600">
             {user.email}
           </Text>
+          <ManageAccount />
         </Box>
       </Flex>
       <Stack spacing={4}>

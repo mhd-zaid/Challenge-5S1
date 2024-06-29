@@ -33,7 +33,7 @@ const Navbar = ({ onLogout, menus }) => {
             </MenuButton>
             <MenuList>
               <MenuGroup title='Administration'>
-                <MenuItem onClick={() => {navigate('/admin/control-center');}} display={isAdministrator ? 'block' : 'none'}>Centre de contrôle</MenuItem>
+                <MenuItem onClick={() => {navigate('/admin/control-center');}} display={isAdministrator || isPrestataire ? 'block' : 'none'}>Centre de contrôle</MenuItem>
                 <MenuItem onClick={() => {navigate('/calendar');}} display={isPrestataire ? 'block' : 'none'}>Plannings</MenuItem>
                 <MenuItem onClick={() => {
                   user.roles.includes('ROLE_ADMIN') ? navigate('/admin/control-center'):

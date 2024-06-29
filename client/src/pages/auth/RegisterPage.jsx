@@ -29,7 +29,7 @@ const RegisterPage = () => {
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email,
-        phoneNumber: data.phoneNumber,
+        phone: data.phoneNumber,
         plainPassword: data.password,
       });
       if (response.status === 201) {

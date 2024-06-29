@@ -23,10 +23,22 @@ class UserDenormalizer implements DenormalizerInterface
 
         //Pour le role presta on set en dur role_employee et pour le role usero ou employee on set role_customer
         //Le role admin pourra mettre ce qu'il veut dans la variable roles
-        if($this->security->isGranted('ROLE_PRESTA')){
+
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $user->setPlainPassword('Motdepassee123!!');
+            $roles = [];
+            $roles[] = $data['roles'];
+            $user->setRoles($roles);
+        } 
+        else if($this->security->isGranted('ROLE_PRESTA')){
             $data['roles'] = ['ROLE_EMPLOYEE'];
             $user->setRoles($data['roles']);
-        } else if ($this->security->isGranted('ROLE_USER') || $this->security->isGranted('ROLE_EMPLOYEE')) {
+
+            $user->setCompany($this->security->getUser()->getCompany());
+            $user->setPlainPassword('Motdepassee123!');
+            
+        }  
+        else if ($this->security->isGranted('ROLE_USER') || $this->security->isGranted('ROLE_EMPLOYEE')) {
             $data['roles'] = ['ROLE_CUSTOMER'];
             $user->setRoles($data['roles']);
         }

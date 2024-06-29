@@ -16,7 +16,7 @@ import { useAuth } from '@/context/AuthContext.jsx';
 import { useEffect, useState } from 'react';
 
 const FormStudio = ({studio, onSubmitForm}) => {
-  const { token } = useAuth();
+  const { token, isAdministrator } = useAuth();
   const toast = useToast();
   const {
     handleSubmit,
@@ -37,7 +37,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
     7: { start: null, end: null },
   });
 
-  console.log(studioData);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -55,11 +54,11 @@ const FormStudio = ({studio, onSubmitForm}) => {
       })));
     };
 
-    fetchCompanies();
+    if (isAdministrator) fetchCompanies();
   }, []);
 
   async function upsertStudio(data) {
-    const url = studio ? import.meta.env.VITE_BACKEND_BASE_URL + studio['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studios`;
+    const url = studio ? import.meta.env.VITE_BACKEND_URL + studio['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studios`;
     const method = studio ? 'PATCH' : 'POST';
     const contentType = studio ? 'application/merge-patch+json' : 'application/ld+json';
 

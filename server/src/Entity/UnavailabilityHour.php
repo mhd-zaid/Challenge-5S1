@@ -24,7 +24,7 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
         new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
         new Patch(
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
-            security: "object.getStatus() !== 'Accepted' && object.getStatus() !== 'Rejected'"
+            security: "object.getStatus() !== 'Rejected'"
         ),
         new SoftDelete(
             security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_EMPLOYEE')",

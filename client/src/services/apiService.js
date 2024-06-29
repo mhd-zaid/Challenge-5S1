@@ -1,8 +1,9 @@
 export const apiService = {
 
-    async getAll(token, entity, page){
+    async getAll(token, entity, page = 1, itemsPerPage = 10){
         page = page || 1;
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/${entity}?page=${page}`,
+        itemsPerPage = itemsPerPage || 10;
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/${entity}?page=${page}&itemsPerPage=${itemsPerPage}`, 
           {
               method: 'GET',
               headers: {
