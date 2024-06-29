@@ -32,11 +32,11 @@ const EmployeeProfile = ({user}) => {
           <Text fontSize="lg" color="gray.600">
             {user.email}
           </Text>
+          <ManageAccount />
         </Box>
       </Flex>
       <Stack spacing={4}>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
-          <ManageAccount />
           <Heading as="h2" size="md" mb={2}>
             Informations générales
           </Heading>

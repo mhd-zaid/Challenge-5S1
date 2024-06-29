@@ -5,6 +5,8 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import ManageAccountForm from '../forms/ManageAccountForm';
+import { EditIcon } from '@chakra-ui/icons';
+import ModifyPassword from '../forms/ModifyPassword';
 
 const ManageAccount = () => {
   const { register, handleSubmit, setValue, reset, getValues, watch, formState: { errors } } = useForm();
@@ -15,7 +17,8 @@ const ManageAccount = () => {
 
   return (
     <>
-      <Button onClick={openModal}>Ouvrir la gestion de compte</Button>
+      <EditIcon boxSize={6} color="blue.500" cursor="pointer" onClick={openModal} />
+
       <Modal isOpen={isOpen} onClose={closeModal}>
         <ModalOverlay />
         <ModalContent>
@@ -32,6 +35,9 @@ const ManageAccount = () => {
               <TabPanels>
                 <TabPanel>
                   <ManageAccountForm close={closeModal} />
+                </TabPanel>
+                <TabPanel>
+                  <ModifyPassword close={closeModal} />
                 </TabPanel>
               </TabPanels>
             </Tabs>
