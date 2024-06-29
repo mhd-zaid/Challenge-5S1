@@ -23,7 +23,7 @@ import {
   ModalBody,
   Flex, MenuItem, Menu, MenuButton, MenuList, Text,
 } from '@chakra-ui/react';
-import Pagination from '@/components/Pagination.jsx';
+// import Pagination from '@/components/Pagination.jsx';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { Icon } from '@iconify/react';
 import FormCompany from '@/components/forms/FormCompany.jsx';
@@ -33,6 +33,8 @@ import FormCompanyRequest from '@/components/forms/FormCompanyRequest.jsx';
 import { apiService } from '@/services/apiService.js';
 import FormStudioOpeningTime from '@/components/forms/FormStudioOpeningTime.jsx';
 import useCustomDate from '@/hooks/useCustomDate.js';
+import Pagination from '@/components/shared/Pagination';
+import { set } from 'react-hook-form';
 
 const AdminControlCenterPage = () => {
   const { user, token, isAdministrator, isPrestataire } = useAuth();
@@ -54,12 +56,103 @@ const AdminControlCenterPage = () => {
     'ROLE_CUSTOMER': 'Client',
   };
 
-  useEffect(() => {
-    fetchData(dataType, currentPage);
-  }, [dataType, currentPage]);
+  const [paginationStudio, setPaginationStudio] = useState({
+    page: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+  });
 
-  const fetchData = async (type, page) => {
-    const response = await apiService.getAll(token, type, page)
+  const [paginationUser, setPaginationUser] = useState({
+    page: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+  });
+
+  const [paginationOpeningTime, setPaginationOpeningTime] = useState({
+    page: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+  });
+
+  const [paginationCompany, setPaginationCompany] = useState({
+    page: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+  });
+
+  useEffect(() => {
+    if(isAdministrator) {
+    fetchData('companies', paginationCompany.page, paginationCompany.itemsPerPage);
+    }
+  }, [paginationCompany.itemsPerPage, paginationCompany.page]);
+
+  const handlePageChangeCompany = (page) => {
+    setPaginationCompany({ ...paginationCompany, page });
+  };
+
+  const handleItemsPerPageChangeCompany = (itemsPerPage) => {
+    setPaginationCompany({ 
+        ...paginationCompany, 
+        itemsPerPage,
+        page: 1,
+      });
+  };
+
+  useEffect(() => {
+    fetchData('users', paginationUser.page, paginationUser.itemsPerPage);
+  }, [paginationUser.itemsPerPage, paginationUser.page]);
+
+  const handlePageChangeUser = (page) => {
+    setPaginationUser({ ...paginationUser, page });
+  };
+
+  const handleItemsPerPageChangeUser = (itemsPerPage) => {
+    setPaginationUser({ 
+        ...paginationUser, 
+        itemsPerPage,
+        page: 1,
+      });
+  };
+
+  useEffect(() => {
+    fetchData('studio_opening_times', paginationOpeningTime.page, paginationOpeningTime.itemsPerPage);
+  }, [paginationOpeningTime.itemsPerPage, paginationOpeningTime.page]);
+
+  const handlePageChangeOpeningTimes = (page) => {
+    setPaginationOpeningTime({ ...paginationOpeningTime, page });
+  };
+
+  const handleItemsPerPageChangeOpeningTimes = (itemsPerPage) => {
+    setPaginationOpeningTime({ 
+        ...paginationOpeningTime, 
+        itemsPerPage,
+        page: 1,
+      });
+  };
+
+  useEffect(() => {
+    fetchData('studios', paginationStudio.page, paginationStudio.itemsPerPage);
+  }, [paginationStudio.itemsPerPage, paginationStudio.page]);
+
+  const handlePageChangeStudio = (page) => {
+    setPaginationStudio({ ...paginationStudio, page });
+  };
+
+  const handleItemsPerPageChangeStudio = (itemsPerPage) => {
+    setPaginationStudio({ 
+        ...paginationStudio, 
+        itemsPerPage,
+        page: 1,
+      });
+  };
+
+
+  // useEffect(() => {
+  //   fetchData(dataType, currentPage);
+  // }, [dataType, currentPage]);
+
+  const fetchData = async (type, page, itemsPerPage) => {
+    const response = await apiService.getAll(token, type, page, itemsPerPage);
     const data = await response.json();
 
     if (type === 'companies') {
@@ -67,10 +160,22 @@ const AdminControlCenterPage = () => {
         ...company,
         createdAt: new Date(company.createdAt).toLocaleDateString(),
       })))
+      setPaginationCompany({
+        ...paginationCompany,
+        totalItems: data['hydra:totalItems'],
+      });
     } else if (type === 'studios') {
       setStudios(data['hydra:member']);
+      setPaginationStudio({
+        ...paginationStudio,
+        totalItems: data['hydra:totalItems'],
+      });
     } else if (type === 'users') {
       setUsers(data['hydra:member']);
+      setPaginationUser({
+        ...paginationUser,
+        totalItems: data['hydra:totalItems'],
+      });
     } else if (type === 'studio_opening_times') {
       setStudioOpeningTimes(data['hydra:member'].map(
         (studioOpeningTime) => ({
@@ -79,6 +184,10 @@ const AdminControlCenterPage = () => {
           endTime: dayjs.utc(studioOpeningTime.endTime),
         })
       ));
+      setPaginationOpeningTime({
+        ...paginationOpeningTime,
+        totalItems: data['hydra:totalItems'],
+      })
     }
     const view = data['hydra:view'];
     if (view) {
@@ -182,7 +291,13 @@ const AdminControlCenterPage = () => {
                 ))}
               </Tbody>
             </Table>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <Pagination 
+              page={paginationCompany.page}
+              itemsPerPage={paginationCompany.itemsPerPage}
+              totalItems={paginationCompany.totalItems}
+              onPageChange={handlePageChangeCompany}
+              onItemsPerPageChange={handleItemsPerPageChangeCompany}
+            />
             <Box my={4}>
               <Flex gap={4}>
                 <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
@@ -238,7 +353,13 @@ const AdminControlCenterPage = () => {
                 ))}
               </Tbody>
             </Table>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <Pagination 
+              page={paginationStudio.page}
+              itemsPerPage={paginationStudio.itemsPerPage}
+              totalItems={paginationStudio.totalItems}
+              onPageChange={handlePageChangeStudio}
+              onItemsPerPageChange={handleItemsPerPageChangeStudio}
+             />
           </TabPanel>
 
           {/*Gestion des utilisateurs*/}
@@ -275,7 +396,13 @@ const AdminControlCenterPage = () => {
                 ))}
               </Tbody>
             </Table>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <Pagination 
+              page={paginationUser.page}
+              itemsPerPage={paginationUser.itemsPerPage}
+              totalItems={paginationUser.totalItems}
+              onPageChange={handlePageChangeUser}
+              onItemsPerPageChange={handleItemsPerPageChangeUser}
+            />
           </TabPanel>
 
           {/*Horaire d'ouverture*/}
@@ -322,7 +449,13 @@ const AdminControlCenterPage = () => {
                 ))}
               </Tbody>
             </Table>
-            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <Pagination 
+              page={paginationOpeningTime.page}
+              itemsPerPage={paginationOpeningTime.itemsPerPage}
+              totalItems={paginationOpeningTime.totalItems}
+              onPageChange={handlePageChangeOpeningTimes}
+              onItemsPerPageChange={handleItemsPerPageChangeOpeningTimes}
+            />
             <Box my={4}>
               <Flex gap={4}>
                 <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
