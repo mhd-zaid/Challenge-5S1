@@ -7,9 +7,10 @@ import {
   Button,
   VStack,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../context/authContext';
+import {useAuth} from '../../context/AuthContext';
 
 const ModifyPassword = ({ close }) => {
   const {
@@ -21,19 +22,14 @@ const ModifyPassword = ({ close }) => {
   const toast = useToast();
   const { user, token } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-
   const newPassword = watch('newPassword', '');
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const onSubmit = async (values) => {
     setIsSubmitting(true);
-    setSubmitError('');
-
     try {
-
-      await fetch(`${BASE_URL}/users/${user.id}`, {
+      const response = await fetch(`${BASE_URL}/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/merge-patch+json',
@@ -42,20 +38,21 @@ const ModifyPassword = ({ close }) => {
         body: JSON.stringify({
           plainPassword: values.newPassword,
         }),
-      }).then((response) => {
-
-        if (response.status === 200) {
-          toast({
-            title: 'Mot de passe mis a jour',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-          });
-        }
       });
+
+      if (response.status === 200) {
+        toast({
+          title: 'Mot de passe mis à jour',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        throw new Error('Échec de la mise à jour du mot de passe');
+      }
     } catch (error) {
       toast({
-        title: 'Erreur dans la mise a jour du mot de passe',
+        title: 'Erreur dans la mise à jour du mot de passe',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -107,7 +104,13 @@ const ModifyPassword = ({ close }) => {
         </FormErrorMessage>
       </FormControl>
 
-      <Button type="submit" isLoading={isSubmitting} loadingText="En cours...">
+      <Button
+        w={'full'}
+        type="submit"
+        isLoading={isSubmitting}
+        loadingText="En cours..."
+        spinner={<Spinner size="sm" />}
+      >
         Modifier le mot de passe
       </Button>
     </VStack>
