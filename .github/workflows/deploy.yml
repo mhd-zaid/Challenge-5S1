@@ -49,7 +49,7 @@ jobs:
           echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN" >> server/.env.local
           echo "MAILER_DSN=$MAILER_DSN" >> server/.env.local
           echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN" >> server/.env.local
-          echo "JWT_SECRET_KEY=$JWT
+          echo "JWT_SECRET_KEY=$JWT_SECRET_KEY" >> server/.env.local
           echo "JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY" >> server/.env.local
           echo "JWT_PASSPHRASE=$JWT_PASSPHRASE" >> server/.env.local
           echo "FRONTEND_URL=$FRONTEND_URL" >> server/.env.local
@@ -60,6 +60,7 @@ jobs:
         run: |
           cd server
           composer install
+          php bin/console lexik:jwt:generate-keypair
           cd ..
           
       - name: Set up SSH
