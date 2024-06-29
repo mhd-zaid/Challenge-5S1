@@ -23,7 +23,6 @@ import {
   ModalBody,
   Flex, MenuItem, Menu, MenuButton, MenuList, Text,
 } from '@chakra-ui/react';
-// import Pagination from '@/components/Pagination.jsx';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { Icon } from '@iconify/react';
 import FormCompany from '@/components/forms/FormCompany.jsx';
@@ -34,7 +33,6 @@ import { apiService } from '@/services/apiService.js';
 import FormStudioOpeningTime from '@/components/forms/FormStudioOpeningTime.jsx';
 import useCustomDate from '@/hooks/useCustomDate.js';
 import Pagination from '@/components/shared/Pagination';
-import { set } from 'react-hook-form';
 
 const AdminControlCenterPage = () => {
   const { user, token, isAdministrator, isPrestataire } = useAuth();
@@ -189,27 +187,26 @@ const AdminControlCenterPage = () => {
         totalItems: data['hydra:totalItems'],
       })
     }
-    const view = data['hydra:view'];
-    if (view) {
-      const match = view['hydra:last'].match(/page=(\d+)/);
-      if (match) {
-        setTotalPages(Number(match[1]));
-      }
-    } else {
-      setTotalPages(1);
-    }
+    // const view = data['hydra:view'];
+    // if (view) {
+    //   const match = view['hydra:last'].match(/page=(\d+)/);
+    //   if (match) {
+    //     setTotalPages(Number(match[1]));
+    //   }
+    // } else {
+    //   setTotalPages(1);
+    // }
   };
 
-  const handleFormSubmit = async (hasBeenUpdate) => {
-    if (hasBeenUpdate) {
-      await fetchData(dataType, currentPage);
+  const handleFormSubmit = async (hasBeenSubmitted) => {
+    if (hasBeenSubmitted) {
+      await fetchData(dataType, currentPage).then(() => onClose());
     } else {
       onClose();
     }
   };
 
   const handleView = (data) => {
-    console.log("data", data, dataType)
     setEditData(data);
     onOpen();
   }
@@ -386,9 +383,8 @@ const AdminControlCenterPage = () => {
                           <Icon icon="system-uicons:menu-vertical" fontSize={30} style={{color: "black"}} />
                         </MenuButton>
                         <MenuList>
-                          <MenuItem onClick={() => handleView(person)}>Voir les informations de l'utilisateur</MenuItem>
-                          <MenuItem onClick={() => handleView(person)}>Désactiver l'utilisateur</MenuItem>
-                          <MenuItem onClick={() => handleDelete(person)}>Supprimer</MenuItem>
+                          <MenuItem onClick={() => handleView(person)}>Modifier l'utilisateur</MenuItem>
+                          <MenuItem onClick={() => handleView(person)}>Supprimer l'utilisateur</MenuItem>
                         </MenuList>
                       </Menu>
                     </Td>

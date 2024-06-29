@@ -58,7 +58,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
   }, []);
 
   async function upsertStudio(data) {
-    const url = studio ? import.meta.env.VITE_BACKEND_BASE_URL + studio['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studios`;
+    const url = studio ? import.meta.env.VITE_BACKEND_URL + studio['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studios`;
     const method = studio ? 'PATCH' : 'POST';
     const contentType = studio ? 'application/merge-patch+json' : 'application/ld+json';
 

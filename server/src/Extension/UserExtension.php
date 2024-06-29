@@ -35,6 +35,9 @@ final readonly class UserExtension implements QueryCollectionExtensionInterface
             if ($company !== null) {
                 $queryBuilder->andWhere(sprintf('%s.company = :current_user', $rootAlias));
                 $queryBuilder->setParameter('current_user', $company->getId());
+
+                $queryBuilder->andWhere(sprintf('%s.id != :company_owner', $rootAlias));
+                $queryBuilder->setParameter('company_owner', $company->getOwner()->getId());            
             }
         } else {
             $queryBuilder->andWhere(sprintf('%s.employee = :current_user', $rootAlias));

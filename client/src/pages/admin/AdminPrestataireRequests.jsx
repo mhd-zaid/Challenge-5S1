@@ -69,7 +69,7 @@ const AdminPrestataireRequests = () => {
   }, [token]);
 
   const downloadKbis = (url) => {
-    window.open(import.meta.env.VITE_BACKEND_BASE_URL + url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+    window.open(import.meta.env.VITE_BACKEND_URL + url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
   };
 
   useEffect(() => {
