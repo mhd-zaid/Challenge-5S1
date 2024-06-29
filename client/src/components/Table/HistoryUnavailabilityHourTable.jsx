@@ -33,7 +33,7 @@ const HistoryUnavailabilityHourTable = ({ requests, user, page, itemsPerPage, to
             {user.roles.includes('ROLE_PRESTA') && (
             <Td>
               {request.status == 'Accepted' && (
-                  <Button mr={4} onClick={() => onActionClick('cancel', request['@id'])}>Annuler le congé</Button>
+                  <Button mr={4} onClick={() => onActionClick('reject', request['@id'])}>Annuler le congé</Button>
               )}
             </Td>  
             )}
