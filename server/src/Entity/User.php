@@ -30,7 +30,7 @@ use App\Operation\SoftDelete;
         new SoftDelete(),
         new GetCollection(
             paginationItemsPerPage: 10,
-            security: "is_granted('ROLE_ADMIN')",
+            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESTA')",
         ),
         new Get(
             uriTemplate: '/me',

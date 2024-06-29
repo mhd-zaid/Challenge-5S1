@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import {
   Box,
@@ -22,6 +23,8 @@ const FormUser = ({user, onSubmitForm}) => {
     register,
     formState: { errors, isSubmitting }
   } = useForm({});
+  const [isEditable, setIsEditable] = useState(!user);
+  const [userData, setUserDate] = useState(user);
 
   async function updateUser(data) {
     const response = await fetch(import.meta.env.VITE_BACKEND_BASE_URL + user['@id'], {
@@ -75,6 +78,8 @@ const FormUser = ({user, onSubmitForm}) => {
               {/* Champ Nom */}
               <FormControl isInvalid={errors.lastname} isRequired>
                 <FormLabel htmlFor='lastname'>Nom</FormLabel>
+            {isEditable ? (
+              <>
                 <Input
                   id='lastname'
                   autoFocus={true}
@@ -89,12 +94,18 @@ const FormUser = ({user, onSubmitForm}) => {
                 <FormErrorMessage>
                   {errors.lastname && errors.lastname.message}
                 </FormErrorMessage>
+              </>
+            ) : (
+              <Text>{user?.lastname}</Text>
+            )}
               </FormControl>
             </Box>
             <Box w='50%'>
               {/* Champ Prénom */}
               <FormControl isInvalid={errors.firstname} isRequired>
                 <FormLabel htmlFor='firstname'>Prénom</FormLabel>
+            {isEditable ? (
+              <>
                 <Input
                   id='firstname'
                   placeholder='Entrer votre prénom'
@@ -108,6 +119,10 @@ const FormUser = ({user, onSubmitForm}) => {
                 <FormErrorMessage>
                   {errors.firstname && errors.firstname.message}
                 </FormErrorMessage>
+              </>
+            ) : (
+              <Text>{user?.firstname}</Text>
+            )}
               </FormControl>
             </Box>
           </Flex>
@@ -116,6 +131,8 @@ const FormUser = ({user, onSubmitForm}) => {
               {/* Champ Téléphone Portable */}
               <FormControl isInvalid={errors.phone} mt={4} isRequired>
                 <FormLabel htmlFor='phone'>Téléphone Portable</FormLabel>
+            {isEditable ? (
+              <>
                 <InputGroup>
                   <InputLeftElement>
                     <Icon icon="twemoji:flag-for-flag-france" />
@@ -137,14 +154,18 @@ const FormUser = ({user, onSubmitForm}) => {
                 <FormErrorMessage>
                   {errors.phone && errors.phone.message}
                 </FormErrorMessage>
+              </>
+            ) : (
+              <Text>{user?.phone}</Text>
+            )}
               </FormControl>
             </Box>
             <Box w='50%'>
               {/* Champ Email */}
               <FormControl isInvalid={errors.email} mt={4} isRequired>
-                <Flex alignContent={"center"}>
                   <FormLabel htmlFor='email'>Email</FormLabel>
-                </Flex>
+            {isEditable ? (
+              <>
                 <Input
                   id='email'
                   type='email'
@@ -162,6 +183,10 @@ const FormUser = ({user, onSubmitForm}) => {
                 <FormErrorMessage>
                   {errors.email && errors.email.message}
                 </FormErrorMessage>
+              </>
+            ) : (
+              <Text>{user?.email}</Text>
+            )}
               </FormControl>
             </Box>
           </Flex>

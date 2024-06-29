@@ -8,7 +8,7 @@ import {
   FormErrorMessage, FormHelperText,
   FormLabel, Heading,
   Input,
-  InputGroup, InputLeftElement,
+  InputGroup, InputLeftElement, List, ListItem,
   Select, SimpleGrid,
   Text, Textarea, useToast, VStack,
 } from '@chakra-ui/react';
@@ -27,6 +27,15 @@ const FormStudio = ({studio, onSubmitForm}) => {
   const [companies, setCompanies] = useState([]);
   const [studioData, setStudioData] = useState(studio);
   const [isEditable, setIsEditable] = useState(!studio);
+  const [studioOpeningTimes, setStudioOpeningTimes] = useState({
+    1: { start: null, end: null },
+    2: { start: null, end: null },
+    3: { start: null, end: null },
+    4: { start: null, end: null },
+    5: { start: null, end: null },
+    6: { start: null, end: null },
+    7: { start: null, end: null },
+  });
 
   console.log(studioData);
 
@@ -74,6 +83,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
   }
 
   const onSubmit = async (values) => {
+    console.log("values", values);
     const confirmAction = confirm('Etes-vous sûr de vouloir enregistrer ces modifications ?');
     if (!confirmAction) {
       return;
@@ -128,7 +138,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
 
           {/* Champ Nom du studioData */}
           <FormControl isInvalid={errors.name} mt={4} isRequired={isEditable}>
-            <FormLabel htmlFor='name'>Nom du studioData</FormLabel>
+            <FormLabel htmlFor='name'>Nom du studio</FormLabel>
             {isEditable ? (
               <>
                 <Input
@@ -293,6 +303,48 @@ const FormStudio = ({studio, onSubmitForm}) => {
               <Text>{studioData?.address}</Text>
             )}
           </FormControl>
+
+          {/*Horaire d'ouverture*/}
+          {isEditable ? (
+            Array.from(Object.keys(studioOpeningTimes)).map((day, index) => (
+              <Flex gap={4}>
+                <FormLabel htmlFor={`studioOpeningTimes.${day}.start`}>Ouverture {day}</FormLabel>
+                <FormControl isInvalid={errors[`studioOpeningTimes.${day}.start`]}>
+                  <Input
+                    id={`studioOpeningTimes.${day}.start`}
+                    type='time'
+                    defaultValue={studioData?.studioOpeningTimes[day].start}
+                    {...register(`studioOpeningTimes.${day}.start`, {
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors[`studioOpeningTimes.${day}.start`] && errors[`studioOpeningTimes.${day}.start`].message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={errors[`studioOpeningTimes.${day}.end`]} IsRequired={studioOpeningTimes[day].start}>
+                  <Input
+                    id={`studioOpeningTimes.${day}.end`}
+                    type='time'
+                    defaultValue={studioData?.studioOpeningTimes[day].end}
+                    {...register(`studioOpeningTimes.${day}.end`, {
+                    })}
+                  />
+                  <FormErrorMessage>
+                    {errors[`studioOpeningTimes.${day}.end`] && errors[`studioOpeningTimes.${day}.end`].message}
+                  </FormErrorMessage>
+                </FormControl>
+              </Flex>
+            ))
+          ) : (
+            <List>
+              {studioData?.studioOpeningTimes.map((day, index) => (
+                <ListItem key={index}>
+                  {day.startTime.split('T')[1].split(':')[0]}h{day.startTime.split('T')[1].split(':')[1]} : {day.endTime.split('T')[1].split(':')[0]}h{day.endTime.split('T')[1].split(':')[1]}
+                </ListItem>
+              ))}
+            </List>
+          )}
 
           {isEditable ? (
             <Flex p={4} gap={4} justifyContent={"end"}>

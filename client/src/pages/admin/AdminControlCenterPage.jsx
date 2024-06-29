@@ -31,17 +31,22 @@ import FormStudio from '@/components/forms/FormStudio.jsx';
 import FormUser from '@/components/forms/FormUser.jsx';
 import FormCompanyRequest from '@/components/forms/FormCompanyRequest.jsx';
 import { apiService } from '@/services/apiService.js';
+import FormStudioOpeningTime from '@/components/forms/FormStudioOpeningTime.jsx';
+import useCustomDate from '@/hooks/useCustomDate.js';
 
 const AdminControlCenterPage = () => {
-  const { user, token } = useAuth();
+  const { user, token, isAdministrator, isPrestataire } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [editData, setEditData] = useState(null);
   const [companies, setCompanies] = useState([]);
   const [studios, setStudios] = useState([]);
   const [users, setUsers] = useState([]);
+  const [studioOpeningTimes, setStudioOpeningTimes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [dataType, setDataType] = useState('companies');
+  const dayjs = useCustomDate();
+  const [dataType, setDataType] = useState(isAdministrator ? 'companies' : 'studios');
+  const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   const roleNames = {
     'ROLE_ADMIN': 'Administrateur',
     'ROLE_PRESTA': 'Prestataire',
@@ -66,6 +71,14 @@ const AdminControlCenterPage = () => {
       setStudios(data['hydra:member']);
     } else if (type === 'users') {
       setUsers(data['hydra:member']);
+    } else if (type === 'studio_opening_times') {
+      setStudioOpeningTimes(data['hydra:member'].map(
+        (studioOpeningTime) => ({
+          ...studioOpeningTime,
+          startTime: dayjs.utc(studioOpeningTime.startTime),
+          endTime: dayjs.utc(studioOpeningTime.endTime),
+        })
+      ));
     }
     const view = data['hydra:view'];
     if (view) {
@@ -87,6 +100,7 @@ const AdminControlCenterPage = () => {
   };
 
   const handleView = (data) => {
+    console.log("data", data, dataType)
     setEditData(data);
     onOpen();
   }
@@ -103,15 +117,20 @@ const AdminControlCenterPage = () => {
   return (
     <Box px={4} py={24} maxW={"7xl"} mx={"auto"}>
       <Heading mb={4}>Centre de contrôle administratif</Heading>
-      <Tabs onChange={(index) => setDataType(['companies', 'studios', 'users'][index])}>
+      <Tabs onChange={(index) => setDataType(
+        isAdministrator ?
+        ['companies', 'studios', 'users'][index] : ['studios', 'users', 'studio_opening_times'][index]
+      )}>
         <TabList>
-          <Tab>Compagnies</Tab>
+          {isAdministrator && <Tab>Compagnies</Tab>}
           <Tab>Studios</Tab>
           <Tab>Utilisateurs</Tab>
+          {isPrestataire && <Tab>Horaires</Tab>}
         </TabList>
 
         <TabPanels>
           {/*Gestion des compagnies*/}
+          {isAdministrator &&
           <TabPanel>
             <Button mb={4} onClick={handleAdd}>Ajouter une compagnie</Button>
             <Table variant="simple">
@@ -122,7 +141,7 @@ const AdminControlCenterPage = () => {
                   <Th>Téléphone</Th>
                   <Th>Vérifiée</Th>
                   <Th>Date d'inscription</Th>
-                  <Th>Actions</Th>
+                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -183,6 +202,7 @@ const AdminControlCenterPage = () => {
               </Flex>
             </Box>
           </TabPanel>
+          }
 
           {/*Gestion des studios*/}
           <TabPanel>
@@ -193,7 +213,7 @@ const AdminControlCenterPage = () => {
                   <Th>Entreprise</Th>
                   <Th>Studio</Th>
                   <Th>Adresse</Th>
-                  <Th>Actions</Th>
+                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -230,7 +250,7 @@ const AdminControlCenterPage = () => {
                   <Th>Nom</Th>
                   <Th>Email</Th>
                   <Th>Rôle</Th>
-                  <Th>Actions</Th>
+                  <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -257,6 +277,72 @@ const AdminControlCenterPage = () => {
             </Table>
             <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </TabPanel>
+
+          {/*Horaire d'ouverture*/}
+          {isPrestataire &&
+            <TabPanel>
+            <Button mb={4} onClick={handleAdd}>Ajouter une horaire</Button>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Studio</Th>
+                  <Th>Jour</Th>
+                  <Th>H. d'ouverture</Th>
+                  <Th>H. de fermeture</Th>
+                  <Th></Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {studioOpeningTimes && studioOpeningTimes.map((studioOpeningTime) => (
+                  <Tr key={studioOpeningTime.id}>
+                    <Td>{studioOpeningTime.studio?.name}</Td>
+                    <Td>{days[studioOpeningTime.day]}</Td>
+                    <Td>
+                      <Flex justifyContent={"center"} alignItems={"center"}>
+                        {dayjs(studioOpeningTime.startTime).format('HH:mm')}
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <Flex justifyContent={"center"} alignItems={"center"}>
+                        <Text>{dayjs(studioOpeningTime.endTime).format('HH:mm')}</Text>
+                      </Flex>
+                    </Td>
+                    <Td>
+                      <Menu>
+                        <MenuButton as={Flex} bg={"transparent"} cursor={"pointer"}>
+                          <Icon icon="system-uicons:menu-vertical" fontSize={30} style={{color: "black"}} />
+                        </MenuButton>
+                        <MenuList>
+                          <MenuItem onClick={() => handleView(studioOpeningTime)}>Modifier l'horaire</MenuItem>
+                          <MenuItem onClick={() => handleDelete(studioOpeningTime)}>Supprimer</MenuItem>
+                        </MenuList>
+                      </Menu>
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            <Box my={4}>
+              <Flex gap={4}>
+                <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                <Text>Entreprise Désactive</Text>
+              </Flex>
+              <Flex gap={4}>
+                <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                <Text>Entreprise Rejetée</Text>
+              </Flex>
+              <Flex gap={4}>
+                <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
+                <Text>En attente de vérification</Text>
+              </Flex>
+              <Flex gap={4}>
+                <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
+                <Text>Entreprise Vérifiée</Text>
+              </Flex>
+            </Box>
+          </TabPanel>
+          }
         </TabPanels>
       </Tabs>
 
@@ -275,7 +361,9 @@ const AdminControlCenterPage = () => {
             ) : dataType === 'studios' ? (
               <FormStudio studio={editData}  onSubmitForm={handleFormSubmit}/>
             ) : dataType === 'users' ? (
-              <FormUser userr={editData}  onSubmitForm={handleFormSubmit}/>
+              <FormUser user={editData}  onSubmitForm={handleFormSubmit}/>
+            ) : dataType === 'studio_opening_times' ? (
+              <FormStudioOpeningTime studioOpeningTime={editData}  onSubmitForm={handleFormSubmit}/>
             ) : null}
           </ModalBody>
         </ModalContent>
