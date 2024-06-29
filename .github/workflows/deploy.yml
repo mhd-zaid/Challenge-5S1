@@ -11,10 +11,57 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      VITE_BACKEND_URL: ${{ vars.VITE_BACKEND_URL }}
+      APP_ENV: ${{ vars.APP_ENV }}
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MESSENGER_TRANSPORT_DSN: "${{ vars.MESSENGER_TRANSPORT_DSN }}"
+      MAILER_DSN: "${{ secrets.MAILER_DSN }}"
+      CORS_ALLOW_ORIGIN: ${{ vars.CORS_ALLOW_ORIGIN }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET }}
+      JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+      JWT_PASSPHRASE": ""
+      FRONTEND_URL: ${{ vars.FRONTEND_URL }}
+      INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
+      INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: .env.local client
+        run: |
+          echo "VITE_BACKEND_URL=$VITE_BACKEND_URL" > client/.env.local
+
+      - name: prepare client
+        run: |
+          cd client
+          npm install
+          npm run build
+          cd ..
+      
+      - name: .env.local server
+        run: |
+         echo "APP_ENV=$APP_ENV" > server/.env.local
+          echo "APP_SECRET=$APP_SECRET" >> server/.env.local
+          echo "DATABASE_URL=$DATABASE_URL" >> server/.env.local
+          echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN" >> server/.env.local
+          echo "MAILER_DSN=$MAILER_DSN" >> server/.env.local
+          echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN" >> server/.env.local
+          echo "JWT_SECRET_KEY=$JWT
+          echo "JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY" >> server/.env.local
+          echo "JWT_PASSPHRASE=$JWT_PASSPHRASE" >> server/.env.local
+          echo "FRONTEND_URL=$FRONTEND_URL" >> server/.env.local
+          echo "INSEE_API_URL=$INSEE_API_URL" >> server/.env.local
+          echo "INSEE_API_KEY=$INSEE_API_KEY" >> server/.env.local
+          
+      - name: prepare server
+        run: |
+          cd server
+          composer install
+          cd ..
+          
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
