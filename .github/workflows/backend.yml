@@ -3,8 +3,23 @@ name: Backend tests
 on:
   workflow_call:
 
-jobs:
+jobs: 
   install-back-dependencies:
+    environment: BACK_END
+    env:
+      APP_ENV: test
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+      DATABASE_URL: postgresql://user:password@localhost:5432/testdb?serverVersion=13&charset=utf8
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+      JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+      JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+      JWT_PASSPHRASE: ""
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
+      INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
+      MAILER_DSN: "${{ secrets.MAILER_DSN }}"
+      FRONTEND_URL: "${{ vars.FRONTEND_URL }}"
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -14,6 +29,27 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2.18"
+      
+      - name: Create .env file
+        run: touch ./server/.env.local
+      
+      - name: Add git env variables
+        run: |
+          echo APP_ENV=$APP_ENV >> ./server/.env.local
+          echo APP_SECRET=$APP_SECRET >> ./server/.env.local
+          echo DATABASE_URL=$DATABASE_URL >> ./server/.env.local
+          echo CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN >> ./server/.env.local
+          echo JWT_SECRET_KEY=$JWT_SECRET
+          echo JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY
+          echo JWT_PASSPHRASE=$JWT_PASSPHRASE
+          echo MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN
+          echo INSEE_API_KEY=$INSEE_API_KEY
+          echo INSEE_API_URL=$INSEE_API_URL
+          echo MAILER_DSN=$MAILER_DSN
+          echo FRONTEND_URL=$FRONTEND_URL >> ./server/.env.local
+      
+      - name: copy .env.local to .env.test.local & .env
+        run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
@@ -40,10 +76,24 @@ jobs:
             jwt-${{ runner.os }}
 
   test_backend:
+    environment: BACK_END
+    env:
+      APP_ENV: test
+      APP_SECRET: ${{ secrets.APP_SECRET }}
+      DATABASE_URL: postgresql://user:password@localhost:5432/testdb?serverVersion=13&charset=utf8
+      CORS_ALLOW_ORIGIN: '^https?://(localhost|127\.0\.0\.1)(:[0-9]+)?$'
+      JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+      JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+      JWT_PASSPHRASE: ""
+      MESSENGER_TRANSPORT_DSN: doctrine://default?auto_setup=0
+      INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
+      INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
+      MAILER_DSN: "${{ secrets.MAILER_DSN }}"
+      FRONTEND_URL: "${{ vars.FRONTEND_URL }}"
+
     needs: install-back-dependencies
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: postgresql://user:password@localhost:5432/testdb?serverVersion=13&charset=utf8
+
     services:
       database:
         image: postgres:13
@@ -62,6 +112,24 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2.18"
+
+      - name: Add git env variables
+        run: |
+          echo APP_ENV=$APP_ENV >> ./server/.env.local
+          echo APP_SECRET=$APP_SECRET >> ./server/.env.local
+          echo DATABASE_URL=$DATABASE_URL >> ./server/.env.local
+          echo CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN >> ./server/.env.local
+          echo JWT_SECRET_KEY=$JWT_SECRET
+          echo JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY
+          echo JWT_PASSPHRASE=$JWT_PASSPHRASE
+          echo MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN
+          echo INSEE_API_KEY=$INSEE_API_KEY
+          echo INSEE_API_URL=$INSEE_API_URL
+          echo MAILER_DSN=$MAILER_DSN
+          echo FRONTEND_URL=$FRONTEND_URL >> ./server/.env.local
+      
+      - name: copy .env.local to .env.test.local & .env
+        run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env
 
       - name: Install dockerize
         run: |
@@ -83,8 +151,16 @@ jobs:
           path: ./server/config/jwt
           key: jwt-${{ runner.os }}
 
+      - name: Create test database
+        run: php bin/console d:d:c --env=test
+        working-directory: ./server
+      
       - name: Run migrations
-        run: php bin/console d:m:m --no-interaction
+        run: php bin/console d:m:m --no-interaction --env=test
+        working-directory: ./server
+      
+      - name: Load fixtures
+        run: php bin/console d:f:l --no-interaction --env=test
         working-directory: ./server
 
       - name: Run tests
