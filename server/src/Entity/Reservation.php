@@ -15,9 +15,7 @@ use App\Operation\SoftDelete;
 use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
 use App\Validator\AvailableSlot;
-use App\State\ReservationStateProvider;
 
-#[AvailableSlot]
 
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
@@ -25,18 +23,19 @@ use App\State\ReservationStateProvider;
     normalizationContext: ['groups' => ['reservation:read']],
     operations: [
         new Post(
-        securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
-        securityPostDenormalizeMessage: "Only the customer can create a reservation.",
-        denormalizationContext: ['reservation:create']
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
+            securityPostDenormalizeMessage: "Only the customer can create a reservation.",
+            denormalizationContext: ['reservation:create']
         ),
         new Patch(securityPostDenormalize: "is_granted('EDIT', object)",
         denormalizationContext: ['groups' => ['reservation:update']],    
         ),
         new SoftDelete(security: "is_granted('EDIT', object)"),
-        new GetCollection(provider: ReservationStateProvider::class, normalizationContext: ['groups' => ['reservation:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['reservation:read']]),
     ]
-)]
-
+    )]
+    
+#[AvailableSlot]
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
 class Reservation
@@ -55,7 +54,7 @@ class Reservation
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
-    #[Assert\Choice(choices: ['RESERVED', 'COMPLETED'])]
+    #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
     #[Groups(['reservation:read'])]
     private $status = 'RESERVED';
 

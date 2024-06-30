@@ -4,6 +4,7 @@ import AdminProfile from '@/pages/profile/AdminProfilePage.jsx';
 import EmployeeProfile from '@/pages/profile/EmployeeProfilePage.jsx';
 import CustomerProfile from '@/pages/profile/CustomerProfilePage.jsx';
 import PrestaProfile from '@/pages/profile/PrestaProfilePage.jsx';
+import { Box } from '@chakra-ui/react';
 
 const ProfilePage = () => {
   const { user, token } = useAuth();
@@ -14,7 +15,7 @@ const ProfilePage = () => {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${user.id}`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/ld+json',
           Authorization: `Bearer ${token}`,
         },
       });
@@ -25,6 +26,7 @@ const ProfilePage = () => {
     fetchUser();
   }, []);
 
+  const getPage = () => {
     if(user.roles.includes('ROLE_ADMIN')) {
       return <AdminProfile user={userInfo} />
     } else if(user.roles.includes('ROLE_PRESTA')) {
@@ -34,6 +36,19 @@ const ProfilePage = () => {
     } else {
       return <CustomerProfile user={userInfo} />
     }
+  }
+
+  return (
+    <>
+      <Box
+        maxW="7xl"
+        mx="auto"
+        p={6}
+      >
+        {getPage()}
+      </Box>
+    </>
+  );
 };
 
 export default ProfilePage;

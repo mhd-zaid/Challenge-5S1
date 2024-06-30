@@ -7,7 +7,7 @@ const WorkHourService = {
             const response = await fetch(`${url}/work_hours`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/ld+json',
                     Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(data),
@@ -42,7 +42,7 @@ const WorkHourService = {
             const response = await fetch(`${url}/work_hours/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/ld+json',
                     Authorization: `Bearer ${token}`,
                 },
             });

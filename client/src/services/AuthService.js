@@ -6,7 +6,7 @@ const AuthService = {
       const response = await fetch(`${url}/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/ld+json',
         },
         body: JSON.stringify({
           email: email,

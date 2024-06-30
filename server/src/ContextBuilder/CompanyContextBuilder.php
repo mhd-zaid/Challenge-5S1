@@ -31,9 +31,9 @@ final class CompanyContextBuilder implements SerializerContextBuilderInterface
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
                 $context['groups'] = ['company:read:admin'];
             } elseif ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
-                $context['groups'] = ['company:read:presta'];
+                $context['groups'][] = 'company:read:presta';
             } elseif ($this->authorizationChecker->isGranted('ROLE_EMPLOYEE')) {
-                $context['groups'] = ['company:read:employee'];
+                $context['groups'][] = 'company:read:employee';
             } elseif ($this->authorizationChecker->isGranted('ROLE_CUSTOMER')) {
                 $context['groups'] = ['company:read:customer'];
             }

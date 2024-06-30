@@ -25,13 +25,13 @@ final class UserContextBuilder implements SerializerContextBuilderInterface
         $resourceClass = $context['resource_class'] ?? null;
 
         if (($resourceClass === User::class) && isset($context['groups'])){
-//            dd($context['groups']);
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
                 $context['groups'][] = 'user:read:presta';
             } elseif ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
                 $context['groups'][] = 'user:read:presta';
             } elseif ($this->authorizationChecker->isGranted('ROLE_EMPLOYEE')) {
                 $context['groups'][] = 'user:read:presta';
+                $context['groups'][] = 'user:read';
             } elseif ($this->authorizationChecker->isGranted('ROLE_CUSTOMER')) {
                 $context['groups'][] = 'user:read:presta';
             }

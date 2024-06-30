@@ -26,7 +26,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             security: "is_granted('ROLE_ADMIN') or object.getOwner() === user or object.getUsers().contains(user)"
         ),
         new GetCollection(
-            paginationItemsPerPage: 15,
+            paginationItemsPerPage: 10,
             security: "is_granted('ROLE_ADMIN')",
         ),
         new Post(
@@ -53,12 +53,22 @@ class Company
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-//    #[ApiProperty(identifier: false)]
+    #[ApiProperty(identifier: true)]
+    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
+        , 'company:update:admin', 'company:update:presta'
+        , 'company:create:admin', 'user:read'
+    ])]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
     #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
         , 'company:update:admin', 'company:update:presta'
         , 'company:create:admin'
+        , 'user:read:presta',
+        'studio:read'
     ])]
-    private ?int $id = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 9, nullable: true)]
     #[Assert\Length(min: 9, max: 9)]
@@ -72,10 +82,12 @@ class Company
     #[ORM\Column(length: 255)]
     #[Assert\Email()]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'L\'email doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
+    #[Groups([
+        'company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
         , 'company:update:admin', 'company:update:presta'
         , 'company:create:admin'
         , 'user:read:presta'
+        , 'company:read'
     ])]
     private ?string $email = null;
 
@@ -118,7 +130,7 @@ class Company
     #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee'
         , 'company:update:admin', 'company:update:presta'
         , 'company:create:admin', 'company:read'
-        , 'user:read:presta'
+        , 'user:read:presta', 'company:read:common'
     ])]
     private Collection $studios;
 
@@ -131,21 +143,19 @@ class Company
     ])]
     public ?MediaObject $kbis = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-    ])]
-    private ?string $name = null;
-
     #[ORM\Column]
     #[Groups(['company:read:admin', 'company:read:presta'
         , 'company:update:admin'
         , 'company:create:admin'
     ])]
     private ?bool $isVerified = false;
+
+    #[ORM\Column]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin'
+        , 'company:create:admin'
+    ])]
+    private ?bool $isRejected = false;
 
     #[ORM\Column]
     #[Groups(['company:read:admin', 'company:read:presta'
@@ -350,6 +360,18 @@ class Company
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getIsRejected(): ?bool
+    {
+        return $this->isRejected;
+    }
+
+    public function setIsRejected(bool $isRejected): static
+    {
+        $this->isRejected = $isRejected;
 
         return $this;
     }

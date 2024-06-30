@@ -1,12 +1,24 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { Box, Heading, Button, Link } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Button,
+  MenuButton,
+  Menu,
+  MenuList,
+  MenuGroup,
+  MenuItem,
+  MenuDivider,
+} from '@chakra-ui/react';
+import { Icon } from '@iconify/react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useTranslation } from 'react-i18next';
 
 const Navbar = ({ onLogout, menus }) => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdministrator, isPrestataire } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -23,32 +35,79 @@ const Navbar = ({ onLogout, menus }) => {
     >
       <Box>
         <Heading
-          as={Link}
-          href="/"
+          as="h1"
           fontSize="24px"
           fontWeight="bold"
           color="#333"
+          cursor={'pointer'}
+          onClick={() => navigate('/')}
         >
           Instant Studio
         </Heading>
       </Box>
-      <Box>
-        {user && user.roles.includes('ROLE_ADMIN') && (
-          <Button
-            as={RouterLink}
-            to="/admin/control-center"
-            mr="10px"
-            bg="#f3f3f3"
-            color="black"
-            _hover={{ bg: '#e2e2e2' }}
-          >
-            {t('global.control-center')}
-          </Button>
-        )}
-        <Button mr="10px" bg="#f3f3f3" color="black" _hover={{ bg: '#e2e2e2' }}>
-          {t('global.add-presta')}
-        </Button>
-        {!user ? (
+      <Box mx={4}>
+        {user ? (
+          <Menu>
+            <MenuButton as={Button} colorScheme="pink">
+              <Icon
+                icon="material-symbols:menu"
+                fontSize={25}
+                style={{ color: 'white' }}
+              />
+            </MenuButton>
+            <MenuList>
+              <MenuGroup title="Administration">
+                <MenuItem
+                  onClick={() => {
+                    navigate('/admin/control-center');
+                  }}
+                  display={isAdministrator || isPrestataire ? 'block' : 'none'}
+                >
+                  Centre de contrôle
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate('/calendar');
+                  }}
+                  display={isPrestataire ? 'block' : 'none'}
+                >
+                  Plannings
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    user.roles.includes('ROLE_ADMIN')
+                      ? navigate('/admin/control-center')
+                      : navigate('/info');
+                  }}
+                >
+                  Ajouter votre établissement
+                </MenuItem>
+                <MenuItem display={isAdministrator ? 'block' : 'none'}>
+                  Statistiques
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate('/admin/prestataires-demandes');
+                  }}
+                  display={isAdministrator ? 'block' : 'none'}
+                >
+                  Demandes de Prestataires
+                </MenuItem>
+              </MenuGroup>
+              <MenuDivider />
+              <MenuGroup title="Profil">
+                <MenuItem
+                  onClick={() => {
+                    navigate('/profile');
+                  }}
+                >
+                  Mon compte
+                </MenuItem>
+                <MenuItem onClick={logout}>Se déconnecter</MenuItem>
+              </MenuGroup>
+            </MenuList>
+          </Menu>
+        ) : (
           <Button
             as={RouterLink}
             to="/auth/login"
@@ -57,15 +116,6 @@ const Navbar = ({ onLogout, menus }) => {
             _hover={{ bg: '#333' }}
           >
             {t('auth.connect')}
-          </Button>
-        ) : (
-          <Button
-            onClick={logout}
-            bg="black"
-            color="white"
-            _hover={{ bg: '#333' }}
-          >
-            Se déconnecter
           </Button>
         )}
       </Box>

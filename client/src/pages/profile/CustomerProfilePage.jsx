@@ -14,14 +14,7 @@ const CustomerProfile = ({ user }) => {
   const navigate = useNavigate();
 
   return (
-    <Box
-      maxW="7xl"
-      mx="auto"
-      p={6}
-      pt="80px" // Ajout de padding-top pour éviter que la navbar masque le contenu
-      bg={useColorModeValue('gray.100', 'gray.900')}
-      minH="100vh"
-    >
+    <Box pt="80px" minH="100vh">
       <Flex
         direction={{ base: 'column', md: 'row' }}
         align="center"
@@ -48,7 +41,7 @@ const CustomerProfile = ({ user }) => {
           <Heading as="h2" size="md" mb={2}>
             Informations générales
           </Heading>
-          &gt;
+
           <Text>
             Nom: {user.firstname} {user.lastname}
           </Text>

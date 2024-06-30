@@ -6,7 +6,7 @@ const create_unavailability = async (token, formData) => {
   const response = await fetch(`${url}/unavailability_hours`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`
     },
     body: JSON.stringify(formData)
@@ -14,21 +14,37 @@ const create_unavailability = async (token, formData) => {
   return response;
 };
 
-const get_unavailabilities = async (token) => {
-  const response = await fetch(`${url}/unavailability_hours`, {
+const get_unavailabilities = async (token, statuses = [], page = 1, itemsPerPage = 10, userId = null) => {
+  const baseUrl = `${url}/unavailability_hours`;
+
+  const queryParams = [
+    ...statuses.map(status => `status[]=${encodeURIComponent(status)}`),
+    `page=${page}`,
+    `itemsPerPage=${itemsPerPage}`
+  ];
+
+  if (userId) {
+    queryParams.push(`employee=${encodeURIComponent(userId)}`);
+  }
+
+  const fullUrl = `${baseUrl}?${queryParams.join('&')}`;
+
+  const response = await fetch(fullUrl, {
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`
     },
   });
+
   return response;
-}
+};
+
 
 const delete_unavailability = async (token, id) => {
   const response = await fetch(`${url}/unavailability_hours/${id}`, {
     method: 'DELETE',
     headers: {
-      'Content-Type': 'application/json',
+      'Content-Type': 'application/ld+json',
       'Authorization': `Bearer ${token}`
     }
   });

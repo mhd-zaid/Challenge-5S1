@@ -5,20 +5,17 @@ import {
   Avatar,
   Stack,
   Flex,
-  useColorModeValue,
+  Modal,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
+import CalendarPage from '@/pages/CalendarPage.jsx';
+import Unavailability from '@/pages/Unavailability.jsx';
+import ManageAccount from '../../components/Modal/ManageAccount';
+import LineChart from '../../components/LineChart';
 
 const EmployeeProfile = ({user}) => {
-  const navigate = useNavigate();
-
   return (
     <Box
-      maxW="7xl"
-      mx="auto"
-      p={6}
-      pt="80px" // Ajout de padding-top pour éviter que la navbar masque le contenu
-      bg={useColorModeValue('gray.100', 'gray.900')}
+      pt="80px"
       minH="100vh"
     >
       <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" mb={6}>
@@ -35,9 +32,13 @@ const EmployeeProfile = ({user}) => {
           <Text fontSize="lg" color="gray.600">
             {user.email}
           </Text>
+          <ManageAccount />
         </Box>
       </Flex>
       <Stack spacing={4}>
+        <Box p={4} bg="white" shadow="md" borderRadius="md">
+          <LineChart />
+        </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Informations générales
@@ -48,16 +49,19 @@ const EmployeeProfile = ({user}) => {
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Horaire de travail
+            Planning
           </Heading>
-          <Text>Lundi - Vendredi: 9h00 - 17h00</Text>
-          <Text>Samedi: 9h00 - 13h00</Text>
+          <Flex justifyContent={"center"}>
+            <CalendarPage />
+          </Flex>
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Indisponibilités
           </Heading>
-          <Text>Indisponible le 25 juin 2024 (Congés)</Text>
+          <Flex justifyContent={"center"}>
+            <Unavailability />
+          </Flex>
         </Box>
       </Stack>
     </Box>

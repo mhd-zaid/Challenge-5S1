@@ -14,7 +14,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['studioOpeningTime:read']],
+    denormalizationContext: ['groups' => ['studioOpeningTime:write']]
+)]
 #[ApiFilter(
     SearchFilter::class,
     properties: ['studio' => 'exact']
@@ -31,23 +34,23 @@ class StudioOpeningTime
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read', 'company:read:presta', 'studio:read', 'company:read:common', 'studioOpeningTime:write'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read', 'company:read:presta', 'studio:read', 'company:read:common', 'studioOpeningTime:write'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read'])]
+    #[Groups(['studioOpeningTime:read', 'company:read', 'studio:read', 'company:read:presta', 'company:read:common', 'studioOpeningTime:write'])]
     #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 
     #[ORM\ManyToOne(inversedBy: 'studioOpeningTimes')]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read'])]
+    #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write'])]
     private ?Studio $studio = null;
 
     #[ORM\OneToMany(mappedBy: 'studioOpeningTime', targetEntity: UnavailabilityHour::class)]

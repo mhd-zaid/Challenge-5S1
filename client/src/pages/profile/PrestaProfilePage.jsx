@@ -8,16 +8,15 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import CalendarPage from '@/pages/CalendarPage.jsx';
+import Unavailability from '@/pages/Unavailability.jsx';
+import BarChart from '@/components/BarChart.jsx';
 
 const PrestaProfile = ({user}) => {
 
   return (
     <Box
-      maxW="7xl"
-      mx="auto"
-      p={6}
-      pt="80px" // Ajout de padding-top pour éviter que la navbar masque le contenu
-      bg={useColorModeValue('gray.100', 'gray.900')}
+      pt="80px"
       minH="100vh"
     >
       <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" mb={6}>
@@ -64,6 +63,7 @@ const PrestaProfile = ({user}) => {
             </>
           )}
         </Box>
+
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Etablissement(s)
@@ -79,9 +79,30 @@ const PrestaProfile = ({user}) => {
                 <Text>Code postal : {studio.zipCode}</Text>
                 <Text>Pays : {studio.country}</Text>
                 <Text>Tel : {studio.phone}</Text>
+                <Box m={4} p={4} bg="white" shadow="md" borderRadius="md">
+                  <BarChart studio={studio} />
+                </Box>
               </Box>
             ))
           )}
+        </Box>
+
+        <Box p={4} bg="white" shadow="md" borderRadius="md">
+          <Heading as="h2" size="md" mb={2}>
+            Indisponibilités
+          </Heading>
+          <Flex justifyContent={"center"}>
+            <Unavailability />
+          </Flex>
+        </Box>
+
+        <Box p={4} bg="white" shadow="md" borderRadius="md">
+          <Heading as="h2" size="md" mb={2}>
+            Planning
+          </Heading>
+            <Flex justifyContent={"center"}>
+              <CalendarPage />
+            </Flex>
         </Box>
       </Stack>
     </Box>
