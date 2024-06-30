@@ -25,11 +25,12 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
     formState: { errors, isSubmitting }
   } = useForm({});
   const [studioOpeningTimesData, setStudioOpeningTimesData] = useState(studioOpeningTime);
-  const [isEditable, setIsEditable] = useState(!studioOpeningTime);
   const [studios, setStudios] = useState([]);
   const [studioId, setStudioId] = useState(studioOpeningTime ? studioOpeningTime.studio.id : '');
   const dayjs = useCustomDate();
   const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+
+  console.log("add studioOpeningTime", studioOpeningTime);
 
   useEffect(() => {
     const fetchStudios = async () => {
@@ -48,10 +49,10 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
   }, []);
 
   async function upsertStudio(data) {
-    const url = studioOpeningTime ? import.meta.env.VITE_BACKEND_URL + studioOpeningTime['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studio_opening_times`;
-    const method = studioOpeningTime ? 'PATCH' : 'POST';
-    const contentType = studioOpeningTime ? 'application/merge-patch+json' : 'application/ld+json';
-    const response = await fetch(url, {
+    const url = studioOpeningTime.startTime ? import.meta.env.VITE_BACKEND_BASE_URL + studioOpeningTime['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studio_opening_times`;
+    const method = studioOpeningTime.startTime ? 'PATCH' : 'POST';
+    const contentType = studioOpeningTime.startTime ? 'application/merge-patch+json' : 'application/ld+json';
+    return await fetch(url, {
       method: method,
       headers: {
         'Authorization': 'Bearer ' + token,
@@ -64,19 +65,9 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
         endTime: dayjs.utc(`1970-01-01T${data.endTime}`)
       }),
     });
-
-    const result = await response.json();
-
-    if (result.error) {
-      console.error('error', result.error);
-    }else {
-      setIsEditable(false);
-      setStudioOpeningTimesData(result);
-    }
   }
 
   const onSubmit = async (values) => {
-    console.log("values", values);
     const confirmAction = confirm('Etes-vous sûr de vouloir enregistrer ces modifications ?');
     if (!confirmAction) {
       return;
@@ -84,6 +75,8 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        values.studio = studioOpeningTime.studio['@id'];
+        values.day = studioOpeningTime.day;
         upsertStudio(values)
         resolve()
       }, 1000)
@@ -103,135 +96,66 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
 
         <Box>
-          {studioOpeningTimesData && (
-            <Heading as='h2' size='sm' textAlign='center' mb={10}>
-              {studioOpeningTimesData?.studio?.name}
-            </Heading>
-          )}
-
-          {!studioOpeningTimesData && (
-            <FormControl isRequired={isEditable}>
-              <FormLabel>Studio</FormLabel>
-              <Select
-                defaultValue={studioId}
-                onChange={(e) => setStudioId(e.target.value)}
-                {...(!studioOpeningTimesData && register('studio', {
-                  required: 'Ce champ est requis',
-                }))}
-              >
-                <option value="">Sélectionner un studio</option>
-                {studios.map((studio) => (
-                  <option key={studio.id} value={studio['@id']}>
-                    {studio.name} - {studio.id}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-          )}
+          <Heading as='h2' size='sm' textAlign='center' mb={10}>
+            {studioOpeningTimesData?.studio?.name}
+          </Heading>
 
           {/* Champ Nom du studioOpeningTimesData */}
-          <FormControl isInvalid={errors.day} mt={4} isRequired={isEditable}>
+          <FormControl isInvalid={errors.day} mt={4}>
             <FormLabel htmlFor='name'>Jour</FormLabel>
-            {isEditable ? (
-              <>
-                <Select
-                  id='day'
-                  placeholder='Sélectionner un jour'
-                  defaultValue={studioOpeningTimesData?.day}
-                  {...register('day', {
-                    required: 'Ce champ est requis',
-                  })}
-                >
-                  {days.map((day, index) => (
-                    <option key={index} value={index}>
-                      {day}
-                    </option>
-                  ))}
-                </Select>
-                <FormErrorMessage>
-                  {errors.day && errors.day.message}
-                </FormErrorMessage>
-              </>
-            ) : (
-              <Text>{days[studioOpeningTimesData?.day]}</Text>
-            )}
+            <Text>{days[studioOpeningTimesData?.day]}</Text>
           </FormControl>
 
           {/* Heure d'ouverture */}
-          <FormControl isInvalid={errors.startTime} mt={4} isRequired={isEditable}>
+          <FormControl isInvalid={errors.startTime} mt={4} isRequired>
             <FormLabel htmlFor='startTime'>Horaire d'ouverture</FormLabel>
-            {isEditable ? (
-              <>
-                <Input
-                  id='startTime'
-                  type="time"
-                  placeholder='08:00'
-                  defaultValue={dayjs(studioOpeningTimesData?.startTime).format('HH:mm')}
-                  {...register('startTime', {
-                    required: 'Ce champ est requis',
-                    pattern: {
-                      value: /^[0-9]{2}:[0-9]{2}$/,
-                      message: 'Horaire invalide, il doit être au format HH:MM',
-                    },
-                  })}
-                />
-                <FormErrorMessage>
-                  {errors.startTime && errors.startTime.message}
-                </FormErrorMessage>
-              </>
-            ) : (
-              <Text>{dayjs.utc(studioOpeningTimesData?.startTime).format('HH:mm')}</Text>
-            )}
+            <Input
+              id='startTime'
+              type="time"
+              placeholder='08:00'
+              defaultValue={studioOpeningTimesData?.startTime}
+              {...register('startTime', {
+                required: 'Ce champ est requis',
+                pattern: {
+                  value: /^[0-9]{2}:[0-9]{2}$/,
+                  message: 'Horaire invalide, il doit être au format HH:MM',
+                },
+              })}
+            />
+            <FormErrorMessage>
+              {errors.startTime && errors.startTime.message}
+            </FormErrorMessage>
           </FormControl>
 
           {/* Heure de fermeture */}
-          <FormControl isInvalid={errors.endTime} mt={4} isRequired={isEditable}>
-            <FormLabel htmlFor='endTime'>Horaire d'ouverture</FormLabel>
-            {isEditable ? (
-              <>
-                <Input
-                  id='endTime'
-                  placeholder='08:00'
-                  type="time"
-                  defaultValue={dayjs(studioOpeningTimesData?.endTime).format('HH:mm')}
-                  {...register('endTime', {
-                    required: 'Ce champ est requis',
-                    pattern: {
-                      value: /^[0-9]{2}:[0-9]{2}$/,
-                      message: 'Horaire invalide, il doit être au format HH:MM',
-                    },
-                  })}
-                />
-                <FormErrorMessage>
-                  {errors.endTime && errors.endTime.message}
-                </FormErrorMessage>
-              </>
-            ) : (
-              <Text>{dayjs.utc(studioOpeningTimesData?.endTime).format('HH:mm')}</Text>
-            )}
+          <FormControl isInvalid={errors.endTime} mt={4} isRequired>
+            <FormLabel htmlFor='endTime'>Horaire de fermeture</FormLabel>
+            <Input
+              id='endTime'
+              placeholder='08:00'
+              type="time"
+              defaultValue={studioOpeningTimesData?.endTime}
+              {...register('endTime', {
+                required: 'Ce champ est requis',
+                pattern: {
+                  value: /^[0-9]{2}:[0-9]{2}$/,
+                  message: 'Horaire invalide, il doit être au format HH:MM',
+                },
+              })}
+            />
+            <FormErrorMessage>
+              {errors.endTime && errors.endTime.message}
+            </FormErrorMessage>
           </FormControl>
 
-          {isEditable ? (
-            <Flex p={4} gap={4} justifyContent={"end"}>
-              <Button bg="black" color='white' isLoading={isSubmitting} type='submit'>
-                Enregistrer
-              </Button>
-              <Button variant={"outline"} onClick={() => {
-                setIsEditable(false);
-              }}>
-                Annuler
-              </Button>
-            </Flex>
-          ) : (
-            <Flex p={4} gap={4} justifyContent={"end"}>
-              <Button bg="black" color='white' onClick={(e) => {
-                e.preventDefault();
-                setIsEditable(true);
-              }}>
-                Modifier
-              </Button>
-            </Flex>
-          )}
+          <Flex p={4} gap={4} justifyContent={"end"}>
+            <Button bg="black" color='white' isLoading={isSubmitting} type='submit'>
+              Enregistrer
+            </Button>
+            <Button>
+              Annuler
+            </Button>
+          </Flex>
         </Box>
 
       </form>

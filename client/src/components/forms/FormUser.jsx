@@ -34,7 +34,7 @@ const FormUser = ({ user, onSubmitForm }) => {
 
   async function processUser(data) {
     if (user) {
-      const response = await fetch(BASE_URL + '/users/' + user['@id'].split('/')[3], {
+      return await fetch(BASE_URL + '/users/' + user['@id'].split('/')[3], {
         method: 'PATCH',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -42,14 +42,8 @@ const FormUser = ({ user, onSubmitForm }) => {
         },
         body: JSON.stringify(data),
       });
-
-      const result = await response.json();
-
-      if (result.error) {
-        console.error('error', result.error);
-      }
     } else {
-      const response = await fetch(BASE_URL + '/users', {
+      return await fetch(BASE_URL + '/users', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -57,12 +51,6 @@ const FormUser = ({ user, onSubmitForm }) => {
         },
         body: JSON.stringify(data),
       });
-
-      const result = await response.json();
-
-      if (result.error) {
-        console.error('error', result.error);
-      }
     }
   }
 
@@ -73,7 +61,7 @@ const FormUser = ({ user, onSubmitForm }) => {
     }
 
     await processUser(values).then(() => {
-      onSubmitForm(false);
+      onSubmitForm(true);
       toast({
         title: 'Modifications enregistrées',
         status: 'success',
@@ -81,7 +69,7 @@ const FormUser = ({ user, onSubmitForm }) => {
         isClosable: true,
       });
     });
-}
+  }
 
   const handleDelete = async () => {
     const confirmAction = confirm('Etes-vous sûr de vouloir supprimer cet utilisateur ?');
@@ -204,17 +192,17 @@ const FormUser = ({ user, onSubmitForm }) => {
               <FormControl mt={4} isRequired>
                 <FormLabel htmlFor='roles'>Role</FormLabel>
                 <Select
-                id='roles'
-                placeholder="Role"
-                {...register('roles', {
-                  required: 'Ce champ est requis',
-                })}
-              >
-                <option value="ROLE_ADMIN">Admin</option>
-                <option value="ROLE_PRESTA">Prestataire</option>
-                <option value="ROLE_EMPLOYEE">Employé</option>
-                <option value="ROLE_CUSTOMER">Client</option>
-              </Select>
+                  id='roles'
+                  placeholder="Role"
+                  {...register('roles', {
+                    required: 'Ce champ est requis',
+                  })}
+                >
+                  <option value="ROLE_ADMIN">Admin</option>
+                  <option value="ROLE_PRESTA">Prestataire</option>
+                  <option value="ROLE_EMPLOYEE">Employé</option>
+                  <option value="ROLE_CUSTOMER">Client</option>
+                </Select>
                 <FormErrorMessage>
                   {errors.email && errors.email.message}
                 </FormErrorMessage>

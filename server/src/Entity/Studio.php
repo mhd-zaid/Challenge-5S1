@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Operation\SoftDelete;
 use App\Repository\StudioRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,7 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 //            security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
         ),
         new Post(),
-        new Patch()
+        new Patch(),
+        new SoftDelete()
     ],
     stateless: false,
     normalizationContext: ['groups' => ['studio:read']]
@@ -36,6 +38,7 @@ class Studio
 {
     use Traits\BlameableTrait;
     use Traits\TimestampableTrait;
+    use Traits\SoftDeleteableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -44,7 +47,7 @@ class Studio
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'company:read', 'planning:read', 'user:read:presta', 'reservation:read', 'company:read:presta', 'workHour:read', 'studioOpeningTime:read'])]
+    #[Groups(['studio:read', 'company:read', 'planning:read', 'user:read:presta', 'reservation:read', 'company:read:presta', 'workHour:read', 'studioOpeningTime:read', 'service:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $name = null;
@@ -100,13 +103,6 @@ class Studio
     private ?string $fullAddress = null;
 
     /**
-     * @var Collection<int, Service>
-     */
-    #[ORM\ManyToMany(targetEntity: Service::class, mappedBy: 'studios')]
-    #[Groups(['studio:read'])]
-    private Collection $services;
-
-    /**
      * @var Collection<int, Reservation>
      */
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Reservation::class)]
@@ -118,13 +114,19 @@ class Studio
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Stat::class)]
     private Collection $stats;
 
+    /**
+     * @var Collection<int, Service>
+     */
+    #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Service::class)]
+    private Collection $services;
+
     public function __construct()
     {
         $this->studioOpeningTimes = new ArrayCollection();
         $this->workHours = new ArrayCollection();
-        $this->services = new ArrayCollection();
         $this->reservations = new ArrayCollection();
         $this->stats = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -294,33 +296,6 @@ class Studio
     }
 
     /**
-     * @return Collection<int, Service>
-     */
-    public function getServices(): Collection
-    {
-        return $this->services;
-    }
-
-    public function addService(Service $service): static
-    {
-        if (!$this->services->contains($service)) {
-            $this->services->add($service);
-            $service->addStudio($this);
-        }
-
-        return $this;
-    }
-
-    public function removeService(Service $service): static
-    {
-        if ($this->services->removeElement($service)) {
-            $service->removeStudio($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Reservation>
      */
     public function getReservations(): Collection
@@ -374,6 +349,36 @@ class Studio
             // set the owning side to null (unless already changed)
             if ($stat->getStudio() === $this) {
                 $stat->setStudio(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Service>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+            $service->setStudio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): static
+    {
+        if ($this->services->removeElement($service)) {
+            // set the owning side to null (unless already changed)
+            if ($service->getStudio() === $this) {
+                $service->setStudio(null);
             }
         }
 

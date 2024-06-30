@@ -11,6 +11,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
 import BarChart from '@/components/BarChart.jsx';
+import ManageAccount from '@/components/Modal/ManageAccount.jsx';
 
 const PrestaProfile = ({user}) => {
 
@@ -33,6 +34,7 @@ const PrestaProfile = ({user}) => {
           <Text fontSize="lg" color="gray.600">
             {user.email}
           </Text>
+          <ManageAccount />
         </Box>
       </Flex>
       <Stack spacing={4}>
