@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Spinner, useToast, IconButton, Table, Thead, Tbody, Tr, Th, Td, Button,
-  Icon
+  Icon, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogContent, AlertDialogOverlay
 } from '@chakra-ui/react';
-import { RepeatIcon } from '@chakra-ui/icons';
+import { RepeatIcon, CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import PlanningService from '../services/planningService';
 import CompanyService from '../services/CompanyService';
 import { useAuth } from '../context/AuthContext';
@@ -11,7 +12,6 @@ import FilterCalendar from '../components/FilterCalendar';
 import EventModalCalendar from '../components/Modal/EventModalCalendar';
 import Calendar from '../components/Calendar';
 import useCustomDate from '../hooks/useCustomDate';
-import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import ReservationService from '../services/ReservationService';
 
 const CalendarPage = () => {
@@ -24,9 +24,14 @@ const CalendarPage = () => {
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [reservations, setReservations] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [actionType, setActionType] = useState('');
+  const [selectedReservationId, setSelectedReservationId] = useState(null);
   const toast = useToast();
 
   const dayjs = useCustomDate();
+  const cancelRef = React.useRef();
 
   const get_plannings = async () => {
     setIsLoading(true);
@@ -88,10 +93,16 @@ const CalendarPage = () => {
     }
   };
 
-  const handleCancelReservation = async (reservationId) => {
+  const confirmAction = (type, reservationId) => {
+    setActionType(type);
+    setSelectedReservationId(reservationId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleCancelReservation = async () => {
+    setIsProcessing(true);
     try {
-      console.log(reservationId)
-      await PlanningService.cancel_reservation(token, reservationId);
+      await PlanningService.update_reservation(token, selectedReservationId, 'CANCELED');
       toast({
         title: 'Réservation annulée',
         description: 'La réservation a été annulée avec succès',
@@ -108,6 +119,35 @@ const CalendarPage = () => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setIsProcessing(false);
+      setIsConfirmOpen(false);
+    }
+  };
+
+  const handleCompleteReservation = async () => {
+    setIsProcessing(true);
+    try {
+      await PlanningService.update_reservation(token, selectedReservationId, 'COMPLETED');
+      toast({
+        title: 'Réservation complété',
+        description: 'La réservation a été complété avec succès',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+      get_plannings();
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de compléter la réservation',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsProcessing(false);
+      setIsConfirmOpen(false);
     }
   };
 
@@ -189,9 +229,7 @@ const CalendarPage = () => {
             isClosable: true,
         });
     }
-};
-
-
+  };
 
   useEffect(() => {
     get_plannings();
@@ -261,8 +299,14 @@ const CalendarPage = () => {
             <IconButton
               aria-label="Annuler"
               icon={<CloseIcon />}
-              onClick={() => handleCancelReservation(reservation.id)}
+              onClick={() => confirmAction('cancel', reservation.id)}
               mr={4} 
+            />
+            <IconButton
+              aria-label="Compléter"
+              icon={<CheckIcon />}
+              onClick={() => confirmAction('complete', reservation.id)}
+              mr={4}
             />
             {!reservation.healthy && (
                 <IconButton
@@ -290,6 +334,32 @@ const CalendarPage = () => {
         get_plannings={get_plannings}
         toast={toast}
       />
+      <AlertDialog
+        isOpen={isConfirmOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={() => setIsConfirmOpen(false)}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              {actionType === 'cancel' ? 'Annuler la réservation' : 'Compléter la réservation'}
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Êtes-vous sûr de vouloir {actionType === 'cancel' ? 'annuler' : 'compléter'} cette réservation ?
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={() => setIsConfirmOpen(false)}>
+                Annuler
+              </Button>
+              <Button colorScheme="red" onClick={actionType === 'cancel' ? handleCancelReservation : handleCompleteReservation} ml={3} isLoading={isProcessing}>
+                Confirmer
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 };
