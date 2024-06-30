@@ -20,7 +20,6 @@ use App\Validator\CompletedReservation;
     denormalizationContext: ['groups' => ['feedback:write']],
     normalizationContext: ['groups' => ['feedback:read']],
     operations:[
-        new Post(processor: FeedbackStateProcessor::class),
         new Patch(processor: FeedbackStateProcessor::class),
         new Get(),
     ]
@@ -60,7 +59,7 @@ class Feedback
         return $this->note;
     }
 
-    public function setNote(int $note): static
+    public function setNote(?int $note): static
     {
         $this->note = $note;
 

@@ -55,7 +55,6 @@ class ReservationSubscriber implements EventSubscriberInterface
     {
         $feedback = new Feedback();
         $feedback->setReservation($reservation);
-        $feedback->setNote(0);
         $this->entityManager->persist($feedback);
         $this->entityManager->flush();
         $frontendUrl = $_ENV['FRONTEND_URL'];
