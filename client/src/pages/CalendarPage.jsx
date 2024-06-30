@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Spinner, useToast, IconButton } from '@chakra-ui/react';
+import {
+  Box, Spinner, useToast, IconButton, Table, Thead, Tbody, Tr, Th, Td, Button,
+} from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import PlanningService from '../services/planningService';
 import CompanyService from '../services/CompanyService';
@@ -17,6 +19,7 @@ const CalendarPage = () => {
   const [selectedFilterUser, setSelectedFilterUser] = useState('');
   const [event, setEvent] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [reservations, setReservations] = useState([]);
   const toast = useToast();
 
   const get_plannings = async () => {
@@ -24,7 +27,7 @@ const CalendarPage = () => {
     try {
       const response = await PlanningService.get_plannings(token);
       const data = await response.json();
-      const workHours = data['hydra:member'].filter(planning => planning.type == 'workHour').map(planning => {
+      const workHours = data['hydra:member'].filter(planning => planning.type === 'workHour').map(planning => {
         return {
           start: planning.start.split('+')[0],
           end: planning.end.split('+')[0],
@@ -43,6 +46,8 @@ const CalendarPage = () => {
           }
         };
       });
+      const reservations = data['hydra:member'].filter(planning => planning.type === 'reservation');
+      setReservations(reservations);
       setPlannings(workHours);
     } catch (error) {
       toast({
@@ -64,7 +69,6 @@ const CalendarPage = () => {
       const data = await response.json();
       setUsers(data.users['hydra:member']);
       setStudios(data.studios['hydra:member']);
-      console.log(data)
     } catch (error) {
       toast({
         title: 'Erreur de chargement',
@@ -78,12 +82,35 @@ const CalendarPage = () => {
     }
   };
 
+  const handleCancelReservation = async (reservationId) => {
+    try {
+      // Assuming PlanningService has a method for canceling reservations
+      await PlanningService.cancel_reservation(token, reservationId);
+      toast({
+        title: 'Réservation annulée',
+        description: 'La réservation a été annulée avec succès',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+      get_plannings();  // Refresh the plannings to update the reservations list
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'annuler la réservation',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
     get_plannings();
     get_company_detail();
   }, []);
 
-  const filteredPlannings = plannings.filter(planning => 
+  const filteredPlannings = plannings.filter(planning =>
     (!selectedFilterStudio || planning.extendedProps.studio === selectedFilterStudio) &&
     (!selectedFilterUser || planning.extendedProps.employee === selectedFilterUser)
   );
@@ -116,6 +143,37 @@ const CalendarPage = () => {
             setEvent={setEvent}
             get_plannings={get_plannings}
           />
+          <Table variant="simple" mt={4}>
+            <Thead>
+              <Tr>
+                <Th>Nom du client</Th>
+                <Th>Nom de l'employé</Th>
+                <Th>Studio</Th>
+                <Th>Date</Th>
+                <Th>Healthy</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {reservations.map(reservation => (
+                <Tr key={reservation.id}>
+                  <Td>{`${reservation.customer.firstname} ${reservation.customer.lastname}`}</Td>
+                  <Td>{`${reservation.employee.firstname} ${reservation.employee.lastname}`}</Td>
+                  <Td>{`${reservation.studio.name}`}</Td>
+                  <Td>{new Date(reservation.date).toLocaleString()}</Td>
+                  <Td>{reservation.healthy ? 'Yes' : 'No'}</Td>
+                  <Td>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => handleCancelReservation(reservation.id)}
+                    >
+                      Annuler
+                    </Button>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </>
       )}
       <EventModalCalendar

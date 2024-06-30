@@ -145,7 +145,8 @@ class PlanningProvider implements ProviderInterface
 
     private function isContainedWithin(Reservation $reservation, WorkHour $workHour): bool
     {
-        return $reservation->getDate() >= $workHour->getStartTime() && $reservation->getDate() <= $workHour->getEndTime();
+
+        return $reservation->getDate() >= $workHour->getStartTime() && (clone $reservation->getDate())->modify('+1 hour') <= $workHour->getEndTime();
     }
 
     private function isOverlappingWithAny(WorkHour $workHour, iterable $unavailabilityHours): bool
