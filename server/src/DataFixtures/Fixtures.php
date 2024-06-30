@@ -120,7 +120,7 @@ class Fixtures extends Fixture
     private function companyFixture() : array
     {
         return [
-            'company{1..4}' => [
+            'company{1..8}' => [
                 'name'=> '<company()>',
                 'siren'=> '<randomElement(["123456789"])>',
                 'email'=> '<email()>',
@@ -132,9 +132,7 @@ class Fixtures extends Fixture
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
                 'socialMedia'=> '<url()>',
                 'website'=> '<url()>',
-                'isVerified'=> '<boolean()>',
-                'isActive'=> '<boolean()>',
-                'isRejected'=> '<boolean()>',
+                'status'=> '<randomElement(["pending", "accepted", "refused", "deleted"])>',
                 'owner'=> '@user*',
             ],
         ];
