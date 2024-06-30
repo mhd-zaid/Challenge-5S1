@@ -97,7 +97,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Assert\Unique]
-    #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN', 'ROLE_EMPLOYEE'])]
+    #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN', 'ROLE_EMPLOYEE'] , multiple: true)]
     #[Groups(['user:read'])]
     private array $roles = [];
 
