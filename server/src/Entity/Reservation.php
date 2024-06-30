@@ -35,7 +35,7 @@ use App\Validator\AvailableSlot;
     ]
     )]
     
-#[AvailableSlot]
+#[AvailableSlot(groups: ['reservation:create'])]
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
 class Reservation
@@ -55,7 +55,7 @@ class Reservation
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:update'])]
     private $status = 'RESERVED';
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
@@ -65,7 +65,7 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read'])]
+    #[Groups(['reservation:create', 'reservation:read', 'reservation:update'])]
     private ?User $employee = null;
 
     #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]

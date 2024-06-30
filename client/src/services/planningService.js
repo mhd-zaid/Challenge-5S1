@@ -16,6 +16,24 @@ const PlanningService = {
         console.error("An error occurred during getting all plans:", error);
         throw error;
         }
+    },
+    cancel_reservation: async (token, reservationId) => {
+        try {
+        const response = await fetch(`${url}/reservations/${reservationId}`, {
+            method: 'PATCH',
+            headers: {
+            'Content-Type': 'application/merge-patch+json',
+            Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+            status: 'CANCELED',
+            }),
+        });
+        return response;
+        } catch (error) {
+        console.error("An error occurred during cancelling the reservation:", error);
+        throw error;
+        }
     }
 
 };
