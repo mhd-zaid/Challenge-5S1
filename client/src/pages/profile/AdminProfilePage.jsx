@@ -19,6 +19,7 @@ import {
   FormLabel,
   Input,
 } from '@chakra-ui/react';
+import ManageAccount from '@/components/Modal/ManageAccount.jsx';
 
 const AdminProfile = ({user}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,6 +55,7 @@ const AdminProfile = ({user}) => {
           <Text fontSize="lg" color="gray.600">
             {user.email}
           </Text>
+          <ManageAccount />
         </Box>
         <Button colorScheme="blue" onClick={handleEditProfile}>
           Modifier le profil

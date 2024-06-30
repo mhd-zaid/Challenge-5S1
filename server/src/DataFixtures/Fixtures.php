@@ -289,7 +289,7 @@ class Fixtures extends Fixture
             $service->setDescription($serviceFixtures[$rand]['description']);
             $service->setCost($serviceFixtures[$rand]['cost']);
             $service->setDuration($serviceFixtures[$rand]['duration']);
-            $service->addStudio($studio);
+            $service->setStudio($studio);
             $service->setCreatedAt(new \DateTime());
             $service->setUpdatedAt(new \DateTime());
             $manager->persist($service);

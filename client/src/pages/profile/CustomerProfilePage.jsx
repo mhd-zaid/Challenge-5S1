@@ -9,6 +9,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import ManageAccount from '@/components/Modal/ManageAccount.jsx';
 
 const CustomerProfile = ({user}) => {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ const CustomerProfile = ({user}) => {
           <Text fontSize="lg" color="gray.600">
             {user.email}
           </Text>
+          <ManageAccount />
         </Box>
       </Flex>
       <Stack spacing={4}>

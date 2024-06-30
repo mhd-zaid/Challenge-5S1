@@ -107,7 +107,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?Company $company = null;
 
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: WorkHour::class)]

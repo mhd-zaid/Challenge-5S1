@@ -27,16 +27,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
   const [companies, setCompanies] = useState([]);
   const [studioData, setStudioData] = useState(studio);
   const [isEditable, setIsEditable] = useState(!studio);
-  const [studioOpeningTimes, setStudioOpeningTimes] = useState({
-    1: { start: null, end: null },
-    2: { start: null, end: null },
-    3: { start: null, end: null },
-    4: { start: null, end: null },
-    5: { start: null, end: null },
-    6: { start: null, end: null },
-    7: { start: null, end: null },
-  });
-
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -58,7 +48,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
   }, []);
 
   async function upsertStudio(data) {
-    const url = studio ? import.meta.env.VITE_BACKEND_URL + studio['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studios`;
+    const url = studio ? import.meta.env.VITE_BACKEND_BASE_URL + studio['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studios`;
     const method = studio ? 'PATCH' : 'POST';
     const contentType = studio ? 'application/merge-patch+json' : 'application/ld+json';
 
@@ -76,6 +66,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
     if (result.error) {
       console.error('error', result.error);
     }else {
+      onSubmitForm(true);
       setIsEditable(false);
       setStudioData(result);
     }
@@ -94,7 +85,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
         resolve()
       }, 1000)
     }).then(() => {
-      onSubmitForm(true);
       toast({
         title: {studioData} ? 'Modifications enregistrées' : 'Studio créé',
         status: 'success',
@@ -215,18 +205,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
                 )}
               </FormControl>
             </Box>
-            {/*<Box w='50%'>*/}
-            {/*  /!* Numéro de siret *!/*/}
-            {/*  <FormControl mt={4}>*/}
-            {/*    <FormLabel htmlFor='siret'>Numéro de siret</FormLabel>*/}
-            {/*    <Input*/}
-            {/*      disabled={true}*/}
-            {/*      id='siret'*/}
-            {/*      placeholder='Entrer votre numéro de siret'*/}
-            {/*      value={studioData?.siret}*/}
-            {/*    />*/}
-            {/*  </FormControl>*/}
-            {/*</Box>*/}
           </Flex>
 
           <Flex gap={8}>
@@ -302,48 +280,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
               <Text>{studioData?.address}</Text>
             )}
           </FormControl>
-
-          {/*Horaire d'ouverture*/}
-          {isEditable ? (
-            Array.from(Object.keys(studioOpeningTimes)).map((day, index) => (
-              <Flex gap={4}>
-                <FormLabel htmlFor={`studioOpeningTimes.${day}.start`}>Ouverture {day}</FormLabel>
-                <FormControl isInvalid={errors[`studioOpeningTimes.${day}.start`]}>
-                  <Input
-                    id={`studioOpeningTimes.${day}.start`}
-                    type='time'
-                    defaultValue={studioData?.studioOpeningTimes[day].start}
-                    {...register(`studioOpeningTimes.${day}.start`, {
-                    })}
-                  />
-                  <FormErrorMessage>
-                    {errors[`studioOpeningTimes.${day}.start`] && errors[`studioOpeningTimes.${day}.start`].message}
-                  </FormErrorMessage>
-                </FormControl>
-
-                <FormControl isInvalid={errors[`studioOpeningTimes.${day}.end`]} IsRequired={studioOpeningTimes[day].start}>
-                  <Input
-                    id={`studioOpeningTimes.${day}.end`}
-                    type='time'
-                    defaultValue={studioData?.studioOpeningTimes[day].end}
-                    {...register(`studioOpeningTimes.${day}.end`, {
-                    })}
-                  />
-                  <FormErrorMessage>
-                    {errors[`studioOpeningTimes.${day}.end`] && errors[`studioOpeningTimes.${day}.end`].message}
-                  </FormErrorMessage>
-                </FormControl>
-              </Flex>
-            ))
-          ) : (
-            <List>
-              {studioData?.studioOpeningTimes.map((day, index) => (
-                <ListItem key={index}>
-                  {day.startTime.split('T')[1].split(':')[0]}h{day.startTime.split('T')[1].split(':')[1]} : {day.endTime.split('T')[1].split(':')[0]}h{day.endTime.split('T')[1].split(':')[1]}
-                </ListItem>
-              ))}
-            </List>
-          )}
 
           {isEditable ? (
             <Flex p={4} gap={4} justifyContent={"end"}>
