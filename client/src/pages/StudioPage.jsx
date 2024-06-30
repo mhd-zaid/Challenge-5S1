@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  Card,
-  CardBody,
   Divider,
   Flex,
   Heading,

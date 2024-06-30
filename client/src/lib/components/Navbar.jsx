@@ -35,7 +35,8 @@ const Navbar = ({ onLogout, menus }) => {
     >
       <Box>
         <Heading
-          as="h1"
+          as={'h1'}
+          m={0}
           fontSize="24px"
           fontWeight="bold"
           color="#333"

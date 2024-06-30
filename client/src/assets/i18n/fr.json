@@ -32,5 +32,18 @@
     "choose-employee": "Choisir ce photographe",
     "reservation-success": "Votre réservation a bien été prise en compte",
     "my-reservations": "Voir mes réservations"
+  },
+  "profile": {
+    "general-info": "Informations générales",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "booking-history": "Historique des réservations",
+    "no-reservations": "Vous n'avez pas encore de réservations",
+    "reserved": "Réservé",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "change-booking": "Modifier la réservation",
+    "cancel-change": "Annuler la modification",
+    "reservation-updated": "Votre réservation a bien été modifiée"
   }
 }

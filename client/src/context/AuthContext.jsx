@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
             logout();
           }
         }
+        setAuthLoading(false);
       } catch (error) {
         if (error.name === 'AbortError') {
           console.info('Fetch aborted');

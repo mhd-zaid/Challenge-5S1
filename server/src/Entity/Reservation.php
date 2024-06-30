@@ -55,7 +55,7 @@ class Reservation
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
-    #[Groups(['reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:update'])]
     private $status = 'RESERVED';
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]

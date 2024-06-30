@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import AdminProfile from '@/pages/profile/AdminProfilePage.jsx';
 import EmployeeProfile from '@/pages/profile/EmployeeProfilePage.jsx';
@@ -7,47 +6,24 @@ import PrestaProfile from '@/pages/profile/PrestaProfilePage.jsx';
 import { Box } from '@chakra-ui/react';
 
 const ProfilePage = () => {
-  const { user, token } = useAuth();
-  const [userInfo, setUserInfo] = useState({});
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${user.id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/ld+json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      setUserInfo(data)
-    }
-
-    fetchUser();
-  }, []);
+  const { user } = useAuth();
 
   const getPage = () => {
-    if(user.roles.includes('ROLE_ADMIN')) {
-      return <AdminProfile user={userInfo} />
-    } else if(user.roles.includes('ROLE_PRESTA')) {
-      return <PrestaProfile user={userInfo} />
-    } else if(user.roles.includes('ROLE_EMPLOYEE')) {
-      return <EmployeeProfile user={userInfo} />
+    if (user.roles.includes('ROLE_ADMIN')) {
+      return <AdminProfile user={user} />;
+    } else if (user.roles.includes('ROLE_PRESTA')) {
+      return <PrestaProfile user={user} />;
+    } else if (user.roles.includes('ROLE_EMPLOYEE')) {
+      return <EmployeeProfile user={user} />;
     } else {
-      return <CustomerProfile user={userInfo} />
+      return <CustomerProfile user={user} />;
     }
-  }
+  };
 
   return (
-    <>
-      <Box
-        maxW="7xl"
-        mx="auto"
-        p={6}
-      >
-        {getPage()}
-      </Box>
-    </>
+    <Box maxW="7xl" mx="auto" p={6}>
+      {getPage()}
+    </Box>
   );
 };
 
