@@ -279,7 +279,7 @@ const AdminControlCenterPage = () => {
                     <Th>Nom</Th>
                     <Th>Email</Th>
                     <Th>Téléphone</Th>
-                    <Th>Vérifiée</Th>
+                    <Th>Status</Th>
                     <Th>Date d'inscription</Th>
                     <Th></Th>
                   </Tr>
@@ -292,15 +292,15 @@ const AdminControlCenterPage = () => {
                       <Td>{company.phone}</Td>
                       <Td>
                         <Flex justifyContent={"center"}>
-                          {!company.isActive ? (
-                            <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
-                          ) : company.isRejected ? (
-                            <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
-                          ) : !company.isVerified && !company.isRejected ? (
+                          {company.status === 'pending' ? (
                             <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
-                          ) : (
+                          ) : company.status === 'accepted' ? (
                             <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
-                          )}
+                          ) : company.status === 'refused' ? (
+                            <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                          ) : company.status === 'deleted' ? (
+                            <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                          ) : null}
                         </Flex>
                       </Td>
                       <Td>{company.createdAt}</Td>
@@ -327,21 +327,21 @@ const AdminControlCenterPage = () => {
                 onItemsPerPageChange={handleItemsPerPageChangeCompany}
               />
               <Box my={4}>
-                <Flex gap={4}>
-                  <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
-                  <Text>Entreprise Désactive</Text>
-                </Flex>
-                <Flex gap={4}>
-                  <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
-                  <Text>Entreprise Rejetée</Text>
-                </Flex>
-                <Flex gap={4}>
+                <Flex gap={4} alignItems={"center"}>
                   <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
-                  <Text>En attente de vérification</Text>
+                  <Text>Demande en attente</Text>
                 </Flex>
-                <Flex gap={4}>
+                <Flex gap={4} alignItems={"center"}>
                   <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
-                  <Text>Entreprise Vérifiée</Text>
+                  <Text>Demande accepté</Text>
+                </Flex>
+                <Flex gap={4} alignItems={"center"}>
+                  <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                  <Text>Demande rejetée</Text>
+                </Flex>
+                <Flex gap={4} alignItems={"center"}>
+                  <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                  <Text>Entreprise supprimée</Text>
                 </Flex>
               </Box>
             </TabPanel>

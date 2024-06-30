@@ -143,27 +143,6 @@ class Company
     ])]
     public ?MediaObject $kbis = null;
 
-    #[ORM\Column]
-    #[Groups(['company:read:admin', 'company:read:presta'
-        , 'company:update:admin'
-        , 'company:create:admin'
-    ])]
-    private ?bool $isVerified = false;
-
-    #[ORM\Column]
-    #[Groups(['company:read:admin', 'company:read:presta'
-        , 'company:update:admin'
-        , 'company:create:admin'
-    ])]
-    private ?bool $isRejected = false;
-
-    #[ORM\Column]
-    #[Groups(['company:read:admin', 'company:read:presta'
-        , 'company:update:admin'
-        , 'company:create:admin'
-    ])]
-    private ?bool $isActive = false;
-
     private ?string $fullAddress = null;
 
     #[ORM\ManyToOne(inversedBy: 'company')]
@@ -195,6 +174,19 @@ class Company
         , 'user:read:presta'
     ])]
     private ?string $socialMedia = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['company:read:admin', 'company:read:presta'
+        , 'company:update:admin'
+        , 'company:create:admin'
+    ])]
+    #[Assert\Choice(choices: [
+        'pending',
+        'accepted',
+        'refused',
+        'deleted'
+    ])]
+    private ?string $status = 'pending';
 
     public function __construct()
     {
@@ -352,42 +344,6 @@ class Company
         return $this;
     }
 
-    public function getIsVerified(): ?bool
-    {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    public function getIsRejected(): ?bool
-    {
-        return $this->isRejected;
-    }
-
-    public function setIsRejected(bool $isRejected): static
-    {
-        $this->isRejected = $isRejected;
-
-        return $this;
-    }
-
-    public function getIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
     public function getOwner(): ?User
     {
         return $this->owner;
@@ -432,6 +388,18 @@ class Company
     public function setSocialMedia(?string $socialMedia): static
     {
         $this->socialMedia = $socialMedia;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

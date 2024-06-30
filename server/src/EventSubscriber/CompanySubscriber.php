@@ -17,7 +17,7 @@ class CompanySubscriber implements EventSubscriberInterface
 {
     private ?Company $updatedCompany = null;
     private ?string $updatedField = null;
-    private ?bool $isVerified = null;
+    private ?bool $status = null;
 
     public function __construct(
         private MailService $emailService
@@ -62,8 +62,8 @@ class CompanySubscriber implements EventSubscriberInterface
         if ($object instanceof Company) {
             $this->updatedCompany = $object;
 
-            if ($args->hasChangedField('isVerified')) {
-                $this->isVerified = $args->getNewValue('isVerified');
+            if ($args->hasChangedField('status')) {
+                $this->status = $args->getNewValue('status');
             }
         }
     }
@@ -73,8 +73,8 @@ class CompanySubscriber implements EventSubscriberInterface
         if ($this->updatedCompany) {
             $frontendUrl = $_ENV['FRONTEND_URL'];
 
-            if ($this->isVerified !== null) {
-                if ($this->isVerified) {
+            if ($this->status !== null) {
+                if ($this->status) {
                     $this->emailService->sendEmail($this->updatedCompany->getOwner()
                         , 'Votre compte a été vérifié'
                         , 'company_verified.html.twig'
@@ -105,7 +105,7 @@ class CompanySubscriber implements EventSubscriberInterface
             }
 
             $this->updatedCompany = null;
-            $this->isVerified = null;
+            $this->status = null;
         }
     }
 }
