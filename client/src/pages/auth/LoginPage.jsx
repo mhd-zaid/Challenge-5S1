@@ -196,7 +196,7 @@ const LoginPage = () => {
       <Text textAlign="center" mt={4}>
         {t('auth.no-account')}
       </Text>
-      <Link to="/auth/login">
+      <Link to="/auth/register">
         <Button size="lg" mt={4}>
           {t('auth.register')}
         </Button>

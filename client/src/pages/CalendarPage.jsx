@@ -158,7 +158,7 @@ const CalendarPage = () => {
         const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/available_slots/${reservation.studio['@id'].split('/')[3]}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/ld+json',
                 'Authorization': 'Bearer ' + token
             }
         });

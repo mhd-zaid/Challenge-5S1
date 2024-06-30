@@ -10,9 +10,9 @@ import {
   Heading,
   Text,
   useToast,
-  Spinner,
-  Link
+  Spinner
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const RegisterPage = () => {
@@ -31,6 +31,11 @@ const RegisterPage = () => {
         email: data.email,
         phone: data.phoneNumber,
         plainPassword: data.password,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/ld+json',
+        },
       });
       if (response.status === 201) {
         setIsAccountCreated(true);
