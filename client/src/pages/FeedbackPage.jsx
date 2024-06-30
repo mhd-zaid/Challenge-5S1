@@ -16,7 +16,7 @@ import {
   HStack
 } from '@chakra-ui/react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 
 const getFeedback = async (id) => {
     try {
@@ -36,6 +36,7 @@ const FeedbackForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { register, handleSubmit, formState: { errors } } = useForm();
     const toast = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchFeedback = async () => {
@@ -64,7 +65,7 @@ const FeedbackForm = () => {
                     'Content-Type': 'application/merge-patch+json',
                 },
                 body: JSON.stringify({
-                    rating: parseInt(data.rating),
+                    note: parseInt(data.rating),
                     message: data.message,
                 }),
             });
@@ -76,6 +77,7 @@ const FeedbackForm = () => {
                     duration: 5000,
                     isClosable: true,
                 });
+                navigate('/');
             } else {
                 toast({
                     title: 'Erreur',
@@ -86,7 +88,6 @@ const FeedbackForm = () => {
                 });
             }
         } catch (error) {
-            console.error(error);
             toast({
                 title: 'Erreur',
                 description: 'Erreur lors de l\'envoi du feedback.',
@@ -100,7 +101,11 @@ const FeedbackForm = () => {
     };
 
     if (!feedback) {
-        return <Box p={4}>Chargement...</Box>;
+        return (
+            <Box p={4} maxWidth="500px" mx="auto">
+                <Heading as="h2" size="lg" textAlign="center" mb={10} mt={20}>Chargement...</Heading>
+            </Box>
+        );
     }
     
     if (feedback.reservation.status !== 'COMPLETED') {
