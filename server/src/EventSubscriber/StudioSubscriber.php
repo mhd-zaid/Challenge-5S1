@@ -39,9 +39,12 @@ class StudioSubscriber implements EventSubscriberInterface
     {
         $reservations = $studio->getReservations();
         foreach ($reservations as $reservation) {
-            $reservation->setDeletedAt(new \DateTime());
-            $this->entityManager->persist($reservation);
-            $this->entityManager->flush();
+            if($reservation->getStatus() === 'RESERVED') {
+                $reservation->setStatus('CANCELED');
+                $reservation->setDeletedAt(new \DateTime());
+                $this->entityManager->persist($reservation);
+                $this->entityManager->flush();        
+            }
         }
 
         $workHours = $studio->getWorkHours();
@@ -50,7 +53,7 @@ class StudioSubscriber implements EventSubscriberInterface
             $this->entityManager->persist($workHour);
             $this->entityManager->flush();
         }
-
+        
         $studio->setDeletedAt(new \DateTime());
         $this->entityManager->persist($studio);
         $this->entityManager->flush();
