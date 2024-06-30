@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Post;
 use App\Repository\StatRepository;
+use App\State\StatProvider;
 use App\State\StatReservationProvider;
 use App\State\StatVisiteProvider;
 use Doctrine\DBAL\Types\Types;
@@ -26,6 +27,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_EMPLOYEE')",
             provider: StatReservationProvider::class,
             uriTemplate: '/stats/reservation',
+        ),
+        new Get(
+            security: "is_granted('ROLE_ADMIN')",
+            provider: StatProvider::class,
+            uriTemplate: '/stats',
         ),
         new Post()
     ],
