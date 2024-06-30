@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Spinner, useToast, IconButton, Table, Thead, Tbody, Tr, Th, Td, Button,
+  Icon
 } from '@chakra-ui/react';
 import { RepeatIcon } from '@chakra-ui/icons';
 import PlanningService from '../services/planningService';
@@ -9,6 +10,9 @@ import { useAuth } from '../context/AuthContext';
 import FilterCalendar from '../components/FilterCalendar';
 import EventModalCalendar from '../components/Modal/EventModalCalendar';
 import Calendar from '../components/Calendar';
+import useCustomDate from '../hooks/useCustomDate';
+import { CloseIcon, CheckIcon } from '@chakra-ui/icons';
+import ReservationService from '../services/ReservationService';
 
 const CalendarPage = () => {
   const { token, user } = useAuth();
@@ -21,6 +25,8 @@ const CalendarPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [reservations, setReservations] = useState([]);
   const toast = useToast();
+
+  const dayjs = useCustomDate();
 
   const get_plannings = async () => {
     setIsLoading(true);
@@ -84,7 +90,7 @@ const CalendarPage = () => {
 
   const handleCancelReservation = async (reservationId) => {
     try {
-      // Assuming PlanningService has a method for canceling reservations
+      console.log(reservationId)
       await PlanningService.cancel_reservation(token, reservationId);
       toast({
         title: 'Réservation annulée',
@@ -93,7 +99,7 @@ const CalendarPage = () => {
         duration: 5000,
         isClosable: true,
       });
-      get_plannings();  // Refresh the plannings to update the reservations list
+      get_plannings();
     } catch (error) {
       toast({
         title: 'Erreur',
@@ -104,6 +110,88 @@ const CalendarPage = () => {
       });
     }
   };
+
+  const replaceReservation = async (reservation) => {
+    const reservationDate = dayjs.utc(reservation.date).format('YYYY-MM-DD');
+    const reservationTime = dayjs.utc(reservation.date).format('HH:mm');
+    try {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/available_slots/${reservation.studio['@id'].split('/')[3]}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch available slots');
+        }
+
+        const data = await response.json();
+        const availableSlots = data[reservationDate];
+
+        const slotsAtTime = availableSlots.filter(slot => slot.start === reservationTime);
+
+        if (slotsAtTime.length > 0) {
+            const usersAvailable = slotsAtTime.reduce((acc, slot) => {
+                slot.users.forEach(user => {
+                    acc.add({
+                        id: user.id,
+                        name: `${user.fullname}`
+                    });
+                });
+                return acc;
+            }, new Set());
+
+            console.log('Utilisateurs disponibles :', Array.from(usersAvailable));
+
+            const updateReservation = await ReservationService.replace_reservation(token, {
+                id: reservation.id,
+                employee: Array.from(usersAvailable)[0].id,
+            });
+
+            console.log("ICI")
+
+            if (updateReservation.ok) {
+                toast({
+                    title: 'Réservation remplacée',
+                    description: 'La réservation a été remplacée avec succès',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true,
+                });
+                get_plannings();
+            } else {
+                toast({
+                    title: 'Erreur',
+                    description: 'Impossible de remplacer la réservation',
+                    status: 'error',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        } else {
+            toast({
+                title: 'Aucun créneau disponible',
+                description: 'Aucun créneau n\'est disponible pour remplacer cette réservation',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+
+    } catch (error) {
+      console.error('An error occurred during replacing a reservation:', error);
+        toast({
+            title: 'Erreur',
+            description: 'Impossible de remplacer la réservation',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+        });
+    }
+};
+
+
 
   useEffect(() => {
     get_plannings();
@@ -120,60 +208,75 @@ const CalendarPage = () => {
       {isLoading ? (
         <Spinner size="xl" />
       ) : (
-        <>
-          {user.roles.includes('ROLE_PRESTA') && (
-            <FilterCalendar
-              studios={studios}
-              users={users}
-              selectedFilterStudio={selectedFilterStudio}
-              setSelectedFilterStudio={setSelectedFilterStudio}
-              selectedFilterUser={selectedFilterUser}
-              setSelectedFilterUser={setSelectedFilterUser}
+    <>
+    {user.roles.includes('ROLE_PRESTA') && (
+      <FilterCalendar
+        studios={studios}
+        users={users}
+        selectedFilterStudio={selectedFilterStudio}
+        setSelectedFilterStudio={setSelectedFilterStudio}
+        selectedFilterUser={selectedFilterUser}
+        setSelectedFilterUser={setSelectedFilterUser}
+      />
+    )}
+    <IconButton
+      onClick={get_plannings}
+      icon={<RepeatIcon />}
+      aria-label="Recharger le planning"
+      mb={4}
+    />
+    <Calendar
+      user={user}
+      plannings={filteredPlannings}
+      setEvent={setEvent}
+      get_plannings={get_plannings}
+    />
+    <Table variant="simple" mt={4}>
+      <Thead>
+        <Tr>
+          <Th>Nom du client</Th>
+          <Th>Nom de l'employé</Th>
+          <Th>Studio</Th>
+          <Th>Date</Th>
+          <Th>Healthy</Th>
+          <Th>Actions</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        {reservations.map(reservation => (
+          <Tr key={reservation.id}>
+            <Td>{`${reservation.customer.firstname} ${reservation.customer.lastname}`}</Td>
+            <Td>{`${reservation.employee.firstname} ${reservation.employee.lastname}`}</Td>
+            <Td>{`${reservation.studio.name}`}</Td>
+            <Td>{dayjs.utc(reservation.date).format('YYYY-MM-DD HH:mm:ss')}</Td>
+            <Td>
+              {reservation.healthy ? (
+                <CheckIcon color="green.500" />
+              ) : (
+                <CloseIcon color="red.500" />
+              )}
+            </Td>
+            <Td>
+            <Box display="flex" alignItems="center">
+            <IconButton
+              aria-label="Annuler"
+              icon={<CloseIcon />}
+              onClick={() => handleCancelReservation(reservation.id)}
+              mr={4} 
             />
-          )}
-          <IconButton
-            onClick={get_plannings}
-            icon={<RepeatIcon />}
-            aria-label="Recharger le planning"
-            mb={4}
-          />
-          <Calendar
-            user={user}
-            plannings={filteredPlannings}
-            setEvent={setEvent}
-            get_plannings={get_plannings}
-          />
-          <Table variant="simple" mt={4}>
-            <Thead>
-              <Tr>
-                <Th>Nom du client</Th>
-                <Th>Nom de l'employé</Th>
-                <Th>Studio</Th>
-                <Th>Date</Th>
-                <Th>Healthy</Th>
-                <Th>Actions</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {reservations.map(reservation => (
-                <Tr key={reservation.id}>
-                  <Td>{`${reservation.customer.firstname} ${reservation.customer.lastname}`}</Td>
-                  <Td>{`${reservation.employee.firstname} ${reservation.employee.lastname}`}</Td>
-                  <Td>{`${reservation.studio.name}`}</Td>
-                  <Td>{new Date(reservation.date).toLocaleString()}</Td>
-                  <Td>{reservation.healthy ? 'Yes' : 'No'}</Td>
-                  <Td>
-                    <Button
-                      colorScheme="red"
-                      onClick={() => handleCancelReservation(reservation.id)}
-                    >
-                      Annuler
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
+            {!reservation.healthy && (
+                <IconButton
+                  onClick={() => replaceReservation(reservation)}
+                  icon={<RepeatIcon />}
+                  aria-label="Essayer de remplacer la réservation"
+                />
+            )}
+          </Box>
+            </Td>
+          </Tr>
+        ))}
+      </Tbody>
+    </Table>
         </>
       )}
       <EventModalCalendar
