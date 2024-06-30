@@ -32,7 +32,7 @@ const ManageAccount = () => {
       await fetch(`${BASE_URL}/users/${user.id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/ld+json',
           'Authorization': `Bearer ${token}`
         }
       }).then((response) => {

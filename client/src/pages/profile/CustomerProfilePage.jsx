@@ -51,7 +51,7 @@ const CustomerProfile = ({ user }) => {
     await fetch(import.meta.env.VITE_BACKEND_URL + `/reservations`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/ld+json',
         Authorization: `Bearer ${token}`,
       },
     })

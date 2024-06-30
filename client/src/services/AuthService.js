@@ -106,7 +106,7 @@ const AuthService = {
     const response = await fetch(`${url}/me`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/ld+json',
         Authorization: `Bearer ${token}`,
       },
       signal: signal,
