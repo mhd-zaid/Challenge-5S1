@@ -29,7 +29,8 @@ final readonly class UserExtension implements QueryCollectionExtensionInterface
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            return;
+            $queryBuilder->andWhere(sprintf('%s.id != :currentUserId', $rootAlias))
+                ->setParameter('currentUserId', $user->getId());
         } elseif ($this->security->isGranted('ROLE_PRESTA')) {
             $company = $user->getCompany();
             if ($company !== null) {

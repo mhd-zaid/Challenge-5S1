@@ -283,7 +283,63 @@ const AdminControlCenterPage = () => {
           {/*Gestion des compagnies*/}
           {isAdministrator &&
             <TabPanel>
-              <Button mb={4} onClick={() => handleAdd()}>Ajouter une compagnie</Button>
+              <Button mb={4} onClick={handleAdd}>Ajouter une compagnie</Button>
+              <Table variant="simple">
+                <Thead>
+                  <Tr>
+                    <Th>Nom</Th>
+                    <Th>Email</Th>
+                    <Th>Téléphone</Th>
+                    <Th>Vérifiée</Th>
+                    <Th>Date d'inscription</Th>
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {companies && companies.map((company) => (
+                    <Tr key={company.id}>
+                      <Td>{company.name}</Td>
+                      <Td>{company.email}</Td>
+                      <Td>{company.phone}</Td>
+                      <Td>
+                        <Flex justifyContent={"center"}>
+                          {!company.isActive ? (
+                            <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                          ) : company.isRejected ? (
+                            <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                          ) : !company.isVerified && !company.isRejected ? (
+                            <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
+                          ) : (
+                            <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
+                          )}
+                        </Flex>
+                      </Td>
+                      <Td>{company.createdAt}</Td>
+                      <Td>
+                        <Menu>
+                          <MenuButton as={Flex} bg={"transparent"} cursor={"pointer"}>
+                            <Icon icon="system-uicons:menu-vertical" fontSize={30} style={{color: "black"}} />
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem onClick={() => handleView(company)}>Voir les informations de la compagnie</MenuItem>
+                            <MenuItem onClick={() => handleView(company)}>Modifier les informations du propriétaire</MenuItem>
+                            <MenuItem onClick={() => handleView(company)}>Modifier le propriétaire</MenuItem>
+                            <MenuItem onClick={() => handleView(company)}>Désactiver la compagnie</MenuItem>
+                            <MenuItem onClick={() => handleDelete(company)}>Supprimer</MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
+              <Pagination
+                page={paginationCompany.page}
+                itemsPerPage={paginationCompany.itemsPerPage}
+                totalItems={paginationCompany.totalItems}
+                onPageChange={handlePageChangeCompany}
+                onItemsPerPageChange={handleItemsPerPageChangeCompany}
+              />
               <Box my={4}>
                 <Flex gap={4}>
                   <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
