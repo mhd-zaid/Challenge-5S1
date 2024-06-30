@@ -23,6 +23,7 @@ import Unavailability from './pages/Unavailability.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
 import ProfilePage from '@/pages/profile/ProfilePage.jsx';
 import AdminControlCenterPage from '@/pages/admin/AdminControlCenterPage.jsx';
+import FeedbackPage from './pages/FeedbackPage.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -43,6 +44,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               />
               <Route path="verify/:token" element={<EmailVerifiedPage />} />
             </Route>
+            <Route path="feedback/:id" element={<FeedbackPage />} />
 
             <Route element={<AuthGuard />}>
               <Route path="profile" element={<ProfilePage />} />

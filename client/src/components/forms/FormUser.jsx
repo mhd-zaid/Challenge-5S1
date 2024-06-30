@@ -12,6 +12,7 @@ import {
   useToast, Select
 } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { useEffect, useState } from 'react';
 
 const FormUser = ({ user, onSubmitForm }) => {
   const { token, isAdministrator } = useAuth();
@@ -19,7 +20,8 @@ const FormUser = ({ user, onSubmitForm }) => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting } ,
+    getValues
   } = useForm({
     defaultValues: {
       lastname: user?.lastname || '',
@@ -29,12 +31,33 @@ const FormUser = ({ user, onSubmitForm }) => {
       roles: user?.roles[0] || '',
     }
   });
+  const [companies, setCompanies] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(user?.roles[0] || '');
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL
 
-  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/companies`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/ld+json',
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+      const data = await response.json();
+      setCompanies(data['hydra:member'].map((company) => ({
+        ...company,
+        id: data['@id'] + '/' + company.id,
+      })));
+    };
+
+    if (isAdministrator) fetchCompanies();
+  }, []);
+
 
   async function processUser(data) {
     if (user) {
-      const response = await fetch(BASE_URL + '/users/' + user['@id'].split('/')[3], {
+      return await fetch(BASE_URL + '/users/' + user['@id'].split('/')[3], {
         method: 'PATCH',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -42,14 +65,8 @@ const FormUser = ({ user, onSubmitForm }) => {
         },
         body: JSON.stringify(data),
       });
-
-      const result = await response.json();
-
-      if (result.error) {
-        console.error('error', result.error);
-      }
     } else {
-      const response = await fetch(BASE_URL + '/users', {
+      return await fetch(BASE_URL + '/users', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -57,12 +74,6 @@ const FormUser = ({ user, onSubmitForm }) => {
         },
         body: JSON.stringify(data),
       });
-
-      const result = await response.json();
-
-      if (result.error) {
-        console.error('error', result.error);
-      }
     }
   }
 
@@ -73,7 +84,7 @@ const FormUser = ({ user, onSubmitForm }) => {
     }
 
     await processUser(values).then(() => {
-      onSubmitForm(false);
+      onSubmitForm(true);
       toast({
         title: 'Modifications enregistrées',
         status: 'success',
@@ -81,7 +92,7 @@ const FormUser = ({ user, onSubmitForm }) => {
         isClosable: true,
       });
     });
-}
+  }
 
   const handleDelete = async () => {
     const confirmAction = confirm('Etes-vous sûr de vouloir supprimer cet utilisateur ?');
@@ -200,37 +211,53 @@ const FormUser = ({ user, onSubmitForm }) => {
                 </FormErrorMessage>
               </FormControl>
             </Box>
-            <Box w='50%'>
-              <FormControl mt={4} isRequired>
-                <FormLabel htmlFor='roles'>Role</FormLabel>
+            {isAdministrator && !user && (
+              <Box w='50%'>
+                <FormControl mt={4} isRequired>
+                  <FormLabel htmlFor='roles'>Role</FormLabel>
+                  <Select
+                    id='roles'
+                    placeholder="Role"
+                    {...register('roles', {
+                      required: 'Ce champ est requis',
+                    })}
+                    onChange={(e) => setSelectedRole(e.target.value)}
+                  >
+                    <option value="ROLE_ADMIN">Admin</option>
+                    <option value="ROLE_EMPLOYEE">Employé</option>
+                    <option value="ROLE_CUSTOMER">Client</option>
+                  </Select>
+                  <FormErrorMessage>
+                    {errors.email && errors.email.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </Box>
+            )}
+            </Flex>
+            <Flex mt={4}>
+            {isAdministrator && !user && selectedRole === 'ROLE_EMPLOYEE' && (
+              <FormControl isRequired>
+                <FormLabel>Entreprise</FormLabel>
                 <Select
-                id='roles'
-                placeholder="Role"
-                {...register('roles', {
-                  required: 'Ce champ est requis',
-                })}
-              >
-                <option value="ROLE_ADMIN">Admin</option>
-                <option value="ROLE_PRESTA">Prestataire</option>
-                <option value="ROLE_EMPLOYEE">Employé</option>
-                <option value="ROLE_CUSTOMER">Client</option>
-              </Select>
-                <FormErrorMessage>
-                  {errors.email && errors.email.message}
-                </FormErrorMessage>
+                  onChange={(e) => setCompanyId(e.target.value)}
+                  {...register('company', {
+                    required: 'Ce champ est requis',
+                  })}
+                >
+                  <option value="">Sélectionner une entreprise</option>
+                  {companies.map((company) => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </Select>
               </FormControl>
-            </Box>
+            )}
           </Flex>
 
           <Flex p={4} gap={4} justifyContent={"end"}>
             <Button bg="black" color='white' isLoading={isSubmitting} type='submit'>
               Enregistrer
-            </Button>
-            <Button bg="black" isLoading={isSubmitting} color='white' onClick={() => {
-              onSubmitForm(true);
-              handleDelete();
-            }}>
-              Supprimer
             </Button>
             <Button variant={"outline"} onClick={() => onSubmitForm(false)}>
               Annuler

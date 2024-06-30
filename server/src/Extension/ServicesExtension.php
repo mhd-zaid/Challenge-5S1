@@ -4,11 +4,11 @@ namespace App\Extension;
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
-use App\Entity\User;
+use App\Entity\Service;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final readonly class UserExtension implements QueryCollectionExtensionInterface
+final readonly class ServicesExtension implements QueryCollectionExtensionInterface
 {
     public function __construct(
         private Security $security,
@@ -23,26 +23,20 @@ final readonly class UserExtension implements QueryCollectionExtensionInterface
 
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass): void
     {
-        if (User::class !== $resourceClass || null === $user = $this->security->getUser()) {
+        if (Service::class !== $resourceClass || null === $user = $this->security->getUser()) {
             return;
         }
 
         $rootAlias = $queryBuilder->getRootAliases()[0];
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            $queryBuilder->andWhere(sprintf('%s.id != :currentUserId', $rootAlias))
-                ->setParameter('currentUserId', $user->getId());
+            return;
         } elseif ($this->security->isGranted('ROLE_PRESTA')) {
             $company = $user->getCompany();
-            if ($company !== null) {
-                $queryBuilder->andWhere(sprintf('%s.company = :current_user', $rootAlias));
-                $queryBuilder->setParameter('current_user', $company->getId());
-
-                $queryBuilder->andWhere(sprintf('%s.id != :company_owner', $rootAlias));
-                $queryBuilder->setParameter('company_owner', $company->getOwner()->getId());            
+            $studios = $company->getStudios();
+            if($company !== null){
+                $queryBuilder->andWhere(sprintf('%s.studio IN (:studios)', $rootAlias));
+                $queryBuilder->setParameter('studios', $studios);
             }
-        } else {
-            $queryBuilder->andWhere(sprintf('%s.employee = :current_user', $rootAlias));
-            $queryBuilder->setParameter('current_user', $user->getId());
         }
     }
 }

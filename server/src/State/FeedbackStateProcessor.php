@@ -22,10 +22,6 @@ class FeedbackStateProcessor implements ProcessorInterface
 
     public function process($data, $operation, array $uriVariables = [], array $context = [])
     {
-        if ($data->getReservation()->getCustomer() !== $this->security->getUser()) {
-           return UnauthorizedHttpException::class;
-        }
-
         $existingFeedback = $this->em->getRepository(Feedback::class)->findOneBy(['reservation' => $data->getReservation()]);
         if ($existingFeedback != null && $data->getId() == null) {
 

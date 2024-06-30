@@ -29,6 +29,7 @@ import { FiMoreVertical } from 'react-icons/fi';
 import { MdCancel, MdEditCalendar } from 'react-icons/md';
 import { CgRedo } from 'react-icons/cg';
 import WeeksPlanning from '../../components/WeeksPlanning';
+import ManageAccount from '@/components/Modal/ManageAccount.jsx';
 
 const CustomerProfile = ({ user }) => {
   const { t } = useTranslation();
@@ -139,15 +140,11 @@ const CustomerProfile = ({ user }) => {
           <Heading as="h1" size="xl" mb={2}>
             {user.firstname} {user.lastname}
           </Heading>
-          <Flex alignItems={'center'}>
-            <Text fontSize="lg" color="gray.600">
-              {user.email}
-            </Text>
-            <Box w={1} h={1} rounded={'full'} bgColor={'gray.400'} mx={2} />
-            <Text fontSize="lg" color="gray.600">
-              {user.phone}
-            </Text>
-          </Flex>
+
+          <Text fontSize="lg" color="gray.600">
+            {user.email}
+          </Text>
+          <ManageAccount />
         </Box>
       </Flex>
       <Box p={4} bg="white" shadow="md" borderRadius="md">

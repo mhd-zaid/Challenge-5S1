@@ -8,6 +8,7 @@ use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Operation\SoftDelete;
 use App\Repository\ServiceRepository;
@@ -23,6 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['service:read']],
     operations: [
         new Post(),
+        new Patch(),
         new GetCollection(),
         new Get(),
         new SoftDelete(),
@@ -65,14 +67,7 @@ class Service
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Groups(['service:read','studio:read'])]
     #[Assert\NotNull]
-    #[Assert\GreaterThan(0)]
     private ?\DateTimeInterface $duration = null;
-
-    /**
-     * @var Collection<int, Studio>
-     */
-    #[ORM\ManyToMany(targetEntity: Studio::class, inversedBy: 'services')]
-    private Collection $studios;
 
     /**
      * @var Collection<int, Reservation>
@@ -80,9 +75,12 @@ class Service
     #[ORM\OneToMany(mappedBy: 'service', targetEntity: Reservation::class)]
     private Collection $reservations;
 
+    #[ORM\ManyToOne(inversedBy: 'services')]
+    #[Groups(['service:read'])]
+    private ?Studio $studio = null;
+
     public function __construct()
     {
-        $this->studios = new ArrayCollection();
         $this->reservations = new ArrayCollection();
     }
 
@@ -140,30 +138,6 @@ class Service
     }
 
     /**
-     * @return Collection<int, Studio>
-     */
-    public function getStudios(): Collection
-    {
-        return $this->studios;
-    }
-
-    public function addStudio(Studio $studio): static
-    {
-        if (!$this->studios->contains($studio)) {
-            $this->studios->add($studio);
-        }
-
-        return $this;
-    }
-
-    public function removeStudio(Studio $studio): static
-    {
-        $this->studios->removeElement($studio);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Reservation>
      */
     public function getReservations(): Collection
@@ -189,6 +163,18 @@ class Service
                 $reservation->setService(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStudio(): ?Studio
+    {
+        return $this->studio;
+    }
+
+    public function setStudio(?Studio $studio): static
+    {
+        $this->studio = $studio;
 
         return $this;
     }
