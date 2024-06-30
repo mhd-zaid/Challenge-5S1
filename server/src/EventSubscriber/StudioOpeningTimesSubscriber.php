@@ -9,7 +9,7 @@ use App\Entity\StudioOpeningTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 
-class StudioSubscriber implements EventSubscriberInterface
+class StudioOpeningTimesSubscriber implements EventSubscriberInterface
 {
     public function __construct(private MailService $emailService, private EntityManagerInterface $entityManager)
     {
