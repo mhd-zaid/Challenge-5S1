@@ -1,5 +1,3 @@
-import { Spinner } from '@chakra-ui/react';
-
 const extend_theme = {
   styles: {
     global: {
@@ -195,7 +193,6 @@ const extend_theme = {
           },
           _active: {
             bgGradient: 'linear(to-r, whiteAlpha.700, whiteAlpha.900)', // Adjust active colors
-
           },
         },
         success: {
@@ -283,7 +280,6 @@ const extend_theme = {
           },
           _active: {
             bgGradient: 'linear(to-r, whiteAlpha.700, whiteAlpha.900)', // Adjust active colors
-
           },
         },
       },

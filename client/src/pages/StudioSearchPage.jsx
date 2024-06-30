@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Flex,
@@ -8,12 +8,14 @@ import {
   Image,
   Divider,
   Heading,
+  Link,
 } from '@chakra-ui/react';
 import { Icon } from '@iconify/react';
 import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { useTranslation } from 'react-i18next';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -24,6 +26,8 @@ L.Icon.Default.mergeOptions({
 });
 
 const StudioSearchPage = () => {
+  const { t } = useTranslation();
+
   const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
@@ -92,10 +96,10 @@ const StudioSearchPage = () => {
   };
 
   return (
-    <Box pt={100} h={'100%'}>
+    <Box pt={100}>
       <Flex display={'flex'} justifyContent={'space-between'}>
         <Heading textAlign={'start'} size={'xs'} px={'2%'}>
-          Séléctionner un studio
+          {t('studio.select-studio')}
         </Heading>
       </Flex>
       {loading ? (
@@ -110,7 +114,7 @@ const StudioSearchPage = () => {
         </Flex>
       ) : studios.length === 0 ? (
         <Flex justifyContent={'center'} alignItems={'center'} h={'30vh'}>
-          <Heading size={'md'}>Aucun résultat trouvé</Heading>
+          <Heading size={'md'}>{t('studio.no-results')}</Heading>
         </Flex>
       ) : (
         <Flex
@@ -125,7 +129,7 @@ const StudioSearchPage = () => {
                   <Flex>
                     <Image
                       borderRadius={'lg'}
-                      src={`https://source.unsplash.com/random/300x200/?${studio.name}`}
+                      src={`https://picsum.photos/200/300`}
                     />
                   </Flex>
                   <Flex flexDirection={'column'} py={2} px={5}>
@@ -139,7 +143,12 @@ const StudioSearchPage = () => {
                     <Flex alignItems={'center'} gap={2}>
                       <Icon icon="ph:star-bold" style={{ color: 'gray' }} />
                       <Text fontSize={'md'}>
-                        { studio.averageNote === 0 ? '-' : studio.averageNote.toFixed(1).toString().replace('.', ',') }{' '}
+                        {studio.averageNote === 0
+                          ? '-'
+                          : studio.averageNote
+                              .toFixed(1)
+                              .toString()
+                              .replace('.', ',')}{' '}
                         ({studio.nbrFeedbacks} avis) -{' '}
                         {service === null
                           ? '€€€'
@@ -156,10 +165,16 @@ const StudioSearchPage = () => {
                   alignItems={'center'}
                   p={2}
                 >
-                  <Text as={'u'} cursor={'pointer'}>
-                    Plus d'information
-                  </Text>
-                  <Button variant={'flat'}>Prendre RDV</Button>
+                  <Link href={`/studios/${studio.id}`}>
+                    {t('studio.more-info')}
+                  </Link>
+
+                  <Button
+                    as={Link}
+                    href={`/studios/${studio.id}#prestation-choice`}
+                  >
+                    {t('studio.reservation-btn')}
+                  </Button>
                 </Flex>
                 {index === studios.length - 1 ? null : (
                   <Divider

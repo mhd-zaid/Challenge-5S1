@@ -14,7 +14,7 @@ trait TimestampableTrait {
 
     #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     #[Gedmo\Timestampable(on: 'update')]
-    #[Groups(['company:read:admin', 'company:read:presta'])]
+    #[Groups(['company:read:admin', 'company:read:presta', 'reservation:read'])]
     private ?\DateTime $updatedAt = null;
 
     /**

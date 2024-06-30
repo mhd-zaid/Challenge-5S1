@@ -1,9 +1,20 @@
 {
-  "greeting": "Bonjour, Monde!",
-  "homepage": {
-    "main-title": "Bienvenue à notre site!"
+  "global": {
+    "filters": "Filtres",
+    "control-center": "Centre de contrôle",
+    "add-presta": "Ajouter votre établissement"
+  },
+  "auth": {
+    "connect": "Se connecter",
+    "register": "Créer un compte",
+    "pwd": "Mot de passe",
+    "forgot-pwd": "Mot de passe oublié ?",
+    "no-account": "Pas encore de compte ?",
+    "new-user": "Nouveau sur Instant Studio ?",
+    "already-account": "Vous avez déjà utilisé Instant Studio ?"
   },
   "studio": {
+    "select-studio": "Sélectionner un studio",
     "reservation-btn": "Prendre RDV",
     "book": "Réserver",
     "prestation-choice": "Choix de la prestation",
@@ -11,16 +22,28 @@
     "person": "Photographes du studio",
     "about": "À propos du studio",
     "opening-hours": "Horaires d'ouverture",
-    "closed": "Fermé"
+    "closed": "Fermé",
+    "more-info": "Plus d'informations",
+    "no-results": "Aucun résultat trouvé",
+    "chosen-presta": "Prestation séléctionnée",
+    "chosen-date": "Date et heure séléctionnées",
+    "auth-required": "Vous devez être connecté pour réserver une prestation",
+    "choose-within-employees": "Choisissez parmi les photographes disponibles",
+    "choose-employee": "Choisir ce photographe",
+    "reservation-success": "Votre réservation a bien été prise en compte",
+    "my-reservations": "Voir mes réservations"
   },
-  "auth": {
-    "login":{
-      "password": "Mot de passe",
-      "email": "Email",
-      "submit": "Se connecter",
-      "forgot-password": "Mot de passe oublié ?",
-      "no-account": "Pas de compte ?",
-      "create-account": "Créer un compte"
-    }
+  "profile": {
+    "general-info": "Informations générales",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "booking-history": "Historique des réservations",
+    "no-reservations": "Vous n'avez pas encore de réservations",
+    "reserved": "Réservé",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "change-booking": "Modifier la réservation",
+    "cancel-change": "Annuler la modification",
+    "reservation-updated": "Votre réservation a bien été modifiée"
   }
 }

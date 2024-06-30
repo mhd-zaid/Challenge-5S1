@@ -32,6 +32,7 @@ class SlotService {
                 }
                 
                 foreach ($slots as $slot) {
+
                     $start = $slot['start']->format('H:i');
                     $end = $slot['end']->format('H:i');
                     
@@ -46,7 +47,9 @@ class SlotService {
                     $availabilityByDateAndSlot[$date]["$start-$end"]['users'][] = [
                         'id' => '/api/users/' . $user->getId(),
                         'fullname' => $user->getFirstname() . ' ' . $user->getLastname(),
-                    ];                }
+                    ];                
+                }
+
             }
         }
         

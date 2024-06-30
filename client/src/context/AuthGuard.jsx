@@ -1,43 +1,19 @@
-import { useEffect, useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import AuthService from '@/services/AuthService';
+import { Flex, Spinner } from '@chakra-ui/react';
 
 const AuthGuard = () => {
-  const { token, setUser, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { user, authLoading } = useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (token) {
-          const response = await AuthService.me(token);
-          if (response.status === 200) {
-            const user = await response.json();
-            setUser(user);
-          } else {
-            logout();
-            setUser(null);
-          }
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la récupération de l'utilisateur:",
-          error,
-        );
-        logout();
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [token, setUser]);
-
-  if (loading) {
-    return <div>Chargement...</div>;
+  if (authLoading) {
+    return (
+      <Flex justify="center" align="center" h="full">
+        <Spinner size="xl" />
+      </Flex>
+    );
   }
-  return token && !loading ? <Outlet /> : <Navigate to="/auth/login" replace />;
+
+  return user ? <Outlet /> : <Navigate to="/auth/login" replace />;
 };
 
 export default AuthGuard;

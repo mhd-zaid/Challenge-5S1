@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Operation\SoftDelete;
@@ -23,6 +24,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             paginationItemsPerPage: 10,
 //            security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
         ),
+        new GetCollection(),
+        new Get(),
         new Post(),
         new Patch(),
         new SoftDelete()

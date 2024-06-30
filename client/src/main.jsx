@@ -51,8 +51,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="my-absences" element={<Unavailability />} />
               <Route path="admin">
-                <Route path="prestataires-demandes" element={<AdminPrestataireRequests />} />
-                <Route path="control-center" element={<AdminControlCenterPage />} />
+                <Route
+                  path="prestataires-demandes"
+                  element={<AdminPrestataireRequests />}
+                />
+                <Route
+                  path="control-center"
+                  element={<AdminControlCenterPage />}
+                />
               </Route>
             </Route>
 
@@ -65,10 +71,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               />
             </Route>
 
-
             <Route path="info" element={<InfoPage />} />
 
-            <Route path="studio" element={<StudioSearchPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

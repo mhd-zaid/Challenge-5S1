@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  Card,
-  CardBody,
   Divider,
   Flex,
   Heading,
@@ -105,7 +103,7 @@ const StudioPage = () => {
       </Flex>
       <Box mt={4} h={60}>
         <Image
-          src={studio.image}
+          src={studio.image || 'https://picsum.photos/1000/400'}
           alt={studio.name}
           bgColor={'gray'}
           w={'full'}
@@ -131,8 +129,7 @@ const StudioPage = () => {
                 >
                   <Text>{service.name}</Text>
                   <Flex alignItems={'center'}>
-                    <Text>{/* service.duration */}60min</Text>{' '}
-                    {/* TODO: change when duration is integer */}
+                    <Text>1h</Text>
                     <Box
                       w={1}
                       h={1}
@@ -183,19 +180,6 @@ const StudioPage = () => {
           </Box>
         </Flex>
       </Flex>
-      {/* <Flex flexDir={'column'} flex={7}>
-        <Heading size={'sm'}>{t('studio.person')}</Heading>
-        <Box bgColor={'white'} p={4}>
-          <Card maxW="3xs">
-            <CardBody>
-              <Image src="" bgColor={'gray'} w="full" h={40} />
-              <Text fontWeight={'bold'} size="sm" textAlign={'center'} mt={4}>
-                Josh
-              </Text>
-            </CardBody>
-          </Card>
-        </Box>
-      </Flex> */}
 
       {studio.description && (
         <Flex flexDir={'column'} flex={7}>
