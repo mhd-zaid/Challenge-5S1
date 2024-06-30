@@ -24,7 +24,7 @@ const CalendarPage = () => {
     try {
       const response = await PlanningService.get_plannings(token);
       const data = await response.json();
-      const mappedData = data['hydra:member'].map(planning => {
+      const workHours = data['hydra:member'].filter(planning => planning.type == 'workHour').map(planning => {
         return {
           start: planning.start.split('+')[0],
           end: planning.end.split('+')[0],
@@ -43,7 +43,7 @@ const CalendarPage = () => {
           }
         };
       });
-      setPlannings(mappedData);
+      setPlannings(workHours);
     } catch (error) {
       toast({
         title: 'Erreur de chargement',

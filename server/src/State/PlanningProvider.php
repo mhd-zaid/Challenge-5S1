@@ -7,6 +7,7 @@ use ApiPlatform\State\ProviderInterface;
 use App\Entity\UnavailabilityHour;
 use App\Entity\User;
 use App\Entity\WorkHour;
+use App\Entity\Reservation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -22,7 +23,7 @@ class PlanningProvider implements ProviderInterface
     )
     {}
 
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []):  object|array|null
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $user = $this->security->getUser();
         if (!$user instanceof User) {
@@ -39,6 +40,7 @@ class PlanningProvider implements ProviderInterface
         
         return [];
     }
+
     private function getEmployeePlanning(User $user): array
     {
         $workHours = $this->em->getRepository(WorkHour::class)->findBy(['employee' => $user->getId()]);
@@ -47,7 +49,12 @@ class PlanningProvider implements ProviderInterface
             'status' => 'Accepted',
         ]);
 
-        return $this->createPlanning($workHours, $unavailabilityHours);
+        $reservations = $this->em->getRepository(Reservation::class)->findBy([
+            'employee' => $user->getId(),
+            'status' => 'RESERVED',
+        ]);
+
+        return $this->createPlanning($workHours, $unavailabilityHours, $reservations);
     }
 
     private function getPrestaPlanning(User $user): array
@@ -70,38 +77,89 @@ class PlanningProvider implements ProviderInterface
             }
         }
 
-        return $this->createPlanning($workHours, $unavailabilityHours);
+        $reservations = $this->em->getRepository(Reservation::class)->findBy([
+            'status' => 'RESERVED',
+        ]);
+
+        return $this->createPlanning($workHours, $unavailabilityHours, $reservations);
     }
-    private function createPlanning(iterable $workHours, iterable $unavailabilityHours): array
+
+    private function createPlanning(iterable $workHours, iterable $unavailabilityHours, iterable $reservations): array
     {
         $planning = [];
 
         foreach ($workHours as $workHour) {
-            $hasUnavailability = false;
-            foreach ($unavailabilityHours as $unavailabilityHour) {
-                if ($this->isOverlapping($workHour, $unavailabilityHour)) {
-                    $hasUnavailability = true;
-                    break;
-                }
-            }
-
-            $planning[] = [
+            $workHourData = [
                 'type' => 'workHour',
                 'start' => $workHour->getStartTime(),
                 'end' => $workHour->getEndTime(),
                 'studio' => $workHour->getStudio(),
                 'employee' => $workHour->getEmployee(),
                 'idEvent' => $workHour->getId(),
-                'hasUnavailabilityHours' => $hasUnavailability,
+                'hasUnavailabilityHours' => false,
             ];
+
+            foreach ($unavailabilityHours as $unavailabilityHour) {
+                if ($this->isOverlapping($workHour, $unavailabilityHour)) {
+                    $workHourData['hasUnavailabilityHours'] = true;
+                    break;
+                }
+            }
+
+            $planning[] = $workHourData;
+        }
+
+        foreach ($reservations as $reservation) {
+            $reservationData = [
+                'type' => 'reservation',
+                'id' => $reservation->getId(),
+                'date' => $reservation->getDate(),
+                'status' => $reservation->getStatus(),
+                'customer' => $reservation->getCustomer(),
+                'employee' => $reservation->getEmployee(),
+                'studio' => $reservation->getStudio(),
+                'healthy' => false,
+            ];
+
+            foreach ($workHours as $workHour) {
+                if ($this->isContainedWithin($reservation, $workHour) && 
+                    !$this->isOverlappingWithAny($workHour, $unavailabilityHours) && 
+                    $this->isInSameStudioAndEmployee($reservation, $workHour)) {
+                    $reservationData['healthy'] = true;
+                    break;
+                }
+            }
+
+            $planning[] = $reservationData;
         }
 
         return $planning;
     }
+
     private function isOverlapping(WorkHour $workHour, UnavailabilityHour $unavailabilityHour): bool
     {
         return $workHour->getStartTime() < $unavailabilityHour->getEndTime() &&
-               $workHour->getEndTime() > $unavailabilityHour->getStartTime()
-               && $workHour->getEmployee() === $unavailabilityHour->getEmployee();
+               $workHour->getEndTime() > $unavailabilityHour->getStartTime() &&
+               $workHour->getEmployee() === $unavailabilityHour->getEmployee();
+    }
+
+    private function isContainedWithin(Reservation $reservation, WorkHour $workHour): bool
+    {
+        return $reservation->getDate() >= $workHour->getStartTime() && $reservation->getDate() <= $workHour->getEndTime();
+    }
+
+    private function isOverlappingWithAny(WorkHour $workHour, iterable $unavailabilityHours): bool
+    {
+        foreach ($unavailabilityHours as $unavailabilityHour) {
+            if ($this->isOverlapping($workHour, $unavailabilityHour)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function isInSameStudioAndEmployee(Reservation $reservation, WorkHour $workHour): bool
+    {
+        return $reservation->getStudio() === $workHour->getStudio() && $reservation->getEmployee() === $workHour->getEmployee();
     }
 }
