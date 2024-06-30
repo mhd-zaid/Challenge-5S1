@@ -18,59 +18,40 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\Traits\TimestampableTrait;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Controller\UserController;
+use App\Operation\SoftDelete;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
+#[ORM\Table(name: 'utilisateur')]
 #[ApiResource(
-    normalizationContext: ['groups' => ['user:read']],
     operations: [
         new Get(),
         new Post(),
         new Patch(),
-        new Delete(),
-        new GetCollection(),
-        new Get(
-            uriTemplate: '/users/verify-email/{token}', 
-            controller: UserController::class, 
-            read: false
+        new SoftDelete(),
+        new GetCollection(
+            paginationItemsPerPage: 10,
+            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESTA')",
         ),
         new Get(
-            uriTemplate: '/users/send-email-verification/{email}', 
-            controller: UserController::class . '::verify_email', 
-            read: false
+            uriTemplate: '/me',
+            name: 'me',
         ),
-        new Get(
-            uriTemplate: '/users/forget-password/{email}', 
-            controller: UserController::class . '::forgetPassword', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/users/check-token/{token}', 
-            controller: UserController::class . '::checkToken', 
-            read: false
-        ),
-        new Get(
-            uriTemplate: '/me', 
-            controller: UserController::class . '::me', 
-            read: false
-        ),
-        new Post(
-            uriTemplate: '/users/reset-password/{token}', 
-            controller: UserController::class . '::resetPassword', 
-            read: false
-        )
     ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:input']],
 )]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
     use Traits\BlameableTrait;
     use TimestampableTrait;
+    use Traits\SoftDeleteableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     
@@ -81,7 +62,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read', 'workHour:read'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -91,24 +72,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read', 'workHour:read'])]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:input', 'company:write'])]
     private ?string $email = null;
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups(['admin:input'])]
     private ?string $password = null;
 
     #[Assert\Regex(pattern : '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/',
     message: '8 caractères requis avec au moins une majuscule, minuscule, un chiffre et un caractère spécial')]
+    #[Groups(['user:input'])]
     private ?string $plainPassword = null;
 
     #[ORM\Column]
@@ -116,30 +97,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     #[Assert\Unique]
-    #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN'], multiple: true)]
+    #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN', 'ROLE_EMPLOYEE'])]
+    #[Groups(['user:read'])]
     private array $roles = [];
 
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $phone = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $country = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $zipCode = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $city = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $address = null;
-
     #[ORM\ManyToOne(inversedBy: 'users')]
+    #[Groups(['user:read', 'user:input'])]
     private ?Company $company = null;
-
-    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Studio::class)]
-    private Collection $studios;
 
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: WorkHour::class)]
     private Collection $workHours;
@@ -147,22 +116,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: UnavailabilityHour::class)]
     private Collection $unavailabilityHours;
 
-    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: ServiceEmployee::class)]
-    private Collection $serviceEmployees;
-
-    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Reservation::class)]
-    private Collection $reservations;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[ApiProperty(identifier: true, description: "Token unique de l'utilisateur")] // Définir que 'token' est l'identifiant pour une opération spécifique
     private ?string $token = null;
+
+    /**
+     * @var Collection<int, Reservation>
+     */
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Reservation::class, orphanRemoval: true)]
+    private Collection $reservations;
 
     public function __construct()
     {
-        $this->studios = new ArrayCollection();
         $this->workHours = new ArrayCollection();
         $this->unavailabilityHours = new ArrayCollection();
-        $this->serviceEmployees = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
         $this->reservations = new ArrayCollection();
     }
 
@@ -297,54 +265,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCountry(): ?string
-    {
-        return $this->country;
-    }
-
-    public function setCountry(string $country): static
-    {
-        $this->country = $country;
-
-        return $this;
-    }
-
-    public function getZipCode(): ?string
-    {
-        return $this->zipCode;
-    }
-
-    public function setZipCode(string $zipCode): static
-    {
-        $this->zipCode = $zipCode;
-
-        return $this;
-    }
-
-    public function getCity(): ?string
-    {
-        return $this->city;
-    }
-
-    public function setCity(string $city): static
-    {
-        $this->city = $city;
-
-        return $this;
-    }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): static
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
     public function getIsValidated(): ?bool
     {
         return $this->isValidated;
@@ -357,32 +277,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-
-    public function __serialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'lastname'=>$this->lastname,
-            'firstname'=>$this->firstname,
-            'email' => $this->email,
-            'password' => $this->password,
-            'isValidated' => $this->isValidated,
-            'roles' => $this->roles,
-        ];
-    }
-    public function __unserialize(array $serialized)
-    {
-        $this->id = $serialized['id'];
-        $this->email = $serialized['email'];
-        $this->password = $serialized['password'];
-        $this->lastname = $serialized['lastname'];
-        $this->firstname = $serialized['firstname'];
-        $this->isValidated = $serialized['isValidated'];
-        $this->roles = $serialized['roles'];
-
-        return $this;
-    }
-
     public function getCompany(): ?Company
     {
         return $this->company;
@@ -391,36 +285,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCompany(?Company $company): static
     {
         $this->company = $company;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Studio>
-     */
-    public function getStudios(): Collection
-    {
-        return $this->studios;
-    }
-
-    public function addStudio(Studio $studio): static
-    {
-        if (!$this->studios->contains($studio)) {
-            $this->studios->add($studio);
-            $studio->setUtilisateur($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStudio(Studio $studio): static
-    {
-        if ($this->studios->removeElement($studio)) {
-            // set the owning side to null (unless already changed)
-            if ($studio->getUtilisateur() === $this) {
-                $studio->setUtilisateur(null);
-            }
-        }
 
         return $this;
     }
@@ -485,32 +349,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, ServiceEmployee>
-     */
-    public function getServiceEmployees(): Collection
+    public function getToken(): ?string
     {
-        return $this->serviceEmployees;
+        return $this->token;
     }
 
-    public function addServiceEmployee(ServiceEmployee $serviceEmployee): static
+    public function setToken(?string $token): static
     {
-        if (!$this->serviceEmployees->contains($serviceEmployee)) {
-            $this->serviceEmployees->add($serviceEmployee);
-            $serviceEmployee->setEmployee($this);
-        }
-
-        return $this;
-    }
-
-    public function removeServiceEmployee(ServiceEmployee $serviceEmployee): static
-    {
-        if ($this->serviceEmployees->removeElement($serviceEmployee)) {
-            // set the owning side to null (unless already changed)
-            if ($serviceEmployee->getEmployee() === $this) {
-                $serviceEmployee->setEmployee(null);
-            }
-        }
+        $this->token = $token;
 
         return $this;
     }
@@ -527,7 +373,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
-            $reservation->setUtilisateur($this);
+            $reservation->setCustomer($this);
         }
 
         return $this;
@@ -537,22 +383,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->reservations->removeElement($reservation)) {
             // set the owning side to null (unless already changed)
-            if ($reservation->getUtilisateur() === $this) {
-                $reservation->setUtilisateur(null);
+            if ($reservation->getCustomer() === $this) {
+                $reservation->setCustomer(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(?string $token): static
-    {
-        $this->token = $token;
 
         return $this;
     }

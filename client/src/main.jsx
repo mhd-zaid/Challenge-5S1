@@ -8,13 +8,22 @@ import './index.css';
 import NotFoundPage from './pages/NotFoundPage.jsx';
 import App from './App.jsx';
 import Home from './pages/HomePage';
-import Profile from './pages/ProfilePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgetPasswordPage from './pages/auth/ForgetPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import EmailVerifiedPage from './pages/auth/EmailVerifiedPage.jsx';
+import StudioSearchPage from './pages/StudioSearchPage.jsx';
+import InfoPage from '@/pages/info/InfoPage.jsx';
 import AuthGuard from './context/AuthGuard.jsx';
+import StudioPage from './pages/StudioPage.jsx';
+import ReservationPage from './pages/ReservationPage.jsx';
+import AdminPrestataireRequests from '@/pages/admin/AdminPrestataireRequests.jsx';
+import Unavailability from './pages/Unavailability.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
+import ProfilePage from '@/pages/profile/ProfilePage.jsx';
+import AdminControlCenterPage from '@/pages/admin/AdminControlCenterPage.jsx';
+import FeedbackPage from './pages/FeedbackPage.jsx';
 
 const theme = extendTheme(extend_theme);
 
@@ -25,13 +34,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
-
-            <Route
-            path='profile'
-            element={ <AuthGuard component={Profile} /> }
-            />
-
-        
             <Route path="auth">
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
@@ -42,6 +44,35 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               />
               <Route path="verify/:token" element={<EmailVerifiedPage />} />
             </Route>
+            <Route path="feedback/:id" element={<FeedbackPage />} />
+
+            <Route element={<AuthGuard />}>
+              <Route path="profile" element={<ProfilePage />} />
+              <Route path="calendar" element={<CalendarPage />} />
+              <Route path="my-absences" element={<Unavailability />} />
+              <Route path="admin">
+                <Route
+                  path="prestataires-demandes"
+                  element={<AdminPrestataireRequests />}
+                />
+                <Route
+                  path="control-center"
+                  element={<AdminControlCenterPage />}
+                />
+              </Route>
+            </Route>
+
+            <Route path="studios">
+              <Route index element={<StudioSearchPage />} />
+              <Route path=":id" element={<StudioPage />} />
+              <Route
+                path=":id/reservation/:service_id"
+                element={<ReservationPage />}
+              />
+            </Route>
+
+            <Route path="info" element={<InfoPage />} />
+
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

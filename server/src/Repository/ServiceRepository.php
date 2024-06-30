@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Service;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,6 +20,26 @@ class ServiceRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Service::class);
+    }
+
+    public function findAllDistinctByColumn(string $column): array
+    {
+        if($column == 'studio') {
+            $column = 'studio_id';
+        }
+        
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT DISTINCT ON (' . $column . ') * FROM service';
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(Service::class, 's');
+
+        $query = $this->getEntityManager()->createNativeQuery($sql, $rsm);
+
+        return $query->getResult();
     }
 
     //    /**

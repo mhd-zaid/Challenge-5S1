@@ -2,15 +2,26 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\StudioOpeningTimeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    normalizationContext: ['groups' => ['studioOpeningTime:read']],
+    denormalizationContext: ['groups' => ['studioOpeningTime:write']]
+)]
+#[ApiFilter(
+    SearchFilter::class,
+    properties: ['studio' => 'exact']
+)]
 class StudioOpeningTime
 {
     use Traits\BlameableTrait;
@@ -22,18 +33,28 @@ class StudioOpeningTime
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read', 'company:read', 'company:read:presta', 'studio:read', 'company:read:common', 'studioOpeningTime:write'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read', 'company:read', 'company:read:presta', 'studio:read', 'company:read:common', 'studioOpeningTime:write'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read', 'company:read', 'studio:read', 'company:read:presta', 'company:read:common', 'studioOpeningTime:write'])]
+    #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 
     #[ORM\ManyToOne(inversedBy: 'studioOpeningTimes')]
+    #[Assert\NotBlank]
+    #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write'])]
     private ?Studio $studio = null;
 
     #[ORM\OneToMany(mappedBy: 'studioOpeningTime', targetEntity: UnavailabilityHour::class)]
+    #[Groups(['studioOpeningTime:read'])]
     private Collection $unavailabilityHours;
 
     public function __construct()
@@ -90,36 +111,6 @@ class StudioOpeningTime
     public function setStudio(?Studio $studio): static
     {
         $this->studio = $studio;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, UnavailabilityHour>
-     */
-    public function getUnavailabilityHours(): Collection
-    {
-        return $this->unavailabilityHours;
-    }
-
-    public function addUnavailabilityHour(UnavailabilityHour $unavailabilityHour): static
-    {
-        if (!$this->unavailabilityHours->contains($unavailabilityHour)) {
-            $this->unavailabilityHours->add($unavailabilityHour);
-            $unavailabilityHour->setStudioOpeningTime($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUnavailabilityHour(UnavailabilityHour $unavailabilityHour): static
-    {
-        if ($this->unavailabilityHours->removeElement($unavailabilityHour)) {
-            // set the owning side to null (unless already changed)
-            if ($unavailabilityHour->getStudioOpeningTime() === $this) {
-                $unavailabilityHour->setStudioOpeningTime(null);
-            }
-        }
 
         return $this;
     }

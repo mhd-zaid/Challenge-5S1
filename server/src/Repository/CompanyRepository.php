@@ -45,4 +45,12 @@ class CompanyRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findLatest(): ?Company
+    {
+        return $this->createQueryBuilder('c')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

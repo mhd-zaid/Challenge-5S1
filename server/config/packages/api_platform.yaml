@@ -1,4 +1,15 @@
 api_platform:
+    defaults:
+        pagination_enabled: true
+        pagination_items_per_page: 30
+
+        pagination_client_enabled: true
+        pagination_client_items_per_page: true
+    collection:
+            pagination:
+                enabled_parameter_name: pagination
+                items_per_page_parameter_name: itemsPerPage
+                page_parameter_name: page
     swagger:
         api_keys:
             apiKey:
@@ -6,22 +17,8 @@ api_platform:
                 type: header
     title: Hello API Platform
     version: 1.0.0
+    show_webby: false
+    use_symfony_listeners: false
     formats:
-        json: ['application/json']
-    error_formats:
-        jsonproblem: ['application/problem+json']
-        jsonld: ['application/ld+json'] 
-        jsonapi: ['application/vnd.api+json']
-    docs_formats:
-        jsonld: ['application/ld+json']
-        jsonopenapi: ['application/vnd.openapi+json']
-        html: ['text/html']
-    defaults:
-        stateless: true
-        cache_headers:
-            vary: ['Content-Type', 'Authorization', 'Origin']
-        extra_properties:
-            standard_put: true
-            rfc_7807_compliant_errors: true
-    event_listeners_backward_compatibility_layer: false
-    keep_legacy_inflector: false
+        jsonld: ['application/ld+json', 'application/merge-patch+json']
+        multipart: ['multipart/form-data']

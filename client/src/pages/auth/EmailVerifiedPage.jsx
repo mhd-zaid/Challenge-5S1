@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Box, Button, Center, Heading, Text, Spinner } from '@chakra-ui/react';
-import axios from 'axios';
+import AuthService from '@/services/AuthService';
 
 const EmailVerifiedPage = () => {
   const { token } = useParams();
@@ -10,7 +10,7 @@ const EmailVerifiedPage = () => {
   useEffect(() => {
     const verifyEmail = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/users/verify-email/${token}`);
+        const response = await AuthService.verify_email(token);
         if (response.status === 200) {
           setVerificationStatus('success');
         } else {
@@ -30,14 +30,16 @@ const EmailVerifiedPage = () => {
         <Heading mb={4}>Email Verification</Heading>
         {verificationStatus === 'pending' && <Spinner size="xl" color="blue.500" />}
         {verificationStatus === 'success' && (
-          <Text color="green.600">Your email has been successfully verified!</Text>
+          <Text textAlign="center" color="green.600">Email vérifié !</Text>
         )}
         {verificationStatus === 'error' && (
-          <Text color="red.600">An error occurred while verifying your email.</Text>
+          <Text textAlign="center" color="red.600">Une erreur s'est produite durant la vérification.</Text>
         )}
         {verificationStatus !== 'pending' && (
           <Link to="/auth/login">
-            <Button mt={4}>Go to Login</Button>
+            <Text textAlign="center" as='u' mt={4}>
+              Page de connexion
+            </Text>
           </Link>
         )}
       </Box>

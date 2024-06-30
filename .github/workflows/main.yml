@@ -1,90 +1,18 @@
-name: Backend tests
+name: CI
 
 on:
   push:
     branches:
-      - "*"
-
+      - dev
+      - feature/*
+      - fix/*
+      - hotfix/*
+      - feat/*
 jobs:
-  install-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  backend:
+    uses: ./.github/workflows/backend.yml
+    secrets: inherit
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2.18"
-
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-        working-directory: ./server
-
-      - name: Install Lexik keys
-        run: php bin/console lexik:jwt:generate-keypair
-        working-directory: ./server
-
-      - name: Archive vendor directory
-        uses: actions/upload-artifact@v3
-        with:
-          name: vendor
-          path: ./server/vendor
-
-      - name: Archive JWT keys
-        uses: actions/upload-artifact@v3
-        with:
-          name: jwt-keys
-          path: ./server/config/jwt
-
-  test:
-    needs: install-dependencies
-    runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: mysql://root:testrootpass@127.0.0.1:3306/testdb?serverVersion=8.0.37&charset=utf8mb4
-    services:
-      database:
-        image: mysql:8.0.37
-        env:
-          MYSQL_DATABASE: testdb
-          MYSQL_ROOT_PASSWORD: testrootpass
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 3306:3306
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2.18"
-
-      - name: Download vendor directory
-        uses: actions/download-artifact@v3
-        with:
-          name: vendor
-          path: ./server/vendor
-
-      - name: Download JWT keys
-        uses: actions/download-artifact@v3
-        with:
-          name: jwt-keys
-          path: ./server/config/jwt
-
-      - name: Wait for MySQL
-        run: |
-          dockerize -wait tcp://database:3306 -timeout 1m
-
-      - name: Run migrations
-        run: php bin/console doctrine:migrations:migrate --no-interaction
-        working-directory: ./server
-
-      - name: Run tests
-        run: php bin/phpunit
-        working-directory: ./server
+  frontend:
+    uses: ./.github/workflows/frontend.yml
+    secrets: inherit

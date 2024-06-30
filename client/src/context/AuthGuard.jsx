@@ -1,46 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import axios from 'axios';
+import { Flex, Spinner } from '@chakra-ui/react';
 
-const AuthGuard = ({ component: Component }) => {
-  const { token, setUser, logout } = useAuth();
-  const [loading, setLoading] = useState(true);
+const AuthGuard = () => {
+  const { user, authLoading } = useAuth();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (token) {
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}api/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          console.log('response:', response);
-          if (response.status === 200) {
-            const user =  response.data;
-            setUser(user); 
-          } else {
-            console.log('Token invalide')
-            logout();
-            setUser(null); 
-          }
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération de l\'utilisateur:', error);
-        logout();
-      } finally {
-        setLoading(false); 
-      }
-    };
-
-    fetchData();
-  }, [token, setUser]);
-
-  if (loading) {
-    return <div>Chargement...</div>;
+  if (authLoading) {
+    return (
+      <Flex justify="center" align="center" h="full">
+        <Spinner size="xl" />
+      </Flex>
+    );
   }
-  return token && !loading ? <Component /> : <Navigate to="/auth/login" replace />;
+
+  return user ? <Outlet /> : <Navigate to="/auth/login" replace />;
 };
 
 export default AuthGuard;

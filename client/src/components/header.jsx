@@ -1,8 +1,7 @@
-import { useContext } from 'react';
-
+import AppNavbar from '@/lib/components/Navbar';
+import { useAuth } from '@/context/AuthContext.jsx';
 const Header = () => {
-
-  return <></>;
+  return <AppNavbar />;
 };
 
 export default Header;

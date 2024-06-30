@@ -5,6 +5,7 @@ namespace App\Entity\Traits;
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 trait BlameableTrait {
 
@@ -30,12 +31,12 @@ trait BlameableTrait {
 
     public function getUpdatedBy(): ?User
     {
-        return $this->UpdatedBy;
+        return $this->updatedBy;
     }
 
-    public function setUpdatedBy(?User $UpdatedBy): self
+    public function setUpdatedBy(?User $updatedBy): self
     {
-        $this->UpdatedBy = $UpdatedBy;
+        $this->updatedBy = $updatedBy;
 
         return $this;
     }

@@ -4,11 +4,8 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
-
 /**
  * @extends ServiceEntityRepository<User>
  *
@@ -17,11 +14,12 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, Connection $connection)
     {
         parent::__construct($registry, User::class);
+        $this->connection = $connection;
     }
 
     public function save(User $entity, bool $flush = false): void
@@ -43,17 +41,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * @param string $role
+     * @return User[]
      */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
+    public function findByRole(string $role): array
     {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
+        $sql = 'SELECT * FROM "utilisateur" WHERE roles::jsonb @> :role';
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue('role', json_encode([$role]));
+
+        $results = $stmt->executeQuery()->fetchAllAssociative();
+        $users = [];
+        foreach ($results as $data) {
+            $user = $this->getEntityManager()->getRepository(User::class)->find($data['id']);
+            if ($user !== null) {
+                $users[] = $user;
+            }
         }
-
-        $user->setPassword($newHashedPassword);
-
-        $this->add($user, true);
+        return $users;
     }
-
 }
