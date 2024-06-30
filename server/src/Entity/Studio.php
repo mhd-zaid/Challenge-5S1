@@ -379,4 +379,34 @@ class Studio
 
         return $this;
     }
+
+    #[Groups(['studio:read'])]
+    public function getAverageNote(): float
+    {
+        $completedReservations = $this->reservations->filter(fn(Reservation $reservation) => $reservation->getStatus() === 'COMPLETED');
+        $nbrFeedbacks = 0;
+        $totalNote = 0;
+        foreach ($completedReservations as $reservation) {
+            if ($reservation->getFeedback() !== null) {
+                $nbrFeedbacks++;
+                $totalNote += $reservation->getFeedback()->getNote();
+            }
+        }
+
+        return $nbrFeedbacks > 0 ? number_format($totalNote / $nbrFeedbacks, 1) : 0;
+    }
+
+    #[Groups(['studio:read'])]
+    public function getNbrFeedbacks(): int
+    {
+        $nbrFeedbacks = 0;
+        $completedReservations = $this->reservations->filter(fn(Reservation $reservation) => $reservation->getStatus() === 'COMPLETED');
+        foreach ($completedReservations as $reservation) {
+            if ($reservation->getFeedback() !== null && $reservation->getFeedback()?->getNote() !== null && $reservation->getFeedback()?->getMessage() !== null){
+                $nbrFeedbacks++;
+            }
+        }
+
+        return $nbrFeedbacks;
+    }
 }
