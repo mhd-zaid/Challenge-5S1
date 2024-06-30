@@ -27,7 +27,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
   const [companies, setCompanies] = useState([]);
   const [studioData, setStudioData] = useState(studio);
   const [isEditable, setIsEditable] = useState(!studio);
-console.log("studio", studio);
 
   useEffect(() => {
     const fetchCompanies = async () => {

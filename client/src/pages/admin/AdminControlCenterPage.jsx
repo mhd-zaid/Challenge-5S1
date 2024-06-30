@@ -57,6 +57,7 @@ const AdminControlCenterPage = () => {
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  let groupedServices = null;
   const dayjs = useCustomDate();
   const [dataType, setDataType] = useState(isAdministrator ? 'companies' : 'studios');
   const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -85,12 +86,6 @@ const AdminControlCenterPage = () => {
     totalItems: 0,
   });
 
-  useEffect(() => {
-    if(isAdministrator) {
-      fetchData('companies', paginationCompany.page, paginationCompany.itemsPerPage);
-    }
-  }, [paginationCompany.itemsPerPage, paginationCompany.page]);
-
   const handlePageChangeCompany = (page) => {
     setPaginationCompany({ ...paginationCompany, page });
   };
@@ -102,10 +97,6 @@ const AdminControlCenterPage = () => {
       page: 1,
     });
   };
-
-  useEffect(() => {
-    fetchData('users', paginationUser.page, paginationUser.itemsPerPage);
-  }, [paginationUser.itemsPerPage, paginationUser.page]);
 
   const handlePageChangeUser = (page) => {
     setPaginationUser({ ...paginationUser, page });
@@ -120,16 +111,12 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-    fetchData('studio_opening_times', 1, 1000);
-  }, []);
-
-  useEffect(() => {
-    fetchData('services', 1, 1000);
-  }, []);
-
-  useEffect(() => {
-    fetchData('studios', paginationStudio.page, paginationStudio.itemsPerPage);
-  }, [paginationStudio.itemsPerPage, paginationStudio.page]);
+    if(dataType === 'studio_opening_times' || dataType === 'services') {
+      fetchData(dataType, 1, 1000);
+    }else {
+      fetchData(dataType, paginationStudio.page, paginationStudio.itemsPerPage);
+    }
+  }, [paginationStudio.itemsPerPage, paginationStudio.page, dataType]);
 
   const handlePageChangeStudio = (page) => {
     setPaginationStudio({ ...paginationStudio, page });
@@ -253,15 +240,17 @@ const AdminControlCenterPage = () => {
     return result;
   };
 
-  const groupedServices = services.reduce((acc, service) => {
-    const studioName = service.studio.name;
-    if (!acc[studioName]) {
-      acc[studioName] = [];
-    }
-    acc[studioName].push(service);
+  if(services){
+    groupedServices = services.reduce((acc, service) => {
+      const studioName = service.studio.name;
+      if (!acc[studioName]) {
+        acc[studioName] = [];
+      }
+      acc[studioName].push(service);
 
-    return acc;
-  }, {});
+      return acc;
+    }, {});
+  }
 
 
   return (
@@ -283,7 +272,7 @@ const AdminControlCenterPage = () => {
           {/*Gestion des compagnies*/}
           {isAdministrator &&
             <TabPanel>
-              <Button mb={4} onClick={handleAdd}>Ajouter une compagnie</Button>
+              <Button mb={4} onClick={() => handleAdd()}>Ajouter une compagnie</Button>
               <Table variant="simple">
                 <Thead>
                   <Tr>
@@ -322,9 +311,6 @@ const AdminControlCenterPage = () => {
                           </MenuButton>
                           <MenuList>
                             <MenuItem onClick={() => handleView(company)}>Voir les informations de la compagnie</MenuItem>
-                            <MenuItem onClick={() => handleView(company)}>Modifier les informations du propriétaire</MenuItem>
-                            <MenuItem onClick={() => handleView(company)}>Modifier le propriétaire</MenuItem>
-                            <MenuItem onClick={() => handleView(company)}>Désactiver la compagnie</MenuItem>
                             <MenuItem onClick={() => handleDelete(company)}>Supprimer</MenuItem>
                           </MenuList>
                         </Menu>
@@ -414,6 +400,7 @@ const AdminControlCenterPage = () => {
             <Table variant="simple">
               <Thead>
                 <Tr>
+                  <Th>Entreprise</Th>
                   <Th>Nom</Th>
                   <Th>Email</Th>
                   <Th>Rôle</Th>
@@ -423,6 +410,7 @@ const AdminControlCenterPage = () => {
               <Tbody>
                 {users.filter((person) => user.id !== person.id).map((person) => (
                   <Tr key={person.id}>
+                    <Td>{person.company?.name}</Td>
                     <Td>{person.firstname} {person.lastname}</Td>
                     <Td>{person.email}</Td>
                     <Td>{roleNames[person.roles[0]]}</Td>
@@ -560,7 +548,9 @@ const AdminControlCenterPage = () => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent maxW={"4xl"}>
-          <ModalHeader>{editData ? 'Modifier' : 'Ajouter'}</ModalHeader>
+          <ModalHeader>
+            {editData ? `Modifier ${dataType.slice(0, -1)}` : `Ajouter ${dataType.slice(0, -1)}`}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {dataType === 'companies' ? (
