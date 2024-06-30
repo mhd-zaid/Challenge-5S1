@@ -92,28 +92,11 @@ const StudioSearchPage = () => {
   };
 
   return (
-    <Box pt={100} w h={'100%'}>
+    <Box pt={100} h={'100%'}>
       <Flex display={'flex'} justifyContent={'space-between'}>
         <Heading textAlign={'start'} size={'xs'} px={'2%'}>
           Séléctionner un studio
         </Heading>
-        <Button
-          display={'flex'}
-          alignItems={'center'}
-          justifyContent={'space-between'}
-          gap={4}
-          mx={'2%'}
-          mb={'2%'}
-          variant={'outline_transparent'}
-        >
-          <Icon
-            icon="mage:filter"
-            width="1.5em"
-            height="1.5em"
-            style={{ color: 'black' }}
-          />
-          Filtrer
-        </Button>
       </Flex>
       {loading ? (
         <Flex justifyContent={'center'} alignItems={'center'} h={'30vh'}>
@@ -156,10 +139,8 @@ const StudioSearchPage = () => {
                     <Flex alignItems={'center'} gap={2}>
                       <Icon icon="ph:star-bold" style={{ color: 'gray' }} />
                       <Text fontSize={'md'}>
-                        {(Math.floor(Math.random() * 5) + 1)
-                          .toFixed(1)
-                          .replace('.', ',')}{' '}
-                        ({Math.floor(Math.random() * 500)} avis) -{' '}
+                        { studio.averageNote === 0 ? '-' : studio.averageNote.toFixed(1).toString().replace('.', ',') }{' '}
+                        ({studio.nbrFeedbacks} avis) -{' '}
                         {service === null
                           ? '€€€'
                           : studio.services.find(
