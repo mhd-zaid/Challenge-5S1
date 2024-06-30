@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Get;
 use App\Repository\FeedbackRepository;
 use App\State\FeedbackStateProcessor;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,7 +21,8 @@ use App\Validator\CompletedReservation;
     normalizationContext: ['groups' => ['feedback:read']],
     operations:[
         new Post(processor: FeedbackStateProcessor::class),
-        new Patch(processor: FeedbackStateProcessor::class)
+        new Patch(processor: FeedbackStateProcessor::class),
+        new Get(),
     ]
 )]
 #[CompletedReservation]
@@ -34,7 +36,6 @@ class Feedback
     private ?Uuid $id = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
     #[Assert\Range(min: 1, max: 5)]
     #[Groups(['feedback:write', 'feedback:read'])]
     private ?int $note = null;

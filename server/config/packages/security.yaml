@@ -47,6 +47,8 @@ security:
     - { path: ^/api/companies, roles: PUBLIC_ACCESS, methods: POST }
     - { path: ^/api/users, roles: PUBLIC_ACCESS, methods: POST }
     - { path: ^/api/stats, roles: PUBLIC_ACCESS, methods: POST }
+    - { path: ^/api/feedback, roles: PUBLIC_ACCESS, methods: PATCH }
+    - { path: ^/api/feedback, roles: PUBLIC_ACCESS, methods: GET }
     - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
