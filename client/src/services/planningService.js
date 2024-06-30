@@ -17,7 +17,7 @@ const PlanningService = {
         throw error;
         }
     },
-    cancel_reservation: async (token, reservationId) => {
+    update_reservation: async (token, reservationId, statut) => {
         try {
         const response = await fetch(`${url}/reservations/${reservationId}`, {
             method: 'PATCH',
@@ -26,7 +26,7 @@ const PlanningService = {
             Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-            status: 'CANCELED',
+            status: statut,
             }),
         });
         return response;
