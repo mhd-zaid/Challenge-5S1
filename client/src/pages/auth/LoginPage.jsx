@@ -56,7 +56,12 @@ const LoginPage = () => {
             setError({
               api: "Votre email n'a pas encore été validé. Veuillez vérifier votre boîte de réception et valider votre compte.",
             });
-          } else {
+          }  else if (errorData.error === 'Company is not active') {
+            setError({
+              api: "Votre compagnie n'a pas encore été approuvé.",
+            });
+          }
+          else {
             setError({
               api: "Nom d'utilisateur ou mot de passe incorrect.",
             });
@@ -169,7 +174,7 @@ const LoginPage = () => {
           <Link to="/auth/forgetpassword">
             <Button mt={4}>{t('auth.forgot-pwd')}</Button>
           </Link>
-          <Button type="submit" bg="black" size="lg" color="white">
+          <Button type="submit" bg="black" size="lg" color="white" mb={2}>
             {isLoading ? <Spinner size="sm" color="white" /> : 'Se connecter'}
           </Button>
         </Stack>
@@ -193,7 +198,7 @@ const LoginPage = () => {
           )}
         </Text>
       )}
-      <Text textAlign="center" mt={4}>
+      <Text textAlign="left" mt={4}>
         {t('auth.no-account')}
       </Text>
       <Link to="/auth/register">

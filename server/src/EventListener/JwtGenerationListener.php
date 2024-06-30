@@ -14,5 +14,12 @@ final class JwtGenerationListener
         if (!$user->getIsValidated()) {
             throw new AccessDeniedHttpException('User is not validated');
         }
+
+        if($user->getCompany() !== null)
+        {
+            if($user->getCompany()->getStatus() !== 'accepted') {
+                throw new AccessDeniedHttpException('Company is not active');
+            }
+        }
     }
 }

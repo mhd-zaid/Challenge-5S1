@@ -99,7 +99,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Unique]
     #[Assert\Choice(choices: ['ROLE_CUSTOMER', 'ROLE_PRESTA', 'ROLE_ADMIN', 'ROLE_EMPLOYEE'] , multiple: true)]
     #[Groups(['user:read'])]
-    private array $roles = [];
+    private array $roles = ['ROLE_CUSTOMER'];
 
     #[ORM\Column (length: 25, nullable: true)]
     #[Assert\Regex('/^\+?[0-9]+$/')]

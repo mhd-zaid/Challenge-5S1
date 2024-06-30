@@ -78,6 +78,12 @@ class UserSubscriber implements EventSubscriberInterface
             foreach($object->getCompany()->getUsers() as $user) {
                 $this->processRemove($user);
             }
+            $company = $object->getCompany();
+            $company->setDeletedAt(new \DateTime());
+            $company->setStatus('deleted');
+            $this->entityManager->persist($company);
+            $this->entityManager->flush();
+            $this->processRemove($object);
         }else{
             $this->processRemove($object);
         }
@@ -99,8 +105,9 @@ class UserSubscriber implements EventSubscriberInterface
         
 
         foreach ($object->getReservations() as $reservation) {
-            if($reservation->getStatus() === 'PENDING') {
+            if($reservation->getStatus() === 'RESERVED') {
                 $reservation->setStatus('CANCELED');
+                $reservation->setDeletedAt(new \DateTime());
                 $this->entityManager->persist($reservation);
                 $this->entityManager->flush();        
             }

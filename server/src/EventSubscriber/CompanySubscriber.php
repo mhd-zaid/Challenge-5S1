@@ -29,7 +29,7 @@ class CompanySubscriber implements EventSubscriberInterface
         return [
             Events::postPersist,
             Events::preUpdate,
-            Events::postFlush,
+            Events::postFlush
         ];
     }
 
@@ -73,8 +73,8 @@ class CompanySubscriber implements EventSubscriberInterface
         if ($this->updatedCompany) {
             $frontendUrl = $_ENV['FRONTEND_URL'];
 
-            if ($this->status !== null) {
-                if ($this->status) {
+          if($this->status != null) {
+            if ($this->status === 'accepted') {
                     $this->emailService->sendEmail($this->updatedCompany->getOwner()
                         , 'Votre compte a été vérifié'
                         , 'company_verified.html.twig'
@@ -83,27 +83,24 @@ class CompanySubscriber implements EventSubscriberInterface
                             , 'loginUrl' => $frontendUrl . '/auth/login'
                         ]
                     );
-                } else {
+                } else if ($this->status === 'refused') {
                     $this->emailService->sendEmail($this->updatedCompany->getOwner()
-                        , 'Votre compte n\'est plus vérifié'
+                        , 'Votre compte a été refusé'
                         , 'company_unverified.html.twig'
                         , [
                             'company' => $this->updatedCompany
                             , 'loginUrl' => $frontendUrl . '/auth/login'
                         ]
                     );
+                } else if ($this->status === 'deleted') {
+                    $this->emailService->sendEmail($this->updatedCompany->getOwner(), 
+                    'Votre compte a été supprimé',
+                    'company_deleted.html.twig', 
+                    []
+                    );
+                
                 }
-            } else {
-                $this->emailService->sendEmail($this->updatedCompany->getOwner()
-                    , 'Modification de compte'
-                    , 'company_info_updated.html.twig'
-                    , [
-                        'company' => $this->updatedCompany
-                        , 'loginUrl' => $frontendUrl . '/auth/login'
-                    ]
-                );
             }
-
             $this->updatedCompany = null;
             $this->status = null;
         }
