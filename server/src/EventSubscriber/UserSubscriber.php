@@ -80,6 +80,7 @@ class UserSubscriber implements EventSubscriberInterface
             }
             $company = $object->getCompany();
             $company->setDeletedAt(new \DateTime());
+            $company->setStatus('deleted');
             $this->entityManager->persist($company);
             $this->entityManager->flush();
             $this->processRemove($object);
