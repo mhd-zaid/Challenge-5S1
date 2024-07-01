@@ -78,6 +78,14 @@ class UserSubscriber implements EventSubscriberInterface
             foreach($object->getCompany()->getUsers() as $user) {
                 $this->processRemove($user);
             }
+
+            $studios = $object->getCompany()->getStudios();
+            foreach ($studios as $studio) {
+                $studio->setDeletedAt(new \DateTime());
+                $this->entityManager->persist($studio);
+                $this->entityManager->flush();
+            }
+
             $company = $object->getCompany();
             $company->setDeletedAt(new \DateTime());
             $company->setStatus('deleted');
@@ -96,6 +104,7 @@ class UserSubscriber implements EventSubscriberInterface
         $object->setFirstname($object->getFirstname() . ' (deleted)');
         $object->setLastname($object->getLastname() . ' (deleted)');
         $object->setEmail($this->hashEmail($object->getEmail()));
+        $object->setDeletedAt(new \DateTime());
 
         $hashedPassword = $this->passwordHasher->hashPassword($object, uniqid());
         $object->setPassword($hashedPassword);

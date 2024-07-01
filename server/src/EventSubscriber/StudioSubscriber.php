@@ -53,10 +53,6 @@ class StudioSubscriber implements EventSubscriberInterface
             $this->entityManager->persist($workHour);
             $this->entityManager->flush();
         }
-        
-        $studio->setDeletedAt(new \DateTime());
-        $this->entityManager->persist($studio);
-        $this->entityManager->flush();
     }   
 
 }

@@ -39,7 +39,6 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
             denormalizationContext: ['groups' => ['company:update:admin', 'company:update:presta']],
 //            securityPostDenormalize: 'is_granted(UPDATE, object)',
         ),
-        new SoftDelete(),
     ],
     normalizationContext: ['groups' => ['company:read:common']],
     denormalizationContext: ['groups' => ['company:write']],
