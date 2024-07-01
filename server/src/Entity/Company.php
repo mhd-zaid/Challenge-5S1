@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Operation\SoftDelete;
 use App\Repository\CompanyRepository;
 use App\State\CompanyPostStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;

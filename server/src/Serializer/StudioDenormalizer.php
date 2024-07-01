@@ -3,7 +3,6 @@
 namespace App\Serializer;
 
 use App\Entity\Studio;
-use App\Entity\User;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -22,11 +21,14 @@ class StudioDenormalizer implements DenormalizerInterface
     {
         $studio = $this->normalizer->denormalize($data, $class, $format, $context);
 
+         if($this->security->isGranted('ROLE_PRESTA')){
+            $studio->setCompany($this->security->getUser()->getCompany());
+        }  
         return $studio;
     }
 
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return Studio::class === $type && (strtoupper($context['operation']->getMethod()) === 'POST' || strtoupper($context['operation']->getMethod()) === 'PATCH');
+        return Studio::class === $type && strtoupper($context['operation']->getMethod()) === 'POST' && "/api/studios" === $context['request_uri'];
     }
 }
