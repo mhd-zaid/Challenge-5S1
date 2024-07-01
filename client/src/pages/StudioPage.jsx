@@ -42,23 +42,7 @@ const StudioPage = () => {
       .then(data => {
         setStudio(data);
         setStudioServices(data.services);
-        getOpeningHours();
-      })
-      .catch(err => console.error(err))
-      .finally(() => setIsLoading(false));
-  };
-
-  const getOpeningHours = async () => {
-    setIsLoading(true);
-    await fetch(
-      import.meta.env.VITE_BACKEND_URL + `/studio_opening_times?studio=${id}`,
-    )
-      .then(res => {
-        if (!res.ok) return;
-        return res.json();
-      })
-      .then(data => {
-        setStudioOpeningHours(data['hydra:member']);
+        setStudioOpeningHours(data.studioOpeningTimes);
       })
       .catch(err => console.error(err))
       .finally(() => setIsLoading(false));

@@ -54,7 +54,6 @@ class Stat
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['stat:write'])]
     #[Assert\NotBlank]
-    #[Assert\DateTime]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne(inversedBy: 'stats')]
