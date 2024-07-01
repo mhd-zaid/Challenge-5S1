@@ -28,7 +28,7 @@ class CompanySubscriber implements EventSubscriberInterface
         return [
             Events::postPersist,
             Events::preUpdate,
-            Events::postFlush,
+            // Events::postFlush,
         ];
     }
 

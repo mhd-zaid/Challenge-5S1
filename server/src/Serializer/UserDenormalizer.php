@@ -22,7 +22,6 @@ class UserDenormalizer implements DenormalizerInterface
         $user = $this->normalizer->denormalize($data, $class, $format, $context);
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            dd($user);
             $user->setPlainPassword('Motdepassee123!!');
             $user->setRoles($data['roles']);
         } 
