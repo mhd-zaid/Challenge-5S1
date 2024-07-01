@@ -189,8 +189,6 @@ const CalendarPage = () => {
                 employee: Array.from(usersAvailable)[0].id,
             });
 
-            console.log("ICI")
-
             if (updateReservation.ok) {
                 toast({
                     title: 'Réservation remplacée',

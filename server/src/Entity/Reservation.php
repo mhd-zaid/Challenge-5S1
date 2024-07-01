@@ -21,17 +21,19 @@ use App\Validator\AvailableSlot;
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['reservation:read']],
+    denormalizationContext: ['groups' => ['reservation:create']],
     operations: [
+        new GetCollection('is_granted("ROLE_CUSTOMER")'),
         new Post(
+            security: "is_granted('ROLE_CUSTOMER')",
             securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
             securityPostDenormalizeMessage: "Only the customer can create a reservation.",
-            denormalizationContext: ['reservation:create']
         ),
-        new Patch(securityPostDenormalize: "is_granted('EDIT', object)",
-        denormalizationContext: ['groups' => ['reservation:update']],    
+        new Patch(
+            security: "object.getStatus() === 'RESERVED'",
+            securityPostDenormalize: "is_granted('EDIT', object)",
         ),
         new SoftDelete(security: "is_granted('EDIT', object)"),
-        new GetCollection(normalizationContext: ['groups' => ['reservation:read']]),
     ]
     )]
     
@@ -50,24 +52,23 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['reservation:create', 'reservation:update', 'reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
 
-    #[Groups(['reservation:read', 'reservation:update', 'feedback:read'])]
-
+    #[Groups(['reservation:read', 'reservation:update'])]
     private $status = 'RESERVED';
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create'])]
+    #[Groups(['reservation:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read', 'reservation:update'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?User $employee = null;
 
     #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
@@ -75,12 +76,12 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?Studio $studio = null;
 
     public function getId(): ?int
