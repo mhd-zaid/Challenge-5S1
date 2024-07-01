@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Get;
 use App\Repository\FeedbackRepository;
 use App\State\FeedbackStateProcessor;
@@ -46,7 +45,7 @@ class Feedback
     #[ORM\OneToOne(inversedBy: 'feedback', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull]
-    #[Groups(['feedback:write', 'feedback:read'])]
+    #[Groups(['feedback:read'])]
     private ?Reservation $reservation = null;
 
     public function getId(): ?Uuid
