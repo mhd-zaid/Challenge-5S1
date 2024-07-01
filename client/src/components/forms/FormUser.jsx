@@ -94,28 +94,6 @@ const FormUser = ({ user, onSubmitForm }) => {
     });
   }
 
-  const handleDelete = async () => {
-    const confirmAction = confirm('Etes-vous sûr de vouloir supprimer cet utilisateur ?');
-    if (!confirmAction) {
-      return;
-    }
-    await fetch(BASE_URL + '/users/' + user['@id'].split('/')[3], {
-      method: 'DELETE',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-      },
-    }).then(() => {
-      onSubmitForm(false);
-      toast({
-        title: 'Utilisateur supprimé',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-    });
-
-  }
-
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>

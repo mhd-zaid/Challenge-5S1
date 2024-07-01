@@ -139,19 +139,7 @@ const AdminControlCenterPage = () => {
 
   useEffect(() => {
     fetchData('studio_opening_times', paginationOpeningTime.page, paginationOpeningTime.itemsPerPage);
-  }, [paginationOpeningTime.itemsPerPage, paginationOpeningTime.page]);
-
-  const handlePageChangeOpeningTimes = (page) => {
-    setPaginationOpeningTime({ ...paginationOpeningTime, page });
-  };
-
-  const handleItemsPerPageChangeOpeningTimes = (itemsPerPage) => {
-    setPaginationOpeningTime({
-      ...paginationOpeningTime,
-      itemsPerPage,
-      page: 1,
-    });
-  };
+  }, []);
 
   useEffect(() => {
     fetchData('studios', paginationStudio.page, paginationStudio.itemsPerPage);
@@ -218,6 +206,7 @@ const AdminControlCenterPage = () => {
 
   const handleFormSubmit = async hasBeenSubmitted => {
     if (hasBeenSubmitted) {
+      console.log("SUBMITTED: ", dataType);
       if (dataType === 'studio_opening_times') {
         console.log('add fetching studio opening times');
         await fetchData(dataType, 1, 1000).then(() => onClose());
@@ -465,9 +454,6 @@ const AdminControlCenterPage = () => {
                             <MenuItem onClick={() => handleView(studio)}>
                               Voir les informations du studio
                             </MenuItem>
-                            <MenuItem onClick={() => handleView(studio)}>
-                              Désactiver le studio
-                            </MenuItem>
                             <MenuItem onClick={() => handleDelete(studio)}>
                               Supprimer
                             </MenuItem>
@@ -599,15 +585,7 @@ const AdminControlCenterPage = () => {
                                   >
                                     Modifier l'horaire
                                   </MenuItem>
-                                  <MenuItem
-                                    onClick={() =>
-                                      handleDelete(
-                                        studioOpeningTimes[studio][day],
-                                      )
-                                    }
-                                  >
-                                    Supprimer
-                                  </MenuItem>
+
                                 </>
                               ) : (
                                 <MenuItem
