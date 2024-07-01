@@ -8,7 +8,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
-final class UserContextBuilder implements SerializerContextBuilderInterface
+final class ReservationContextBuilder implements SerializerContextBuilderInterface
 {
 
     public function __construct(
