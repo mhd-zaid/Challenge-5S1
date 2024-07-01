@@ -103,6 +103,12 @@ const AdminControlCenterPage = () => {
     totalItems: 0,
   });
 
+  const [paginationService, setPaginationService] = useState({
+    page: 1,
+    itemsPerPage: 1000,
+    totalItems: 0,
+  });
+
   useEffect(() => {
     if(isAdministrator) {
       fetchData('companies', paginationCompany.page, paginationCompany.itemsPerPage);
@@ -120,6 +126,13 @@ const AdminControlCenterPage = () => {
       page: 1,
     });
   };
+
+  useEffect(() => {
+      console.log("fetch services", isAdministrator)
+    if(!isAdministrator) {
+      fetchData('services', paginationService.page, paginationService.itemsPerPage);
+    }
+  }, []);
 
   useEffect(() => {
     fetchData('users', paginationUser.page, paginationUser.itemsPerPage);
@@ -665,11 +678,6 @@ const AdminControlCenterPage = () => {
                                       onClick={() => handleDelete(service)}
                                     >
                                       Supprimer la prestation
-                                    </MenuItem>
-                                    <MenuItem
-                                      onClick={() => handleView(service)}
-                                    >
-                                      Dupliquer la prestation
                                     </MenuItem>
                                   </MenuList>
                                 </Menu>

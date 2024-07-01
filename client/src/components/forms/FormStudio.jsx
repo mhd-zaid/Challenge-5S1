@@ -73,7 +73,6 @@ const FormStudio = ({studio, onSubmitForm}) => {
   }
 
   const onSubmit = async (values) => {
-    console.log("values", values);
     const confirmAction = confirm('Etes-vous sûr de vouloir enregistrer ces modifications ?');
     if (!confirmAction) {
       return;
