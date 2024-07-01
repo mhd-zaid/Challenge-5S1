@@ -18,9 +18,12 @@ import {
 } from '@chakra-ui/react';
 import { FaInstagram, FaTiktok } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/context/AuthContext.jsx';
 
 function Footer() {
+  const { user } = useAuth();
   const { i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const getLanguageName = languageCode => {
     switch (languageCode) {
@@ -49,26 +52,34 @@ function Footer() {
             </Stack>
           </Stack>
           <Stack align={'flex-start'} gap="8">
-            <Heading fontSize="x-large">À propos de Instant Studio</Heading>
+            <Heading fontSize="x-large">{t('footer.about')}</Heading>
             <Stack>
-              <Link href={'#'}>Ajouter votre établissement</Link>
-              <Link href={'#'}>Rejoignez-nous</Link>
-              <Link href={'#'}>CGU</Link>
-              <Link href={'#'}>Gestion des cookies</Link>
+              <Link
+                href={
+                  user && user.roles.includes('ROLE_ADMIN')
+                    ? '/admin/control-center'
+                    : '/info'
+                }
+              >
+                {t('global.add-presta')}
+              </Link>
+              <Link href={'#'}>{t('footer.join-us')}</Link>
+              <Link href={'#'}>{t('footer.cgu')}</Link>
+              <Link href={'#'}>{t('footer.cookies')}</Link>
             </Stack>
           </Stack>
           <Stack align={'flex-start'} gap="8">
-            <Heading fontSize="x-large">Trouvez votre prestation</Heading>
+            <Heading fontSize="x-large">{t('footer.find-presta')}</Heading>
             <Stack>
-              <Link href={'#'}>Mariage</Link>
-              <Link href={'#'}>Mode</Link>
-              <Link href={'#'}>Évènementiel</Link>
-              <Link href={'#'}>Culinaire</Link>
-              <Link href={'#'}>Naissance</Link>
+              <Link href={' '}>{t('footer.wedding')}</Link>
+              <Link href={'#'}>{t('footer.fashion')}</Link>
+              <Link href={'#'}>{t('footer.event')}</Link>
+              <Link href={'#'}>{t('footer.cooking')}</Link>
+              <Link href={'#'}>{t('footer.birth')}</Link>
             </Stack>
           </Stack>
           <Stack align={'flex-start'} gap="8">
-            <Heading fontSize="x-large">Recherches fréquentes</Heading>
+            <Heading fontSize="x-large">{t('footer.popular-search')}</Heading>
             <Stack>
               <Link href={'#'}>Studio à Paris</Link>
               <Link href={'#'}>Studio à Bordeaux</Link>

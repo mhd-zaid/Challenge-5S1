@@ -81,7 +81,7 @@ const Navbar = ({ onLogout, menus }) => {
                       : navigate('/info');
                   }}
                 >
-                  Ajouter votre établissement
+                  {t('global.add-presta')}
                 </MenuItem>
                 <MenuItem display={isAdministrator ? 'block' : 'none'}>
                   Statistiques
