@@ -23,7 +23,7 @@ use App\Validator\AvailableSlot;
     normalizationContext: ['groups' => ['reservation:read']],
     denormalizationContext: ['groups' => ['reservation:create']],
     operations: [
-        new GetCollection('is_granted("ROLE_CUSTOMER")'),
+        new GetCollection(security: 'is_granted("ROLE_CUSTOMER")'),
         new Post(
             security: "is_granted('ROLE_CUSTOMER')",
             securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
@@ -32,12 +32,11 @@ use App\Validator\AvailableSlot;
         new Patch(
             security: "object.getStatus() === 'RESERVED'",
             securityPostDenormalize: "is_granted('EDIT', object)",
-        ),
-        new SoftDelete(security: "is_granted('EDIT', object)"),
+        )
     ]
     )]
     
-#[AvailableSlot(groups: ['reservation:create'])]
+#[AvailableSlot]
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
 class Reservation
