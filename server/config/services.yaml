@@ -34,6 +34,11 @@ services:
         decorates: 'api_platform.serializer.context_builder'
         arguments: [ '@App\ContextBuilder\UserContextBuilder.inner' ]
         autoconfigure: false
+    
+    'App\ContextBuilder\StudioContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\ContextBuilder\StudioContextBuilder.inner' ]
+        autoconfigure: false
 
     App\EventListener\VichUploaderPreUploadListener:
         tags:
