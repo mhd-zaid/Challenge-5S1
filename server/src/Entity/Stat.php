@@ -35,7 +35,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Post()
     ],
-    normalizationContext: ['groups' => ['stat:presta:read','stat:studio:read']],
+    normalizationContext: ['groups' => ['stat:read']],
     denormalizationContext: ['groups' => ['stat:write']]
 )]
 class Stat
@@ -46,18 +46,18 @@ class Stat
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['stat:write'])]
+    #[Groups(['stat:read', 'stat:write'])]
     #[Assert\NotBlank]
     #[Assert\Regex(pattern: "/^([0-9]{1,3}\.){3}[0-9]{1,3}$/")]
     private ?string $ip = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['stat:write'])]
+    #[Groups(['stat:read', 'stat:write'])]
     #[Assert\NotBlank]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\ManyToOne(inversedBy: 'stats')]
-    #[Groups(['stat:studio:read','stat:write'])]
+    #[Groups(['stat:read','stat:write'])]
     #[Assert\NotBlank]
     private ?Studio $studio = null;
 
