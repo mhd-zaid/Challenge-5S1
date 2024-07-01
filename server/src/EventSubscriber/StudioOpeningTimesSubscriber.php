@@ -27,13 +27,11 @@ class StudioOpeningTimesSubscriber implements EventSubscriberInterface
 
         /** @var StudioOpeningTime $object */
         if ($object instanceof StudioOpeningTime) {
-            if($args->hasChangedField('deletedAt')) {
-                $this->processDeleteStudioOpeningTime($object);
-            }
+                $this->processUpdateStudioOpeningTimes($object);
         }
     }
 
-    public function processDeleteStudioOpeningTime(StudioOpeningTime $studioOpeningTime): void
+    public function processUpdateStudioOpeningTimes(StudioOpeningTime $studioOpeningTime): void
     {
         $day = $studioOpeningTime->getDay();
         $studio = $studioOpeningTime->getStudio();
