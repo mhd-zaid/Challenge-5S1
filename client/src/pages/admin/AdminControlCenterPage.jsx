@@ -93,7 +93,7 @@ const AdminControlCenterPage = () => {
 
   const [paginationOpeningTime, setPaginationOpeningTime] = useState({
     page: 1,
-    itemsPerPage: 10,
+    itemsPerPage: 1000,
     totalItems: 0,
   });
 
@@ -219,6 +219,7 @@ const AdminControlCenterPage = () => {
   const handleFormSubmit = async hasBeenSubmitted => {
     if (hasBeenSubmitted) {
       if (dataType === 'studio_opening_times') {
+        console.log('add fetching studio opening times');
         await fetchData(dataType, 1, 1000).then(() => onClose());
       } else {
         await fetchData(dataType, currentPage).then(() => onClose());

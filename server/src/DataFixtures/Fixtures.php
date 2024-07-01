@@ -120,7 +120,7 @@ class Fixtures extends Fixture
     private function companyFixture() : array
     {
         return [
-            'company{1..8}' => [
+            'company{1..4}' => [
                 'name'=> '<company()>',
                 'siren'=> '<randomElement(["123456789"])>',
                 'email'=> '<email()>',

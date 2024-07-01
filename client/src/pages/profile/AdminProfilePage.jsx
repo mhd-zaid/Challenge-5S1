@@ -58,9 +58,6 @@ const AdminProfile = ({user}) => {
           </Text>
           <ManageAccount />
         </Box>
-        <Button colorScheme="blue" onClick={handleEditProfile}>
-          Modifier le profil
-        </Button>
       </Flex>
       <Stack spacing={4}>
         <Box m={4} p={4} bg="white" shadow="md" borderRadius="md">
