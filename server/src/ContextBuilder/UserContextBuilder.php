@@ -24,7 +24,7 @@ final class UserContextBuilder implements SerializerContextBuilderInterface
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-        if (($resourceClass === User::class) && isset($context['groups']) && $context['method']->getMethod() === 'POST'){
+        if (($resourceClass === User::class) && isset($context['groups']) && $context['operation']->getMethod() === 'POST'){
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
                 $context['groups'][] = 'user:input:admin';
             } 
