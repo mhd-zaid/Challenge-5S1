@@ -8,7 +8,9 @@ import slider4 from '../assets/slider/slider-4.jpg';
 import slider5 from '../assets/slider/slider-5.jpg';
 import Searchbar from '../components/searchBar';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const sliders = [
@@ -156,6 +158,9 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
                 {t('global.add-presta')}
               </Button>
@@ -191,6 +196,9 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
                 {t('global.add-presta')}
               </Button>
@@ -226,6 +234,9 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
                 {t('global.add-presta')}
               </Button>
@@ -261,6 +272,9 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
                 {t('global.add-presta')}
               </Button>
