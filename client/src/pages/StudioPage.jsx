@@ -136,6 +136,10 @@ const StudioPage = () => {
               const openingHour = studioOpeningHours.find(
                 openingHour => openingHour.day === day,
               );
+              const isClosed =
+                d.utc(openingHour.startTime).format('HH:mm') === '00:00' &&
+                d.utc(openingHour.endTime).format('HH:mm') === '00:00';
+
               return (
                 <Fragment key={day}>
                   {i !== 0 && <Divider />}
@@ -148,13 +152,13 @@ const StudioPage = () => {
                       {d().weekday(day).format('dddd')}
                     </Text>
                     <Text
-                      fontWeight={openingHour && 'medium'}
-                      fontStyle={!openingHour && 'italic'}
+                      fontWeight={!isClosed && 'medium'}
+                      fontStyle={isClosed && 'italic'}
                     >
-                      {openingHour
-                        ? d(openingHour.startTime).format('HH:mm') +
+                      {!isClosed
+                        ? d.utc(openingHour.startTime).format('HH:mm') +
                           ' - ' +
-                          d(openingHour.endTime).format('HH:mm')
+                          d.utc(openingHour.endTime).format('HH:mm')
                         : t('studio.closed')}
                     </Text>
                   </Flex>
