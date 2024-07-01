@@ -21,7 +21,10 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
     denormalizationContext: ['groups' => ['unavailabilityHour:write']],
     operations: [
         new GetCollection(security: "is_granted('ROLE_EMPLOYEE') or is_granted('ROLE_PRESTA')"),
-        new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Post(
+            security: "is_granted('ROLE_EMPLOYEE') or is_granted('ROLE_PRESTA')",
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
+        ),
         new Patch(
             security: "object.getStatus() !== 'Rejected' and is_granted('ROLE_PRESTA') or is_granted('ROLE_EMPLOYEE')",
             securityPostDenormalize: "is_granted('AUTHORIZE', object)"
