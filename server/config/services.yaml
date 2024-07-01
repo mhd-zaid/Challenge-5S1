@@ -45,6 +45,11 @@ services:
         arguments: [ '@App\ContextBuilder\ReservationContextBuilder.inner' ]
         autoconfigure: false
 
+    'App\ContextBuilder\ServiceContextBuilder':
+        decorates: 'api_platform.serializer.context_builder'
+        arguments: [ '@App\ContextBuilder\ServiceContextBuilder.inner' ]
+        autoconfigure: false
+
     App\EventListener\VichUploaderPreUploadListener:
         tags:
             - { name: kernel.event_listener, event: vich_uploader.pre_upload, method: preUpload }

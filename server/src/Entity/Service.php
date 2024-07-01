@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
-use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Operation\SoftDelete;
@@ -22,12 +20,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['service:read']],
+    denormalizationContext: ['groups' => ['service:write']],
     operations: [
-        new Post(),
-        new Patch(),
-        new GetCollection(),
-        new Get(),
-        new SoftDelete(),
+        new Post(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
+        ),
+        new Patch(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
+        ),
+        new GetCollection(
+            security: "is_granted(ROLE_PRESTA)",
+        ),
+        new SoftDelete(
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
+        ),
     ]
 )]
 #[ApiFilter(
@@ -43,29 +49,28 @@ class Service
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['service:read','studio:read'])]
-    // #[ApiProperty(identifier: false)]
+    #[Groups(['service:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['service:read','studio:read','reservation:read'])]
+    #[Groups(['service:read', 'service:write'])]
     #[Assert\Length(min: 5, max: 255)]
     #[Assert\NotBlank]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['service:read'])]
+    #[Groups(['service:read', 'service:write'])]
     #[Assert\Length(min: 20, max: 255)]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['service:read','studio:read'])]
+    #[Groups(['service:read', 'service:write'])]
     #[Assert\NotNull]
     #[Assert\GreaterThanOrEqual(0)]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['service:read','studio:read'])]
+    #[Groups(['service:read', 'service:write'])]
     #[Assert\NotNull]
     private ?\DateTimeInterface $duration = null;
 
@@ -76,7 +81,7 @@ class Service
     private Collection $reservations;
 
     #[ORM\ManyToOne(inversedBy: 'services')]
-    #[Groups(['service:read'])]
+    #[Groups(['service:write:create', 'service:read'])]
     private ?Studio $studio = null;
 
     public function __construct()
