@@ -105,10 +105,10 @@ const Unavailability = () => {
   const getCompanyDetail = async () => {
     const response = await CompanyService.get_company_detail(
       token,
-      user.company.id,
+      user.company['@id'].split('/')[3],
     );
     const data = await response.json();
-    setUsers(data.users['hydra:member']);
+    setUsers(data.users);
   };
 
   const handleSubmit = async formData => {

@@ -24,10 +24,16 @@ final class UserContextBuilder implements SerializerContextBuilderInterface
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-        if (($resourceClass === User::class) && isset($context['groups']) && $context['operation']->getMethod() === 'POST'){
-            if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+        if (($resourceClass === User::class) && isset($context['groups'])){
+            if ($this->authorizationChecker->isGranted('ROLE_ADMIN') && $context['operation']->getMethod() === 'POST') {
                 $context['groups'][] = 'user:input:admin';
             } 
+
+            if ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
+                $context['groups'][] = 'user:read:profile';
+            } else if ($this->authorizationChecker->isGranted('ROLE_EMPLOYEE')) {
+                $context['groups'][] = 'user:read:profile';
+            }
         }
         return $context;
     }
