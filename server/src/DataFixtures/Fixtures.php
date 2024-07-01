@@ -39,7 +39,7 @@ class Fixtures extends Fixture
         $this->realUser($manager);
         $this->addUserToCompany($manager);
         $this->loadServiceFixture($manager);
-        $this->loadStudioOpeningTimeFixture($manager);
+        // $this->loadStudioOpeningTimeFixture($manager);
     }
 
     /**
