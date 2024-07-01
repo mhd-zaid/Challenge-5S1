@@ -10,8 +10,10 @@ import {
   ListItem,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const SearchBar = () => {
+  const { t } = useTranslation();
   const [services, setServices] = useState([]);
   const [selectedService, setSelectedService] = useState('');
   const [city, setCity] = useState('');
@@ -73,7 +75,7 @@ const SearchBar = () => {
       <Flex justifyContent="center" alignItems="center">
         <Stack direction="row" spacing={4} width="100%" maxWidth="1000px">
           <Select
-            placeholder="Que cherchez-vous ?"
+            placeholder={t('studio-search.what-search')}
             value={selectedService}
             onChange={e => setSelectedService(e.target.value)}
           >
@@ -85,7 +87,7 @@ const SearchBar = () => {
           </Select>
           <Box position="relative" width="100%">
             <Input
-              placeholder="Choisissez une Ville"
+              placeholder={t('studio-search.choose-city')}
               value={city}
               onChange={handleCityChange}
             />
@@ -117,7 +119,7 @@ const SearchBar = () => {
             )}
           </Box>
           <Button bg="black" color="white" w="30%" onClick={handleSearch}>
-            Rechercher
+            {t('studio-search.search')}
           </Button>
         </Stack>
       </Flex>

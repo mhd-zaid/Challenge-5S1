@@ -7,7 +7,12 @@ import slider3 from '../assets/slider/slider-3.jpg';
 import slider4 from '../assets/slider/slider-4.jpg';
 import slider5 from '../assets/slider/slider-5.jpg';
 import Searchbar from '../components/searchBar';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const sliders = [
     {
       image: slider1,
@@ -62,7 +67,7 @@ const HomePage = () => {
           color="white"
           fontFamily="Poppins, sans-serif"
         >
-          Réserver votre séance de shooting
+          {t('homepage.main-title')}
         </Text>
         <Searchbar />
       </Box>
@@ -79,7 +84,7 @@ const HomePage = () => {
             fontFamily="Poppins, sans-serif"
             fontWeight="bold"
           >
-            Découvrez nos chef d'oeuvre
+            {t('homepage.section1-title')}
           </Heading>
         </Box>
         <Box
@@ -106,14 +111,14 @@ const HomePage = () => {
             fontFamily="Poppins, sans-serif"
             fontWeight="bold"
           >
-            Vous êtes un professionnel de la photographie ?
+            {t('homepage.section2-title')}
           </Heading>
           <Heading
             fontSize="4xl"
             fontFamily="Poppins, sans-serif"
             fontWeight="bold"
           >
-            Découvrez la prise de RDV en ligne !
+            {t('homepage.section2-subtitle')}
           </Heading>
         </Box>
         <SimpleGrid
@@ -145,7 +150,7 @@ const HomePage = () => {
             }
           >
             <Heading size="xl">+ 50%</Heading>
-            <Text fontSize="md">de fréquence sur les rdv pris en ligne</Text>
+            <Text fontSize="md">{t('homepage.section2-card1-text')}</Text>
             <Box className="button" opacity={0} transition="opacity 0.3s">
               <Button
                 bg="black"
@@ -153,8 +158,11 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
-                Ajouter votre établissement
+                {t('global.add-presta')}
               </Button>
             </Box>
           </Box>
@@ -180,9 +188,7 @@ const HomePage = () => {
             }
           >
             <Heading size="xl">4x</Heading>
-            <Text fontSize="md">
-              moins d'oublis avec les rappels sms des rendez-vous
-            </Text>
+            <Text fontSize="md">{t('homepage.section2-card2-text')}</Text>
             <Box className="button" opacity={0} transition="opacity 0.3s">
               <Button
                 bg="black"
@@ -190,8 +196,11 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
-                Ajouter votre établissement
+                {t('global.add-presta')}
               </Button>
             </Box>
           </Box>
@@ -225,8 +234,11 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
-                Ajouter votre établissement
+                {t('global.add-presta')}
               </Button>
             </Box>
           </Box>
@@ -252,7 +264,7 @@ const HomePage = () => {
             }
           >
             <Heading size="xl">{`> 500 000 €`}</Heading>
-            <Text fontSize="md">De rendez-vous vendus</Text>
+            <Text fontSize="md">{t('homepage.section2-card4-text')}</Text>
             <Box className="button" opacity={0} transition="opacity 0.3s">
               <Button
                 bg="black"
@@ -260,8 +272,11 @@ const HomePage = () => {
                 variant="outline"
                 size="sm"
                 mt="1rem"
+                onClick={() => {
+                  navigate('/info');
+                }}
               >
-                Ajouter votre établissement
+                {t('global.add-presta')}
               </Button>
             </Box>
           </Box>

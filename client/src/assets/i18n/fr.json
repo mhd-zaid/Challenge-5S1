@@ -4,6 +4,15 @@
     "control-center": "Centre de contrôle",
     "add-presta": "Ajouter votre établissement"
   },
+  "homepage": {
+    "main-title": "Réserver votre séance de shooting",
+    "section1-title": "Découvrez nos chef d'oeuvre",
+    "section2-title": "Vous êtes un professionnel de la photographie ?",
+    "section2-subtitle": "Découvrez la prise de RDV en ligne !",
+    "section2-card1-text": "de fréquence sur les rdv pris en ligne",
+    "section2-card2-text": "moins d'oublis avec les rappels sms des rendez-vous",
+    "section2-card4-text": "de rendez-vous vendus"
+  },
   "auth": {
     "connect": "Se connecter",
     "register": "Créer un compte",
@@ -13,8 +22,15 @@
     "new-user": "Nouveau sur Instant Studio ?",
     "already-account": "Vous avez déjà utilisé Instant Studio ?"
   },
-  "studio": {
+  "studio-search": {
+    "what-search": "Que recherchez-vous ?",
+    "choose-city": "Choisissez une ville",
+    "search": "Rechercher",
     "select-studio": "Sélectionner un studio",
+    "more-info": "Plus d'informations",
+    "no-results": "Aucun résultat trouvé"
+  },
+  "studio": {
     "reservation-btn": "Prendre RDV",
     "book": "Réserver",
     "prestation-choice": "Choix de la prestation",
@@ -23,8 +39,6 @@
     "about": "À propos du studio",
     "opening-hours": "Horaires d'ouverture",
     "closed": "Fermé",
-    "more-info": "Plus d'informations",
-    "no-results": "Aucun résultat trouvé",
     "chosen-presta": "Prestation séléctionnée",
     "chosen-date": "Date et heure séléctionnées",
     "auth-required": "Vous devez être connecté pour réserver une prestation",
@@ -45,5 +59,18 @@
     "change-booking": "Modifier la réservation",
     "cancel-change": "Annuler la modification",
     "reservation-updated": "Votre réservation a bien été modifiée"
+  },
+  "footer": {
+    "about": "À propos de Instant Studio",
+    "join-us": "Rejoignez-nous",
+    "cgu": "CGU",
+    "cookies": "Gestion des cookies",
+    "find-presta": "Trouver votre prestation",
+    "wedding": "Mariage",
+    "fashion": "Mode",
+    "event": "Événementiel",
+    "cooking": "Culinaire",
+    "birth": "Naissance",
+    "popular-search": "Recherches fréquentes"
   }
 }

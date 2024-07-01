@@ -115,7 +115,7 @@ const StudioSearchPage = () => {
     <Box pt={8}>
       <Flex display={'flex'} justifyContent={'space-between'}>
         <Heading textAlign={'start'} size={'xs'} px={'2%'}>
-          {t('studio.select-studio')}
+          {t('studio-search.select-studio')}
         </Heading>
       </Flex>
       {loading ? (
@@ -130,7 +130,7 @@ const StudioSearchPage = () => {
         </Flex>
       ) : studios.length === 0 ? (
         <Flex justifyContent={'center'} alignItems={'center'} h={'30vh'}>
-          <Heading size={'md'}>{t('studio.no-results')}</Heading>
+          <Heading size={'md'}>{t('studio-search.no-results')}</Heading>
         </Flex>
       ) : (
         <Flex
@@ -182,7 +182,7 @@ const StudioSearchPage = () => {
                   p={2}
                 >
                   <Link href={`/studios/${studio.id}`}>
-                    {t('studio.more-info')}
+                    {t('studio-search.more-info')}
                   </Link>
 
                   <Button

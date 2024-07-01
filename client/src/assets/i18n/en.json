@@ -4,15 +4,33 @@
     "control-center": "Control center",
     "add-presta": "Add your company"
   },
+  "homepage": {
+    "main-title": "Book your shooting session",
+    "section1-title": "Discover our masterpieces",
+    "section2-title": "Are you a professional photographer ?",
+    "section2-subtitle": "Discover online booking !",
+    "section2-card1-text": "of frequency on online appointments",
+    "section2-card2-text": "less forgetfulness with appointment reminders",
+    "section2-card4-text": "of appointments sold"
+  },
   "auth": {
     "connect": "Sign in",
     "register": "Create an account",
     "pwd": "Password",
     "forgot-pwd": "Forgot password",
-    "no-account": "No account yet ?"
+    "no-account": "No account yet ?",
+    "new-user": "New to Instant Studio ?",
+    "already-account": "Already used Instant Studio ?"
+  },
+  "studio-search": {
+    "what-search": "What are you looking for ?",
+    "choose-city": "Choose a city",
+    "search": "Search",
+    "select-studio": "Select a studio",
+    "more-info": "More information",
+    "no-results": "No results found"
   },
   "studio": {
-    "select-studio": "Select a studio",
     "reservation-btn": "Book now",
     "book": "Book",
     "prestation-choice": "Prestation choice",
@@ -21,7 +39,37 @@
     "about": "About the studio",
     "opening-hours": "Opening hours",
     "closed": "Closed",
-    "more-info": "More information",
-    "no-results": "No results found"
+    "chosen-presta": "Selected prestation",
+    "chosen-date": "Selected date and time",
+    "auth-required": "You must be logged in to book a prestation",
+    "choose-within-employees": "Choose from available photographers",
+    "choose-employee": "Choose this photographer",
+    "reservation-success": "Your reservation has been successfully taken into account",
+    "my-reservations": "See my reservations"
+  },
+  "profile": {
+    "general-info": "General information",
+    "name": "Name",
+    "phone": "Phone",
+    "booking-history": "Booking history",
+    "no-reservations": "You don't have any reservations yet",
+    "reserved": "Reserved",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "change-booking": "Change booking",
+    "cancel-change": "Cancel change"
+  },
+  "footer": {
+    "about": "About Instant Studio",
+    "join-us": "Join us",
+    "cgu": "Terms of use",
+    "cookies": "Cookies management",
+    "find-presta": "Find your prestation",
+    "wedding": "Wedding",
+    "fashion": "Fashion",
+    "event": "Event",
+    "cooking": "Cooking",
+    "birth": "Birth",
+    "popular-search": "Popular searches"
   }
 }
