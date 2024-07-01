@@ -92,11 +92,6 @@ const StudioSearchPage = () => {
   };
 
   const createStat = async studio => {
-    console.log({
-      studio: studio['@id'],
-      date: new Date().toISOString(),
-      ip: randomIp(),
-    });
     await fetch(import.meta.env.VITE_BACKEND_URL + `/stats`, {
       method: 'POST',
       headers: {
@@ -193,7 +188,7 @@ const StudioSearchPage = () => {
                   <Button
                     onClick={() => {
                       createStat(studio);
-                      navigate(`/studios/${studio.id}#prestation-choice`);
+                      navigate(`/studios/${studio.id}`);
                     }}
                   >
                     {t('studio.reservation-btn')}
