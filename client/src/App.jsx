@@ -8,7 +8,7 @@ const App = () => {
   return (
     <AuthProvider>
       <Header />
-      <Box flexDir={'column'} pt={'60px'} pb={24} w={'full'} minH={'100vh'}>
+      <Box flexDir={'column'} pt={'60px'} pb={24} w={'full'} minH={'100%'}>
         <Outlet />
       </Box>
       <Footer />
