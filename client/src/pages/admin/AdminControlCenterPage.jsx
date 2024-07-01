@@ -255,7 +255,7 @@ const AdminControlCenterPage = () => {
       headers: {
         'Authorization': 'Bearer ' + token,
       },
-    ).then(() => {
+    }).then(() => {
       handleFormSubmit(true);
       toast({
         title: `${type} supprimé`,
