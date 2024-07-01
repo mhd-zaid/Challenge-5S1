@@ -21,32 +21,21 @@ class UserDenormalizer implements DenormalizerInterface
     {
         $user = $this->normalizer->denormalize($data, $class, $format, $context);
 
-        //Pour le role presta on set en dur role_employee et pour le role usero ou employee on set role_customer
-        //Le role admin pourra mettre ce qu'il veut dans la variable roles
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
+            dd($user);
             $user->setPlainPassword('Motdepassee123!!');
-            $roles = [];
-            $roles[] = $data['roles'];
-            $user->setRoles($roles);
+            $user->setRoles($data['roles']);
         } 
         else if($this->security->isGranted('ROLE_PRESTA')){
-            $data['roles'] = ['ROLE_EMPLOYEE'];
-            $user->setRoles($data['roles']);
-
+            $user->setRoles(['ROLE_EMPLOYEE']);
             $user->setCompany($this->security->getUser()->getCompany());
-            $user->setPlainPassword('Motdepassee123!');
-            
+            $user->setPlainPassword('Motdepassee123!');            
         }  
-        else if ($this->security->isGranted('ROLE_USER') || $this->security->isGranted('ROLE_EMPLOYEE')) {
-            $data['roles'] = ['ROLE_CUSTOMER'];
-            $user->setRoles($data['roles']);
-        }
         return $user;
     }
 
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return User::class === $type && (strtoupper($context['operation']->getMethod()) === 'POST' || strtoupper($context['operation']->getMethod()) === 'PATCH') && "/api/users" === $context['request_uri'];
+        return User::class === $type && strtoupper($context['operation']->getMethod()) === 'POST' && "/api/users" === $context['request_uri'];
     }
 }
