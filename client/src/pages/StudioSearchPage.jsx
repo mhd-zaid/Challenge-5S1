@@ -96,7 +96,7 @@ const StudioSearchPage = () => {
   };
 
   return (
-    <Box pt={100}>
+    <Box pt={8}>
       <Flex display={'flex'} justifyContent={'space-between'}>
         <Heading textAlign={'start'} size={'xs'} px={'2%'}>
           {t('studio.select-studio')}

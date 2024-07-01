@@ -66,14 +66,14 @@ const StudioPage = () => {
 
   if (!id || isLoading)
     return (
-      <Flex w="full" h="full" justifyContent="center" alignItems="center">
+      <Flex w={'full'} h={'100vh'} justifyContent="center" alignItems="center">
         <Spinner size={'xl'} />
       </Flex>
     );
   if (!studio) return <NotFoundPage />;
 
   return (
-    <Box w="full" p={8} py={24}>
+    <Box w="full" p={8}>
       <Flex justifyContent={'space-between'} alignItems={'end'}>
         <Box>
           <Heading>{studio.name}</Heading>

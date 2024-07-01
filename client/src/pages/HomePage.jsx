@@ -8,11 +8,6 @@ import slider4 from '../assets/slider/slider-4.jpg';
 import slider5 from '../assets/slider/slider-5.jpg';
 import Searchbar from '../components/searchBar';
 const HomePage = () => {
-  const style = {
-    height: '100vh',
-    width: '100vw',
-  };
-
   const sliders = [
     {
       image: slider1,
@@ -50,7 +45,8 @@ const HomePage = () => {
     <>
       {/* Section 1 */}
       <Box
-        style={style}
+        h={'100vh'}
+        w={'100vw'}
         bgImage={`url(${backgroundImage})`}
         bgSize="cover"
         bgPosition="center"

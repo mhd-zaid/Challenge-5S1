@@ -56,12 +56,11 @@ const LoginPage = () => {
             setError({
               api: "Votre email n'a pas encore été validé. Veuillez vérifier votre boîte de réception et valider votre compte.",
             });
-          }  else if (errorData.error === 'Company is not active') {
+          } else if (errorData.error === 'Company is not active') {
             setError({
               api: "Votre compagnie n'a pas encore été approuvé.",
             });
-          }
-          else {
+          } else {
             setError({
               api: "Nom d'utilisateur ou mot de passe incorrect.",
             });
@@ -118,7 +117,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Box p={4} py={24} maxWidth="400px" mx="auto">
+    <Box p={4} maxWidth="400px" mx="auto">
       <Heading as="h2" size="lg" textAlign="center" mb={6}>
         {t('auth.connect')}
       </Heading>
