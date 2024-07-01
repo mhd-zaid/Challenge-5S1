@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -16,8 +17,8 @@ use Psr\Log\LoggerInterface;
 class CompanySubscriber implements EventSubscriberInterface
 {
     private ?Company $updatedCompany = null;
-    private ?string $updatedField = null;
-    private ?bool $status = null;
+    private ?string $status = null;
+    private ?\DateTime $deletedAt = null;
 
     public function __construct(
         private MailService $emailService
@@ -29,7 +30,7 @@ class CompanySubscriber implements EventSubscriberInterface
         return [
             Events::postPersist,
             Events::preUpdate,
-            Events::postFlush
+            Events::postFlush,
         ];
     }
 
@@ -65,6 +66,9 @@ class CompanySubscriber implements EventSubscriberInterface
             if ($args->hasChangedField('status')) {
                 $this->status = $args->getNewValue('status');
             }
+            if($args->hasChangedField('deletedAt')) {
+                $this->deletedAt = $args->getNewValue('deletedAt');
+            }
         }
     }
 
@@ -73,8 +77,8 @@ class CompanySubscriber implements EventSubscriberInterface
         if ($this->updatedCompany) {
             $frontendUrl = $_ENV['FRONTEND_URL'];
 
-          if($this->status != null) {
-            if ($this->status === 'accepted') {
+            if($this->status != null) {
+                if ($this->status === 'accepted') {
                     $this->emailService->sendEmail($this->updatedCompany->getOwner()
                         , 'Votre compte a été vérifié'
                         , 'company_verified.html.twig'
@@ -93,14 +97,22 @@ class CompanySubscriber implements EventSubscriberInterface
                         ]
                     );
                 } else if ($this->status === 'deleted') {
-                    $this->emailService->sendEmail($this->updatedCompany->getOwner(), 
-                    'Votre compte a été supprimé',
-                    'company_deleted.html.twig', 
-                    []
+                    $this->emailService->sendEmail($this->updatedCompany->getOwner(),
+                        'Votre compte a été supprimé',
+                        'company_deleted.html.twig',
+                        []
                     );
-                
                 }
             }
+            if($this->deletedAt != null) {
+//                $presta = $this->updatedCompany->getOwner();
+//                $presta->setDeletedAt($this->deletedAt);
+//                $this->em->persist($presta);
+//                $this->em->flush();
+//                dd($this->deletedAt, $presta->getDeletedAt(), $presta);
+            }
+
+
             $this->updatedCompany = null;
             $this->status = null;
         }

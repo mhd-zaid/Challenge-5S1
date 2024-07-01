@@ -15,8 +15,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
 #[ApiResource(
+
     normalizationContext: ['groups' => ['studioOpeningTime:read']],
-    denormalizationContext: ['groups' => ['studioOpeningTime:write']]
+    denormalizationContext: ['groups' => ['studioOpeningTime:write']],
+    operations: [
+        new GetCollection(),
+        new Patch(),
+    ],
+    stateless: false,
+    normalizationContext: ['groups' => ['studio:read']]
 )]
 #[ApiFilter(
     SearchFilter::class,

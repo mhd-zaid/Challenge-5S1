@@ -1,6 +1,7 @@
 <?php
 namespace App\EventSubscriber;
 
+use App\Entity\StudioOpeningTime;
 use App\Service\MailService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -10,6 +11,7 @@ use App\Entity\Reservation;
 use App\Entity\Studio;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
+use App\Entity\StudioOpeningTimes;	
 
 class StudioSubscriber implements EventSubscriberInterface
 {
@@ -19,7 +21,8 @@ class StudioSubscriber implements EventSubscriberInterface
     public function getSubscribedEvents()
     {
         return [
-            Events::preUpdate
+            Events::preUpdate,
+            Events::postPersist
         ];
     }
 
@@ -35,6 +38,24 @@ class StudioSubscriber implements EventSubscriberInterface
         }
     }
 
+    public function postPersist(LifecycleEventArgs $args): void
+    {
+        $object = $args->getObject();
+
+        /** @var Studio $object */
+        if ($object instanceof Studio) {
+            for ($i = 0; $i < 7; $i++) {
+                $openingTime = new StudioOpeningTime();
+                $openingTime->setDay($i);
+                $openingTime->setStudio($object);
+                $openingTime->setStartTime(new \DateTime('00:00:00'));
+                $openingTime->setEndTime(new \DateTime('00:00:00'));
+                $this->entityManager->persist($openingTime);
+            }
+            $this->entityManager->flush();
+            
+        }
+    }
     private function deleteStudio(Studio $studio): void
     {
         $reservations = $studio->getReservations();
@@ -53,10 +74,6 @@ class StudioSubscriber implements EventSubscriberInterface
             $this->entityManager->persist($workHour);
             $this->entityManager->flush();
         }
-        
-        $studio->setDeletedAt(new \DateTime());
-        $this->entityManager->persist($studio);
-        $this->entityManager->flush();
     }   
 
 }

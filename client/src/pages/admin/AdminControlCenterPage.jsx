@@ -91,13 +91,25 @@ const AdminControlCenterPage = () => {
     totalItems: 0,
   });
 
+  const [paginationOpeningTime, setPaginationOpeningTime] = useState({
+    page: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+  });
+
   const [paginationCompany, setPaginationCompany] = useState({
     page: 1,
     itemsPerPage: 10,
     totalItems: 0,
   });
 
-  const handlePageChangeCompany = page => {
+  useEffect(() => {
+    if(isAdministrator) {
+      fetchData('companies', paginationCompany.page, paginationCompany.itemsPerPage);
+    }
+  }, [paginationCompany.itemsPerPage, paginationCompany.page]);
+
+  const handlePageChangeCompany = (page) => {
     setPaginationCompany({ ...paginationCompany, page });
   };
 
@@ -109,7 +121,11 @@ const AdminControlCenterPage = () => {
     });
   };
 
-  const handlePageChangeUser = page => {
+  useEffect(() => {
+    fetchData('users', paginationUser.page, paginationUser.itemsPerPage);
+  }, [paginationUser.itemsPerPage, paginationUser.page]);
+
+  const handlePageChangeUser = (page) => {
     setPaginationUser({ ...paginationUser, page });
   };
 
@@ -122,12 +138,24 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-    if (dataType === 'studio_opening_times' || dataType === 'services') {
-      fetchData(dataType, 1, 1000);
-    } else {
-      fetchData(dataType, paginationStudio.page, paginationStudio.itemsPerPage);
-    }
-  }, [paginationStudio.itemsPerPage, paginationStudio.page, dataType]);
+    fetchData('studio_opening_times', paginationOpeningTime.page, paginationOpeningTime.itemsPerPage);
+  }, [paginationOpeningTime.itemsPerPage, paginationOpeningTime.page]);
+
+  const handlePageChangeOpeningTimes = (page) => {
+    setPaginationOpeningTime({ ...paginationOpeningTime, page });
+  };
+
+  const handleItemsPerPageChangeOpeningTimes = (itemsPerPage) => {
+    setPaginationOpeningTime({
+      ...paginationOpeningTime,
+      itemsPerPage,
+      page: 1,
+    });
+  };
+
+  useEffect(() => {
+    fetchData('studios', paginationStudio.page, paginationStudio.itemsPerPage);
+  }, [paginationStudio.itemsPerPage, paginationStudio.page]);
 
   const handlePageChangeStudio = page => {
     setPaginationStudio({ ...paginationStudio, page });
@@ -169,22 +197,22 @@ const AdminControlCenterPage = () => {
         totalItems: data['hydra:totalItems'],
       });
     } else if (type === 'studio_opening_times') {
-      setStudioOpeningTimes(
-        transformData(
-          data['hydra:member'].map(studioOpeningTime => ({
-            ...studioOpeningTime,
-            startTime: dayjs.utc(studioOpeningTime.startTime),
-            endTime: dayjs.utc(studioOpeningTime.endTime),
-          })),
-        ),
-      );
-    } else if (type === 'services') {
-      setServices(
-        data['hydra:member'].map(service => ({
-          ...service,
-          duration: dayjs.utc(service.duration).format('HH:mm'),
-        })),
-      );
+      setStudioOpeningTimes(transformData(data['hydra:member'].map(
+        (studioOpeningTime) => ({
+          ...studioOpeningTime,
+          startTime: dayjs.utc(studioOpeningTime.startTime),
+          endTime: dayjs.utc(studioOpeningTime.endTime),
+        })
+      )));
+      setPaginationOpeningTime({
+        ...paginationOpeningTime,
+        totalItems: data['hydra:totalItems'],
+      })
+    } else if(type === 'services') {
+      setServices(data['hydra:member'].map((service) => ({
+        ...service,
+        duration: dayjs.utc(service.duration).format('HH:mm'),
+      })));
     }
   };
 
@@ -215,28 +243,22 @@ const AdminControlCenterPage = () => {
     setCurrentPage(page);
   };
 
-  const handleDelete = async data => {
-    console.log('delete', data);
-    const confirmAction = confirm(
-      'Etes-vous sûr de vouloir supprimer cet élément ?',
-    );
+  const handleDelete = async (data, instance) => {
+    const confirmAction = confirm('Etes-vous sûr de vouloir supprimer cet élément ?');
     if (!confirmAction) {
       return;
     }
-    await fetch(
-      import.meta.env.VITE_BACKEND_URL +
-        `/${dataType}/` +
-        data['@id'].split('/')[3],
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
+
+    const type = instance ? instance : dataType;
+    await fetch(import.meta.env.VITE_BACKEND_URL + `/${type}/` + data['@id'].split('/')[3], {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + token,
       },
     ).then(() => {
       handleFormSubmit(true);
       toast({
-        title: `${dataType} supprimé`,
+        title: `${type} supprimé`,
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -322,67 +344,38 @@ const AdminControlCenterPage = () => {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {companies &&
-                    companies.map(company => (
-                      <Tr key={company.id}>
-                        <Td>{company.name}</Td>
-                        <Td>{company.email}</Td>
-                        <Td>{company.phone}</Td>
-                        <Td>
-                          <Flex justifyContent={'center'}>
-                            {company.status === 'pending' ? (
-                              <Icon
-                                icon="ic:round-info"
-                                fontSize={30}
-                                style={{ color: 'orange' }}
-                              />
-                            ) : company.status === 'accepted' ? (
-                              <Icon
-                                icon="lets-icons:check-fill"
-                                fontSize={30}
-                                style={{ color: 'green' }}
-                              />
-                            ) : company.status === 'refused' ? (
-                              <Icon
-                                icon="gridicons:cross-circle"
-                                fontSize={30}
-                                style={{ color: 'red' }}
-                              />
-                            ) : company.status === 'deleted' ? (
-                              <Icon
-                                icon="circum:no-waiting-sign"
-                                fontSize={30}
-                                style={{ color: 'red' }}
-                              />
-                            ) : null}
-                          </Flex>
-                        </Td>
-                        <Td>{company.createdAt}</Td>
-                        <Td>
-                          <Menu>
-                            <MenuButton
-                              as={Flex}
-                              bg={'transparent'}
-                              cursor={'pointer'}
-                            >
-                              <Icon
-                                icon="system-uicons:menu-vertical"
-                                fontSize={30}
-                                style={{ color: 'black' }}
-                              />
-                            </MenuButton>
-                            <MenuList>
-                              <MenuItem onClick={() => handleView(company)}>
-                                Voir les informations de la compagnie
-                              </MenuItem>
-                              <MenuItem onClick={() => handleDelete(company)}>
-                                Supprimer
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
-                        </Td>
-                      </Tr>
-                    ))}
+                  {companies && companies.map((company) => (
+                    <Tr key={company.id}>
+                      <Td>{company.name}</Td>
+                      <Td>{company.email}</Td>
+                      <Td>{company.phone}</Td>
+                      <Td>
+                        <Flex justifyContent={"center"}>
+                          {company.status === 'pending' ? (
+                            <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
+                          ) : company.status === 'accepted' ? (
+                            <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
+                          ) : company.status === 'refused' ? (
+                            <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
+                          ) : company.status === 'deleted' ? (
+                            <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
+                          ) : null}
+                        </Flex>
+                      </Td>
+                      <Td>{company.createdAt}</Td>
+                      <Td>
+                        <Menu>
+                          <MenuButton as={Flex} bg={"transparent"} cursor={"pointer"}>
+                            <Icon icon="system-uicons:menu-vertical" fontSize={30} style={{color: "black"}} />
+                          </MenuButton>
+                          <MenuList>
+                            <MenuItem onClick={() => handleView(company)}>Voir les informations de la compagnie</MenuItem>
+                            <MenuItem onClick={() => handleDelete(company.owner, 'users')}>Supprimer</MenuItem>
+                          </MenuList>
+                        </Menu>
+                      </Td>
+                    </Tr>
+                  ))}
                 </Tbody>
               </Table>
               <Pagination
