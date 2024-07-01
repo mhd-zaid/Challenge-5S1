@@ -44,6 +44,6 @@ class UnavailabilityHourVoter extends Voter
 
     private function canAuthorize(UnavailabilityHour $unavailabilityHour, UserInterface $user): bool
     {
-        return $user === $unavailabilityHour->getEmployee() || $user === $unavailabilityHour->getEmployee()->getCompany()->getOwner() || in_array('ROLE_ADMIN', $user->getRoles());
+        return $user === $unavailabilityHour->getEmployee() || $user === $unavailabilityHour->getEmployee()->getCompany()->getOwner();
     }
 }
