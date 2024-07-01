@@ -61,7 +61,7 @@ const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {
             {...register('selectedUser', { required: 'L\'utilisateur est requis' })}
             placeholder="Sélectionnez un utilisateur"
           >
-            {users.map((user) => (
+            {users?.map((user) => (
               <option key={user['@id']} value={user['@id']}>
                 {user.lastname} {user.firstname}
               </option>

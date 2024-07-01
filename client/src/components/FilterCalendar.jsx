@@ -10,7 +10,7 @@ const FilterCalendar = ({ studios, users, selectedFilterStudio, setSelectedFilte
         onChange={(e) => setSelectedFilterStudio(e.target.value)}
         placeholder="Sélectionnez un studio"
       >
-        {studios.map((studio) => (
+        {studios?.map((studio) => (
           <option key={studio.id} value={studio['@id']}>
             {studio.name}
           </option>
@@ -25,7 +25,7 @@ const FilterCalendar = ({ studios, users, selectedFilterStudio, setSelectedFilte
         onChange={(e) => setSelectedFilterUser(e.target.value)}
         placeholder="Sélectionnez un utilisateur"
       >
-        {users.map((user) => (
+        {users?.map((user) => (
           <option key={user.id} value={user['@id']}>
             {user.firstname} {user.lastname}
           </option>

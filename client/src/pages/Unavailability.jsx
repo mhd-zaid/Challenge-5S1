@@ -241,7 +241,7 @@ const Unavailability = () => {
       ) : (
         <Box p={4} w={"100%"}>
             <Select placeholder="Tous" value={selectedUser} onChange={handleUserChange}>
-            {users.map((user) => (
+            {users?.map((user) => (
               <option key={user['@id']} value={user['@id']}>
                 {user.firstname} {user.lastname}
               </option>
