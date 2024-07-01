@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -6,6 +6,7 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  Flex,
   FormControl,
   FormLabel,
   Heading,
@@ -41,7 +42,10 @@ const AdminPrestataireRequests = () => {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [siren, setSiren] = useState('');
-  const [companyInfo, setCompanyInfo] = useState({ name: '', creationDate: '' });
+  const [companyInfo, setCompanyInfo] = useState({
+    name: '',
+    creationDate: '',
+  });
   const [isEditable, setIsEditable] = useState(false);
   const [isValid, setIsValid] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -49,15 +53,18 @@ const AdminPrestataireRequests = () => {
   const [tabIndex, setTabIndex] = useState(0); // Etat pour gérer l'onglet actif
 
   const fetchCompaniesRequest = async () => {
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/ld+json',
-        'Authorization': `Bearer ${token}`,
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + '/companies',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/ld+json',
+          Authorization: `Bearer ${token}`,
+        },
       },
-    });
+    );
     let data = await response.json();
-    data = data['hydra:member'].map((request) => ({
+    data = data['hydra:member'].map(request => ({
       ...request,
       createdAt: dayjs(request.createdAt).format('DD/MM/YYYY'),
     }));
@@ -68,8 +75,12 @@ const AdminPrestataireRequests = () => {
     fetchCompaniesRequest();
   }, [token]);
 
-  const downloadKbis = (url) => {
-    window.open(import.meta.env.VITE_BACKEND_URL + url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+  const downloadKbis = url => {
+    window.open(
+      import.meta.env.VITE_BACKEND_URL + url,
+      '_blank',
+      'location=yes,height=570,width=520,scrollbars=yes,status=yes',
+    );
   };
 
   useEffect(() => {
@@ -81,14 +92,24 @@ const AdminPrestataireRequests = () => {
   const getCompanyInfo = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/info/company/${siren}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/info/company/${siren}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
       const data = await response.json();
       if (response.ok) {
         setCompanyInfo({
           ...data,
           name: data.denominationUniteLegale,
           sigle: data.sigleUniteLegale,
-          creationDate: dayjs(data.dateCreationUniteLegale).format('DD/MM/YYYY'),
+          creationDate: dayjs(data.dateCreationUniteLegale).format(
+            'DD/MM/YYYY',
+          ),
         });
         setIsValid(true);
       } else {
@@ -102,9 +123,9 @@ const AdminPrestataireRequests = () => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setCompanyInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
+    setCompanyInfo(prevInfo => ({ ...prevInfo, [name]: value }));
   };
 
   const handleSave = () => {
@@ -112,7 +133,7 @@ const AdminPrestataireRequests = () => {
     onClose();
   };
 
-  const handleOpenModal = (request) => {
+  const handleOpenModal = request => {
     setSelectedRequest(request);
     setSiren(request.siren);
     onOpen();
@@ -121,37 +142,42 @@ const AdminPrestataireRequests = () => {
   const handleValidate = async () => {
     if (selectedRequest) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/companies/${selectedRequest.id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/merge-patch+json',
-            'Authorization': `Bearer ${token}`,
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/companies/${selectedRequest.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/merge-patch+json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: 'accepted' }),
           },
-          body: JSON.stringify({ isVerified: true }),
-        });
+        );
         if (response.ok) {
           toast({
-            title: "Demande approuvée.",
-            description: "La demande a été approuvée avec succès.",
-            status: "success",
+            title: 'Demande approuvée.',
+            description: 'La demande a été approuvée avec succès.',
+            status: 'success',
             duration: 5000,
             isClosable: true,
           });
-          setRequests((prevRequests) => prevRequests.filter((req) => req.id !== selectedRequest.id));
+          setRequests(prevRequests =>
+            prevRequests.filter(req => req.id !== selectedRequest.id),
+          );
         } else {
           toast({
-            title: "Erreur",
+            title: 'Erreur',
             description: "Une erreur est survenue lors de l'approbation.",
-            status: "error",
+            status: 'error',
             duration: 5000,
             isClosable: true,
           });
         }
       } catch (error) {
         toast({
-          title: "Erreur",
+          title: 'Erreur',
           description: "Une erreur est survenue lors de l'approbation.",
-          status: "error",
+          status: 'error',
           duration: 5000,
           isClosable: true,
         });
@@ -165,36 +191,41 @@ const AdminPrestataireRequests = () => {
   const handleRefuse = async () => {
     if (selectedRequest) {
       try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/companies/${selectedRequest.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/ld+json',
-            'Authorization': `Bearer ${token}`,
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/companies/${selectedRequest.id}`,
+          {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/ld+json',
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
         if (response.ok) {
           toast({
-            title: "Demande refusée.",
-            description: "La demande a été refusée avec succès.",
-            status: "success",
+            title: 'Demande refusée.',
+            description: 'La demande a été refusée avec succès.',
+            status: 'success',
             duration: 5000,
             isClosable: true,
           });
-          setRequests((prevRequests) => prevRequests.filter((req) => req.id !== selectedRequest.id));
+          setRequests(prevRequests =>
+            prevRequests.filter(req => req.id !== selectedRequest.id),
+          );
         } else {
           toast({
-            title: "Erreur",
-            description: "Une erreur est survenue lors du refus.",
-            status: "error",
+            title: 'Erreur',
+            description: 'Une erreur est survenue lors du refus.',
+            status: 'error',
             duration: 5000,
             isClosable: true,
           });
         }
       } catch (error) {
         toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors du refus.",
-          status: "error",
+          title: 'Erreur',
+          description: 'Une erreur est survenue lors du refus.',
+          status: 'error',
           duration: 5000,
           isClosable: true,
         });
@@ -206,60 +237,121 @@ const AdminPrestataireRequests = () => {
   };
 
   // Filtrage des demandes approuvées et non approuvées
-  const approvedRequests = requests.filter(req => req.isVerified && !req.isRejected && req.isActive);
-  const waitingRequests = requests.filter(req => !req.isVerified && !req.isRejected && req.isActive);
-  const rejectedRequests = requests.filter(req => req.isRejected);
-  const disabledRequests = requests.filter(req => !req.isActive);
+  const approvedRequests = requests.filter(req => req.status === 'accepted');
+  const pendingRequests = requests.filter(req => req.status === 'pending');
+  const refusedRequests = requests.filter(req => req.status === 'refused');
 
   return (
-    <Box py={24} mx={"auto"} maxW={"80%"}>
+    <Box pt={8} mx={'auto'} maxW={'80%'}>
       <Heading mb={5}>Gestion des demandes de prestataires</Heading>
-      <Tabs isLazy variant="soft-rounded" index={tabIndex} onChange={index => setTabIndex(index)}>
+      <Tabs
+        isLazy
+        variant="soft-rounded"
+        index={tabIndex}
+        onChange={index => setTabIndex(index)}
+      >
         <TabList>
+          <Tab>Demandes</Tab>
           <Tab>Demandes en attente</Tab>
-          <Tab>Etablissements approuvées</Tab>
-          <Tab>Etablissements refusées</Tab>
-          <Tab>Etablissements désactivés</Tab>
+          <Tab>Demandes approuvées</Tab>
+          <Tab>Demandes refusées</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
             <SimpleGrid columns={3} spacing={10}>
-              {waitingRequests.map((request) => (
-                <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
+              {requests.map(request => (
+                <Card
+                  key={request.id}
+                  bg="gray.800"
+                  color="white"
+                  borderRadius="md"
+                  boxShadow="xl"
+                >
                   <CardHeader borderBottom="1px" borderColor="gray.700">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
                       <Heading size="md">{request.name}</Heading>
-                      <Text fontSize="sm" color="gray.400">Fait le : {request.createdAt}</Text>
+                      <Text fontSize="sm" color="gray.400">
+                        Fait le : {request.createdAt}
+                      </Text>
                     </Box>
                   </CardHeader>
                   <CardBody>
                     <List spacing={2}>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Adresse: </Text>
-                        {request.address || "N/A"}
+                        <Text as="span" fontWeight="bold">
+                          Adresse:{' '}
+                        </Text>
+                        {request.address || 'N/A'}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Email: </Text>
+                        <Text as="span" fontWeight="bold">
+                          Email:{' '}
+                        </Text>
                         {request.email}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Téléphone: </Text>
+                        <Text as="span" fontWeight="bold">
+                          Téléphone:{' '}
+                        </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Site web: </Text>
-                        {request.website || "N/A"}
+                        <Text as="span" fontWeight="bold">
+                          Site web:{' '}
+                        </Text>
+                        {request.website || 'N/A'}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Kbis:</Text>
+                        <Text as="span" fontWeight="bold">
+                          Kbis:
+                        </Text>
                         <Text as="span"> Cliquez </Text>
-                        <Link as="span" textDecoration="underline" color="teal.300" onClick={() => downloadKbis(request.kbis.contentUrl)}>ici</Link>
+                        <Link
+                          as="span"
+                          textDecoration="underline"
+                          color="teal.300"
+                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                        >
+                          ici
+                        </Link>
                         <Text as="span"> pour consulter le fichier</Text>
                       </ListItem>
                     </List>
                   </CardBody>
-                  <CardFooter display="flex" justifyContent="flex-end" >
-                    <Button variant="solid" colorScheme="green" onClick={() => handleOpenModal(request)}>Vérifier</Button>
+                  <CardFooter display="flex" justifyContent="flex-end">
+                    {request.status === 'pending' ? (
+                      <Button
+                        variant="solid"
+                        colorScheme="green"
+                        onClick={() => handleOpenModal(request)}
+                      >
+                        Vérifier
+                      </Button>
+                    ) : request.status === 'accepted' ? (
+                      <Flex justifyContent={'center'} alignItems={'center'}>
+                        <Icon
+                          icon="icon-park-solid:check-one"
+                          style={{ color: 'green' }}
+                        />
+                        <Text ml={2} color="green.500">
+                          Demande approuvée.
+                        </Text>
+                      </Flex>
+                    ) : (
+                      <Flex justifyContent={'center'} alignItems={'center'}>
+                        <Icon
+                          icon="mdi:alert-circle"
+                          style={{ color: '#ff0000' }}
+                        />
+                        <Text ml={2} color="red.500">
+                          Demande refusée.
+                        </Text>
+                      </Flex>
+                    )}
                   </CardFooter>
                 </Card>
               ))}
@@ -267,36 +359,143 @@ const AdminPrestataireRequests = () => {
           </TabPanel>
           <TabPanel>
             <SimpleGrid columns={3} spacing={10}>
-              {approvedRequests.map((request) => (
-                <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
+              {pendingRequests.map(request => (
+                <Card
+                  key={request.id}
+                  bg="gray.800"
+                  color="white"
+                  borderRadius="md"
+                  boxShadow="xl"
+                >
                   <CardHeader borderBottom="1px" borderColor="gray.700">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
                       <Heading size="md">{request.name}</Heading>
-                      <Text fontSize="sm" color="gray.400">Fait le : {request.createdAt}</Text>
+                      <Text fontSize="sm" color="gray.400">
+                        Fait le : {request.createdAt}
+                      </Text>
                     </Box>
                   </CardHeader>
                   <CardBody>
                     <List spacing={2}>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Adresse: </Text>
-                        {request.address || "N/A"}
+                        <Text as="span" fontWeight="bold">
+                          Adresse:{' '}
+                        </Text>
+                        {request.address || 'N/A'}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Email: </Text>
+                        <Text as="span" fontWeight="bold">
+                          Email:{' '}
+                        </Text>
                         {request.email}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Téléphone: </Text>
+                        <Text as="span" fontWeight="bold">
+                          Téléphone:{' '}
+                        </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Site web: </Text>
-                        {request.website || "N/A"}
+                        <Text as="span" fontWeight="bold">
+                          Site web:{' '}
+                        </Text>
+                        {request.website || 'N/A'}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Kbis:</Text>
+                        <Text as="span" fontWeight="bold">
+                          Kbis:
+                        </Text>
                         <Text as="span"> Cliquez </Text>
-                        <Link as="span" textDecoration="underline" color="teal.300" onClick={() => downloadKbis(request.kbis.contentUrl)}>ici</Link>
+                        <Link
+                          as="span"
+                          textDecoration="underline"
+                          color="teal.300"
+                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                        >
+                          ici
+                        </Link>
+                        <Text as="span"> pour consulter le fichier</Text>
+                      </ListItem>
+                    </List>
+                  </CardBody>
+                  <CardFooter display="flex" justifyContent="flex-end">
+                    <Button
+                      variant="solid"
+                      colorScheme="green"
+                      onClick={() => handleOpenModal(request)}
+                    >
+                      Vérifier
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </TabPanel>
+          <TabPanel>
+            <SimpleGrid columns={3} spacing={10}>
+              {approvedRequests.map(request => (
+                <Card
+                  key={request.id}
+                  bg="gray.800"
+                  color="white"
+                  borderRadius="md"
+                  boxShadow="xl"
+                >
+                  <CardHeader borderBottom="1px" borderColor="gray.700">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Heading size="md">{request.name}</Heading>
+                      <Text fontSize="sm" color="gray.400">
+                        Fait le : {request.createdAt}
+                      </Text>
+                    </Box>
+                  </CardHeader>
+                  <CardBody>
+                    <List spacing={2}>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">
+                          Adresse:{' '}
+                        </Text>
+                        {request.address || 'N/A'}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">
+                          Email:{' '}
+                        </Text>
+                        {request.email}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">
+                          Téléphone:{' '}
+                        </Text>
+                        {request.phone}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">
+                          Site web:{' '}
+                        </Text>
+                        {request.website || 'N/A'}
+                      </ListItem>
+                      <ListItem>
+                        <Text as="span" fontWeight="bold">
+                          Kbis:
+                        </Text>
+                        <Text as="span"> Cliquez </Text>
+                        <Link
+                          as="span"
+                          textDecoration="underline"
+                          color="teal.300"
+                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                        >
+                          ici
+                        </Link>
                         <Text as="span"> pour consulter le fichier</Text>
                       </ListItem>
                     </List>
@@ -307,76 +506,65 @@ const AdminPrestataireRequests = () => {
           </TabPanel>
           <TabPanel>
             <SimpleGrid columns={3} spacing={10}>
-              {rejectedRequests.map((request) => (
-                <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
+              {refusedRequests.map(request => (
+                <Card
+                  key={request.id}
+                  bg="gray.800"
+                  color="white"
+                  borderRadius="md"
+                  boxShadow="xl"
+                >
                   <CardHeader borderBottom="1px" borderColor="gray.700">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
                       <Heading size="md">{request.name}</Heading>
-                      <Text fontSize="sm" color="gray.400">Fait le : {request.createdAt}</Text>
+                      <Text fontSize="sm" color="gray.400">
+                        Fait le : {request.createdAt}
+                      </Text>
                     </Box>
                   </CardHeader>
                   <CardBody>
                     <List spacing={2}>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Adresse: </Text>
-                        {request.address || "N/A"}
+                        <Text as="span" fontWeight="bold">
+                          Adresse:{' '}
+                        </Text>
+                        {request.address || 'N/A'}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Email: </Text>
+                        <Text as="span" fontWeight="bold">
+                          Email:{' '}
+                        </Text>
                         {request.email}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Téléphone: </Text>
+                        <Text as="span" fontWeight="bold">
+                          Téléphone:{' '}
+                        </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Site web: </Text>
-                        {request.website || "N/A"}
+                        <Text as="span" fontWeight="bold">
+                          Site web:{' '}
+                        </Text>
+                        {request.website || 'N/A'}
                       </ListItem>
                       <ListItem>
-                        <Text as="span" fontWeight="bold">Kbis:</Text>
+                        <Text as="span" fontWeight="bold">
+                          Kbis:
+                        </Text>
                         <Text as="span"> Cliquez </Text>
-                        <Link as="span" textDecoration="underline" color="teal.300" onClick={() => downloadKbis(request.kbis.contentUrl)}>ici</Link>
-                        <Text as="span"> pour consulter le fichier</Text>
-                      </ListItem>
-                    </List>
-                  </CardBody>
-                </Card>
-              ))}
-            </SimpleGrid>
-          </TabPanel>
-          <TabPanel>
-            <SimpleGrid columns={3} spacing={10}>
-              {disabledRequests.map((request) => (
-                <Card key={request.id} bg="gray.800" color="white" borderRadius="md" boxShadow="xl">
-                  <CardHeader borderBottom="1px" borderColor="gray.700">
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Heading size="md">{request.name}</Heading>
-                      <Text fontSize="sm" color="gray.400">Fait le : {request.createdAt}</Text>
-                    </Box>
-                  </CardHeader>
-                  <CardBody>
-                    <List spacing={2}>
-                      <ListItem>
-                        <Text as="span" fontWeight="bold">Adresse: </Text>
-                        {request.address || "N/A"}
-                      </ListItem>
-                      <ListItem>
-                        <Text as="span" fontWeight="bold">Email: </Text>
-                        {request.email}
-                      </ListItem>
-                      <ListItem>
-                        <Text as="span" fontWeight="bold">Téléphone: </Text>
-                        {request.phone}
-                      </ListItem>
-                      <ListItem>
-                        <Text as="span" fontWeight="bold">Site web: </Text>
-                        {request.website || "N/A"}
-                      </ListItem>
-                      <ListItem>
-                        <Text as="span" fontWeight="bold">Kbis:</Text>
-                        <Text as="span"> Cliquez </Text>
-                        <Link as="span" textDecoration="underline" color="teal.300" onClick={() => downloadKbis(request.kbis.contentUrl)}>ici</Link>
+                        <Link
+                          as="span"
+                          textDecoration="underline"
+                          color="teal.300"
+                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                        >
+                          ici
+                        </Link>
                         <Text as="span"> pour consulter le fichier</Text>
                       </ListItem>
                     </List>
@@ -394,7 +582,12 @@ const AdminPrestataireRequests = () => {
           <ModalCloseButton />
           <ModalBody>
             {isLoading ? (
-              <Box display="flex" justifyContent="center" alignItems="center" height="200px">
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height="200px"
+              >
                 <Spinner size="xl" />
               </Box>
             ) : (
@@ -402,7 +595,10 @@ const AdminPrestataireRequests = () => {
                 {isValid === true ? (
                   <>
                     <Box display="flex" alignItems="center" color="green.500">
-                      <Icon icon="icon-park-solid:check-one" style={{color: "green"}} />
+                      <Icon
+                        icon="icon-park-solid:check-one"
+                        style={{ color: 'green' }}
+                      />
                       <Text ml={2}>Les informations sont valides.</Text>
                     </Box>
                     <FormControl id="siren" mt={4}>
@@ -443,8 +639,13 @@ const AdminPrestataireRequests = () => {
                   </>
                 ) : (
                   <Box display="flex" alignItems="center" color="red.500">
-                    <Icon icon="mdi:alert-circle" style={{color: "#ff0000"}} />
-                    <Text ml={2}>Les informations de l'entreprise sont invalides.</Text>
+                    <Icon
+                      icon="mdi:alert-circle"
+                      style={{ color: '#ff0000' }}
+                    />
+                    <Text ml={2}>
+                      Les informations de l'entreprise sont invalides.
+                    </Text>
                   </Box>
                 )}
               </>
@@ -454,25 +655,44 @@ const AdminPrestataireRequests = () => {
           <ModalFooter>
             {isValid && isEditable ? (
               <>
-                <Button colorScheme="blue" mr={3} onClick={handleSave} isDisabled={isLoading}>
+                <Button
+                  colorScheme="blue"
+                  mr={3}
+                  onClick={handleSave}
+                  isDisabled={isLoading}
+                >
                   Sauvegarder
                 </Button>
-                <Button variant="outline" onClick={() => setIsEditable(false)}>Annuler</Button>
+                <Button variant="outline" onClick={() => setIsEditable(false)}>
+                  Annuler
+                </Button>
               </>
             ) : isValid ? (
               <>
-                <Button colorScheme="blue" mr={3} onClick={() => setIsEditable(true)}>Modifier</Button>
-                <Button colorScheme="green" mr={3} onClick={handleValidate}>Approuver</Button>
-                <Button variant="outline" mr={3} onClick={handleRefuse}>Refuser</Button>
+                <Button
+                  colorScheme="blue"
+                  mr={3}
+                  onClick={() => setIsEditable(true)}
+                >
+                  Modifier
+                </Button>
+                <Button colorScheme="green" mr={3} onClick={handleValidate}>
+                  Approuver
+                </Button>
+                <Button variant="outline" mr={3} onClick={handleRefuse}>
+                  Refuser
+                </Button>
               </>
             ) : isValid === false ? (
-              <Button variant="outline" mr={3} onClick={handleRefuse}>Refuser</Button>
+              <Button variant="outline" mr={3} onClick={handleRefuse}>
+                Refuser
+              </Button>
             ) : null}
           </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
   );
-}
+};
 
 export default AdminPrestataireRequests;

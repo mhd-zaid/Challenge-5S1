@@ -122,7 +122,7 @@ const ReservationPage = () => {
   if (!studio) return <NotFoundPage />;
 
   return (
-    <Box w="full" p={8} py={24}>
+    <Box w="full" p={8}>
       <Box>
         <Heading size={'md'}>{studio.name}</Heading>
         <Flex

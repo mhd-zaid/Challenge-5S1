@@ -39,7 +39,7 @@ class Fixtures extends Fixture
         $this->realUser($manager);
         $this->addUserToCompany($manager);
         $this->loadServiceFixture($manager);
-        $this->loadStudioOpeningTimeFixture($manager);
+        // $this->loadStudioOpeningTimeFixture($manager);
     }
 
     /**
@@ -132,9 +132,7 @@ class Fixtures extends Fixture
                 'updatedAt'=> '<dateTimeBetween("now", "now")>',
                 'socialMedia'=> '<url()>',
                 'website'=> '<url()>',
-                'isVerified'=> '<boolean()>',
-                'isActive'=> '<boolean()>',
-                'isRejected'=> '<boolean()>',
+                'status'=> '<randomElement(["pending", "accepted", "refused", "deleted"])>',
                 'owner'=> '@user*',
             ],
         ];

@@ -26,7 +26,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
     }
   }, [event, setValue, reset]);
 
-  const studioOpeningTimes = studios.find(studio => studio['@id'] === selectedStudio)?.studioOpeningTimes.find(time => time.day === new Date(event?.start).getDay());
+  const studioOpeningTimes = studios?.find(studio => studio['@id'] === selectedStudio)?.studioOpeningTimes?.find(time => time.day === new Date(event?.start).getDay());
   const hoursOpeningTime = studioOpeningTimes ? `Ouvert de ${studioOpeningTimes.startTime.split('T')[1].slice(0, 5)} à ${studioOpeningTimes.endTime.split('T')[1].slice(0, 5)}` : 'Studio fermé ce jour-là';
 
   const onSubmit = async (data) => {
@@ -39,9 +39,9 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
       studio: data.studio,
     };
 
-    const studio = studios.find(studio => studio['@id'] === data.studio);
+    const studio = studios?.find(studio => studio['@id'] === data.studio);
     const dayOfWeek = new Date(startDay).getDay();
-    const openingTime = studio.studioOpeningTimes.find(time => time.day === dayOfWeek);
+    const openingTime = studio?.studioOpeningTimes?.find(time => time.day === dayOfWeek);
 
     if (!openingTime) {
       toast({
@@ -193,7 +193,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
                     {...register('employee', { required: 'Utilisateur est requis' })}
                     placeholder="Sélectionnez un utilisateur"
                   >
-                    {users.map((user) => (
+                    {users?.map((user) => (
                       <option key={user['@id']} value={user['@id']}>
                         {user.lastname} {user.firstname}
                       </option>
@@ -207,7 +207,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
                     {...register('studio', { required: 'Studio est requis' })}
                     placeholder="Sélectionnez un studio"
                   >
-                    {studios.map((studio) => (
+                    {studios?.map((studio) => (
                       <option key={studio.id} value={studio['@id']}>
                         {studio.name}
                       </option>

@@ -25,33 +25,13 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
     formState: { errors, isSubmitting }
   } = useForm({});
   const [studioOpeningTimesData, setStudioOpeningTimesData] = useState(studioOpeningTime);
-  const [studios, setStudios] = useState([]);
-  const [studioId, setStudioId] = useState(studioOpeningTime ? studioOpeningTime.studio.id : '');
   const dayjs = useCustomDate();
   const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
-  console.log("add studioOpeningTime", studioOpeningTime);
-
-  useEffect(() => {
-    const fetchStudios = async () => {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/studios`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/ld+json',
-          'Authorization': 'Bearer ' + token,
-        },
-      });
-      const data = await response.json();
-      setStudios(data['hydra:member']);
-    };
-
-    fetchStudios();
-  }, []);
-
-  async function upsertStudio(data) {
-    const url = studioOpeningTime.startTime ? import.meta.env.VITE_BACKEND_BASE_URL + studioOpeningTime['@id'] : `${import.meta.env.VITE_BACKEND_URL}/studio_opening_times`;
-    const method = studioOpeningTime.startTime ? 'PATCH' : 'POST';
-    const contentType = studioOpeningTime.startTime ? 'application/merge-patch+json' : 'application/ld+json';
+  async function updateStudioOpeningTimes(data) {
+    const url = import.meta.env.VITE_BACKEND_URL + '/studio_opening_times/' + studioOpeningTime['@id'].split('/')[3];
+    const method = 'PATCH';
+    const contentType = 'application/merge-patch+json';
     return await fetch(url, {
       method: method,
       headers: {
@@ -72,15 +52,10 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
     if (!confirmAction) {
       return;
     }
+    values.studio = studioOpeningTime.studio['@id'];
+    values.day = studioOpeningTime.day;
 
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        values.studio = studioOpeningTime.studio['@id'];
-        values.day = studioOpeningTime.day;
-        upsertStudio(values)
-        resolve()
-      }, 1000)
-    }).then(() => {
+    await updateStudioOpeningTimes(values).then(() => {
       onSubmitForm(true);
       toast({
         title: {studioOpeningTimesData} ? 'Modifications enregistrées' : 'studioOpeningTime créé',

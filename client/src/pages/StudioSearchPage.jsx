@@ -11,7 +11,7 @@ import {
   Link,
 } from '@chakra-ui/react';
 import { Icon } from '@iconify/react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -27,6 +27,7 @@ L.Icon.Default.mergeOptions({
 
 const StudioSearchPage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const [studios, setStudios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,12 +76,7 @@ const StudioSearchPage = () => {
   const getCoordinates = async address => {
     try {
       const url = `https://nominatim.openstreetmap.org/search?q=${address}&format=json&limit=1`;
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/ld+json',
-        },
-      });
+      const response = await fetch(url);
 
       const data = await response.json();
 
@@ -95,8 +91,28 @@ const StudioSearchPage = () => {
     }
   };
 
+  const createStat = async studio => {
+    await fetch(import.meta.env.VITE_BACKEND_URL + `/stats`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/ld+json',
+      },
+      body: JSON.stringify({
+        studio: studio['@id'],
+        date: new Date().toISOString(),
+        ip: randomIp(),
+      }),
+    });
+  };
+
+  const randomIp = () => {
+    return Array.from({ length: 4 }, () =>
+      Math.floor(Math.random() * 256).toString(),
+    ).join('.');
+  };
+
   return (
-    <Box pt={100}>
+    <Box pt={8}>
       <Flex display={'flex'} justifyContent={'space-between'}>
         <Heading textAlign={'start'} size={'xs'} px={'2%'}>
           {t('studio.select-studio')}
@@ -170,8 +186,10 @@ const StudioSearchPage = () => {
                   </Link>
 
                   <Button
-                    as={Link}
-                    href={`/studios/${studio.id}#prestation-choice`}
+                    onClick={() => {
+                      createStat(studio);
+                      navigate(`/studios/${studio.id}`);
+                    }}
                   >
                     {t('studio.reservation-btn')}
                   </Button>

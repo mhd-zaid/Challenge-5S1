@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -16,8 +17,8 @@ use Psr\Log\LoggerInterface;
 class CompanySubscriber implements EventSubscriberInterface
 {
     private ?Company $updatedCompany = null;
-    private ?string $updatedField = null;
-    private ?bool $isVerified = null;
+    private ?string $status = null;
+    private ?\DateTime $deletedAt = null;
 
     public function __construct(
         private MailService $emailService
@@ -62,8 +63,11 @@ class CompanySubscriber implements EventSubscriberInterface
         if ($object instanceof Company) {
             $this->updatedCompany = $object;
 
-            if ($args->hasChangedField('isVerified')) {
-                $this->isVerified = $args->getNewValue('isVerified');
+            if ($args->hasChangedField('status')) {
+                $this->status = $args->getNewValue('status');
+            }
+            if($args->hasChangedField('deletedAt')) {
+                $this->deletedAt = $args->getNewValue('deletedAt');
             }
         }
     }
@@ -73,8 +77,8 @@ class CompanySubscriber implements EventSubscriberInterface
         if ($this->updatedCompany) {
             $frontendUrl = $_ENV['FRONTEND_URL'];
 
-            if ($this->isVerified !== null) {
-                if ($this->isVerified) {
+            if($this->status != null) {
+                if ($this->status === 'accepted') {
                     $this->emailService->sendEmail($this->updatedCompany->getOwner()
                         , 'Votre compte a été vérifié'
                         , 'company_verified.html.twig'
@@ -83,29 +87,34 @@ class CompanySubscriber implements EventSubscriberInterface
                             , 'loginUrl' => $frontendUrl . '/auth/login'
                         ]
                     );
-                } else {
+                } else if ($this->status === 'refused') {
                     $this->emailService->sendEmail($this->updatedCompany->getOwner()
-                        , 'Votre compte n\'est plus vérifié'
+                        , 'Votre compte a été refusé'
                         , 'company_unverified.html.twig'
                         , [
                             'company' => $this->updatedCompany
                             , 'loginUrl' => $frontendUrl . '/auth/login'
                         ]
                     );
+                } else if ($this->status === 'deleted') {
+                    $this->emailService->sendEmail($this->updatedCompany->getOwner(),
+                        'Votre compte a été supprimé',
+                        'company_deleted.html.twig',
+                        []
+                    );
                 }
-            } else {
-                $this->emailService->sendEmail($this->updatedCompany->getOwner()
-                    , 'Modification de compte'
-                    , 'company_info_updated.html.twig'
-                    , [
-                        'company' => $this->updatedCompany
-                        , 'loginUrl' => $frontendUrl . '/auth/login'
-                    ]
-                );
+            }
+            if($this->deletedAt != null) {
+//                $presta = $this->updatedCompany->getOwner();
+//                $presta->setDeletedAt($this->deletedAt);
+//                $this->em->persist($presta);
+//                $this->em->flush();
+//                dd($this->deletedAt, $presta->getDeletedAt(), $presta);
             }
 
+
             $this->updatedCompany = null;
-            $this->isVerified = null;
+            $this->status = null;
         }
     }
 }

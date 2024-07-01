@@ -2,7 +2,7 @@ name: CD
 
 on:
   workflow_dispatch:
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,8 +18,9 @@ jobs:
       JWT_PUBLIC_KEY: "${{ vars.JWT_PUBLIC_KEY }}"
       JWT_PASSPHRASE: ""
       FRONTEND_URL: ${{ vars.FRONTEND_URL }}
-      INSEE_API_URL: ${{ secrets.INSEE_API_URL }}
       INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
+      INSEE_SIRET_API_URL: ${{ secrets.INSEE_SIRET_API_URL }}
+      INSEE_SIREN_API_URL: ${{ secrets.INSEE_SIREN_API_URL }}
 
     steps:
       - name: Checkout repository
@@ -40,29 +41,30 @@ jobs:
           npm install
           npm run build
           cd ..
-      
+
       - name: .env.local server
         run: |
-         echo "APP_ENV=$APP_ENV" > server/.env.local
-          echo "APP_SECRET=$APP_SECRET" >> server/.env.local
-          echo "DATABASE_URL=$DATABASE_URL" >> server/.env.local
-          echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN" >> server/.env.local
-          echo "MAILER_DSN=$MAILER_DSN" >> server/.env.local
-          echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN" >> server/.env.local
-          echo "JWT_SECRET_KEY=$JWT_SECRET_KEY" >> server/.env.local
-          echo "JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY" >> server/.env.local
-          echo "JWT_PASSPHRASE=$JWT_PASSPHRASE" >> server/.env.local
-          echo "FRONTEND_URL=$FRONTEND_URL" >> server/.env.local
-          echo "INSEE_API_URL=$INSEE_API_URL" >> server/.env.local
-          echo "INSEE_API_KEY=$INSEE_API_KEY" >> server/.env.local
-          
+          echo "APP_ENV=$APP_ENV" > server/.env.local
+           echo "APP_SECRET=$APP_SECRET" >> server/.env.local
+           echo "DATABASE_URL=$DATABASE_URL" >> server/.env.local
+           echo "MESSENGER_TRANSPORT_DSN=$MESSENGER_TRANSPORT_DSN" >> server/.env.local
+           echo "MAILER_DSN=$MAILER_DSN" >> server/.env.local
+           echo "CORS_ALLOW_ORIGIN=$CORS_ALLOW_ORIGIN" >> server/.env.local
+           echo "JWT_SECRET_KEY=$JWT_SECRET_KEY" >> server/.env.local
+           echo "JWT_PUBLIC_KEY=$JWT_PUBLIC_KEY" >> server/.env.local
+           echo "JWT_PASSPHRASE=$JWT_PASSPHRASE" >> server/.env.local
+           echo "FRONTEND_URL=$FRONTEND_URL" >> server/.env.local
+           echo "INSEE_API_KEY=$INSEE_API_KEY" >> server/.env.local
+           echo "INSEE_SIRET_API_URL=$INSEE_SIRET_API_URL" >> server/.env.local
+           echo "INSEE_SIREN_API_URL=$INSEE_SIREN_API_URL" >> server/.env.local
+
       - name: prepare server
         run: |
           cd server
           composer install
           php bin/console lexik:jwt:generate-keypair
           cd ..
-          
+
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -83,3 +85,9 @@ jobs:
             $REMOTE_USER@$REMOTE_HOST:$REMOTE_PATH
           echo "run migrations"
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && cd server && php bin/console doctrine:migrations:migrate --no-interaction"
+          echo "clear cache"
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && cd server && php bin/console cache:clear"
+          echo "restore files directory"
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && cd server && cp -r /var/www/save/files ."
+          echo "change owner var directory"
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && chown -R www-data:www-data server/var"

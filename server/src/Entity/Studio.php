@@ -121,6 +121,7 @@ class Studio
      * @var Collection<int, Service>
      */
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: Service::class)]
+    #[Groups(['studio:read'])]
     private Collection $services;
 
     public function __construct()

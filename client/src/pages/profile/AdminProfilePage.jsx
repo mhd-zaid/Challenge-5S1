@@ -20,6 +20,7 @@ import {
   Input,
 } from '@chakra-ui/react';
 import ManageAccount from '@/components/Modal/ManageAccount.jsx';
+import BarChartAdmin from '@/components/BarChartAdmin.jsx';
 
 const AdminProfile = ({user}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,11 +58,11 @@ const AdminProfile = ({user}) => {
           </Text>
           <ManageAccount />
         </Box>
-        <Button colorScheme="blue" onClick={handleEditProfile}>
-          Modifier le profil
-        </Button>
       </Flex>
       <Stack spacing={4}>
+        <Box m={4} p={4} bg="white" shadow="md" borderRadius="md">
+          <BarChartAdmin />
+        </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Informations générales

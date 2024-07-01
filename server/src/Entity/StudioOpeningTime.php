@@ -5,6 +5,8 @@ namespace App\Entity;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use App\Repository\StudioOpeningTimeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,8 +17,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: StudioOpeningTimeRepository::class)]
 #[ApiResource(
+
+    operations: [
+        new GetCollection(),
+        new Patch(),
+    ],
+    stateless: false,
     normalizationContext: ['groups' => ['studioOpeningTime:read']],
-    denormalizationContext: ['groups' => ['studioOpeningTime:write']]
+    denormalizationContext: ['groups' => ['studioOpeningTime:write']],
 )]
 #[ApiFilter(
     SearchFilter::class,

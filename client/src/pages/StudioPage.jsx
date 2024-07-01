@@ -42,23 +42,7 @@ const StudioPage = () => {
       .then(data => {
         setStudio(data);
         setStudioServices(data.services);
-        getOpeningHours();
-      })
-      .catch(err => console.error(err))
-      .finally(() => setIsLoading(false));
-  };
-
-  const getOpeningHours = async () => {
-    setIsLoading(true);
-    await fetch(
-      import.meta.env.VITE_BACKEND_URL + `/studio_opening_times?studio=${id}`,
-    )
-      .then(res => {
-        if (!res.ok) return;
-        return res.json();
-      })
-      .then(data => {
-        setStudioOpeningHours(data['hydra:member']);
+        setStudioOpeningHours(data.studioOpeningTimes);
       })
       .catch(err => console.error(err))
       .finally(() => setIsLoading(false));
@@ -66,14 +50,14 @@ const StudioPage = () => {
 
   if (!id || isLoading)
     return (
-      <Flex w="full" h="full" justifyContent="center" alignItems="center">
+      <Flex w={'full'} h={'100vh'} justifyContent="center" alignItems="center">
         <Spinner size={'xl'} />
       </Flex>
     );
   if (!studio) return <NotFoundPage />;
 
   return (
-    <Box w="full" p={8} py={24}>
+    <Box w="full" p={8}>
       <Flex justifyContent={'space-between'} alignItems={'end'}>
         <Box>
           <Heading>{studio.name}</Heading>
@@ -152,6 +136,10 @@ const StudioPage = () => {
               const openingHour = studioOpeningHours.find(
                 openingHour => openingHour.day === day,
               );
+              const isClosed =
+                d.utc(openingHour.startTime).format('HH:mm') === '00:00' &&
+                d.utc(openingHour.endTime).format('HH:mm') === '00:00';
+
               return (
                 <Fragment key={day}>
                   {i !== 0 && <Divider />}
@@ -164,13 +152,13 @@ const StudioPage = () => {
                       {d().weekday(day).format('dddd')}
                     </Text>
                     <Text
-                      fontWeight={openingHour && 'medium'}
-                      fontStyle={!openingHour && 'italic'}
+                      fontWeight={!isClosed && 'medium'}
+                      fontStyle={isClosed && 'italic'}
                     >
-                      {openingHour
-                        ? d(openingHour.startTime).format('HH:mm') +
+                      {!isClosed
+                        ? d.utc(openingHour.startTime).format('HH:mm') +
                           ' - ' +
-                          d(openingHour.endTime).format('HH:mm')
+                          d.utc(openingHour.endTime).format('HH:mm')
                         : t('studio.closed')}
                     </Text>
                   </Flex>
