@@ -23,7 +23,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Patch(),
     ],
     stateless: false,
-    normalizationContext: ['groups' => ['studio:read']]
 )]
 #[ApiFilter(
     SearchFilter::class,
