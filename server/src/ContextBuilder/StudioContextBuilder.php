@@ -23,7 +23,7 @@ final class StudioContextBuilder implements SerializerContextBuilderInterface
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-        if ($resourceClass === Studio::class && isset($context['groups']) && $context['operation'] === 'POST'){
+        if ($resourceClass === Studio::class && isset($context['groups']) && $context['operation']->getMethod() === 'POST'){
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
                 $context['groups'][] = 'studio:write:admin';
             }
