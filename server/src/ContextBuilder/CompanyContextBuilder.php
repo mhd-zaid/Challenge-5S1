@@ -23,24 +23,14 @@ final class CompanyContextBuilder implements SerializerContextBuilderInterface
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-//        if ($request->getMethod() === 'POST' || $request->getMethod() === 'PUT') {
-//            dd($context);
-//        }
-
         if ($resourceClass === Company::class && isset($context['groups'])){
             if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-                $context['groups'] = ['company:read:admin'];
-            } elseif ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
+                $context['groups'][] = 'company:read:admin';
+                $context['groups'][] = 'company:write:admin';
+            } else if ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
                 $context['groups'][] = 'company:read:presta';
-            } elseif ($this->authorizationChecker->isGranted('ROLE_EMPLOYEE')) {
-                $context['groups'][] = 'company:read:employee';
-            } elseif ($this->authorizationChecker->isGranted('ROLE_CUSTOMER')) {
-                $context['groups'] = ['company:read:customer'];
-            }
+            } 
         }
-
-//        dd($context['groups']);
-
         return $context;
     }
 }
