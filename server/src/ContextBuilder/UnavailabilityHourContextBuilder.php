@@ -21,8 +21,7 @@ final class UnavailabilityHourContextBuilder implements SerializerContextBuilder
             if($context['operation']->getMethod() === 'POST') $context['groups'][] = 'unavailabilityHour:write:presta';
 
             if($context['operation']->getMethod() === 'PATCH') {
-                $context['groups'] = [];
-                $context['groups'][] = 'unavailabilityHour:write:presta:update';
+                $context['groups'] = ['unavailabilityHour:write:presta:update'];
             }
         }
 
