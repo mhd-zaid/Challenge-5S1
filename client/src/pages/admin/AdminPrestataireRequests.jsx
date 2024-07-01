@@ -94,6 +94,12 @@ const AdminPrestataireRequests = () => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/info/company/${siren}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
       const data = await response.json();
       if (response.ok) {
