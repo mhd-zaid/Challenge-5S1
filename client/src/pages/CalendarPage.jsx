@@ -76,10 +76,10 @@ const CalendarPage = () => {
   const get_company_detail = async () => {
     setIsLoading(true);
     try {
-      const response = await CompanyService.get_company_detail(token, user.company.id);
+      const response = await CompanyService.get_company_detail(token, user.company['@id'].split('/')[3]);
       const data = await response.json();
-      setUsers(data.users['hydra:member']);
-      setStudios(data.studios['hydra:member']);
+      setUsers(data.users);
+      setStudios(data.studios);
     } catch (error) {
       toast({
         title: 'Erreur de chargement',

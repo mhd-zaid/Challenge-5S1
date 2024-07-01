@@ -58,7 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read', 'user:input'])]
+    #[Groups(['user:read', 'user:input', 'company:read:presta', 'planning:read'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -68,7 +68,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read', 'user:input'])]
+    #[Groups(['user:read', 'user:input', 'company:read:presta', 'planning:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -103,7 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups(['user:input:admin'])]
+    #[Groups(['user:input:admin', 'user:read:profile'])]
     private ?Company $company = null;
 
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: WorkHour::class)]
