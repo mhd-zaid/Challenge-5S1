@@ -23,7 +23,7 @@ final class ReservationContextBuilder implements SerializerContextBuilderInterfa
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-        if (($resourceClass === Reservation::class) && isset($context['groups']) && $context['method']->getMethod() === 'PATCH'){
+        if (($resourceClass === Reservation::class) && isset($context['groups']) && $context['operation']->getMethod() === 'PATCH'){
                 $context['groups'][] = 'reservation:update';
         }
         return $context;
