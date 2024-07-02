@@ -308,26 +308,18 @@ const CalendarPage = () => {
               setSelectedFilterUser={setSelectedFilterUser}
             />
           )}
-          <IconButton
+          <Button
             onClick={get_plannings}
-            icon={<RepeatIcon />}
+            leftIcon={<RepeatIcon />}
             aria-label="Recharger le planning"
             mb={4}
-            _hover={{ bg: "teal.500", color: "white" }} // Ajouter un effet de hover
-          />
-          <Button
-  onClick={get_plannings}
-  leftIcon={<RepeatIcon />}
-  aria-label="Recharger le planning"
-  mb={4}
-  _hover={{
-    bg: "blue.500",
-    color: "white",
-    transform: "scale(1.05)"
-  }}
->
-  Recharger le planning
-</Button>
+            _hover={{
+              bg: 'blue.500',
+              color: 'white',
+            }}
+          >
+            Recharger le planning
+          </Button>
           <Calendar
             user={user}
             plannings={filteredPlannings}
