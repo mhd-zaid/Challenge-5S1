@@ -23,6 +23,7 @@ use App\Operation\SoftDelete;
 #[ORM\Table(name: 'utilisateur')]
 #[ApiResource(
     operations: [
+        new Get(security:'is_granted("ROLE_ADMIN")'),
         new Post(securityPostDenormalize: "is_granted('CAN_CREATE', object)"),
         new Patch(securityPostDenormalize:"is_granted('CAN_EDIT', object)"),
         new SoftDelete(securityPostDenormalize:"is_granted('CAN_EDIT', object)"),
