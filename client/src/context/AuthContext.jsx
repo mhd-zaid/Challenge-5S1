@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import AuthService from '@/services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthContext = createContext({
   user: null,
@@ -58,6 +59,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setAuthLoading(false);
+    window.location = '/auth/login';
   };
 
   const isAdministrator = user ? user.roles.includes('ROLE_ADMIN') : false;
