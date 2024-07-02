@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-  Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button,
-  Tabs, TabList, Tab, TabPanels, TabPanel, useToast
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
+  useToast,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import ManageAccountForm from '../forms/ManageAccountForm';
@@ -9,8 +21,10 @@ import { EditIcon } from '@chakra-ui/icons';
 import ModifyPassword from '../forms/ModifyPassword';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const ManageAccount = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false); // State for deletion loading
@@ -27,15 +41,15 @@ const ManageAccount = () => {
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const handleDeleteAccount = async () => {
-    setIsDeleting(true); 
+    setIsDeleting(true);
     try {
       await fetch(`${BASE_URL}/users/${user.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/ld+json',
-          'Authorization': `Bearer ${token}`
-        }
-      }).then((response) => {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then(response => {
         if (response.status === 204) {
           logout();
           navigate('/auth/login');
@@ -43,8 +57,8 @@ const ManageAccount = () => {
       });
     } catch (error) {
       toast({
-        title: "Erreur lors de la suppression de votre compte",
-        status: "error",
+        title: 'Erreur lors de la suppression de votre compte',
+        status: 'error',
         duration: 9000,
         isClosable: true,
       });
@@ -52,25 +66,28 @@ const ManageAccount = () => {
       setIsDeleting(false);
       closeDeleteModal();
     }
-  }
+  };
 
   return (
     <>
-      <EditIcon boxSize={6} color="blue.500" cursor="pointer" onClick={openModal} />
+      <EditIcon
+        boxSize={6}
+        color="blue.500"
+        cursor="pointer"
+        onClick={openModal}
+      />
 
-      <Modal isOpen={isOpen} onClose={closeModal} size='xl'>
+      <Modal isOpen={isOpen} onClose={closeModal} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>
-            Gestion de votre compte
-          </ModalHeader>
+          <ModalHeader>{t('profile.account-edit')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Tabs>
               <TabList>
-                <Tab>Mes informations</Tab>
-                <Tab>Sécurité</Tab>
-                <Tab>Supprimer mon compte</Tab>
+                <Tab>{t('profile.my-info')}</Tab>
+                <Tab>{t('profile.security')}</Tab>
+                <Tab>{t('profile.account-delete')}</Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>
@@ -80,8 +97,13 @@ const ManageAccount = () => {
                   <ModifyPassword close={closeModal} />
                 </TabPanel>
                 <TabPanel>
-                  <Button colorScheme="red" onClick={openDeleteModal} isLoading={isDeleting} loadingText="Suppression en cours...">
-                    Supprimer mon compte
+                  <Button
+                    colorScheme="red"
+                    onClick={openDeleteModal}
+                    isLoading={isDeleting}
+                    loadingText="Suppression en cours..."
+                  >
+                    {t('profile.account-delete')}
                   </Button>
                 </TabPanel>
               </TabPanels>
@@ -94,17 +116,28 @@ const ManageAccount = () => {
       <Modal isOpen={isDeleteModalOpen} onClose={closeDeleteModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Confirmation de la suppression du compte</ModalHeader>
+          <ModalHeader>
+            {t('profile.account-delete-confirmation-title')}
+          </ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            Êtes-vous sûr de vouloir supprimer votre compte ?
-          </ModalBody>
+          <ModalBody>{t('profile.account-delete-confirmation-text')}</ModalBody>
           <ModalFooter>
-            <Button variant="ghost" onClick={closeDeleteModal} isDisabled={isDeleting}>
-              Annuler
+            <Button
+              variant="outline"
+              onClick={closeDeleteModal}
+              isDisabled={isDeleting}
+            >
+              {t('global.cancel')}
             </Button>
-            <Button colorScheme="red" ml={3} onClick={handleDeleteAccount} isLoading={isDeleting} loadingText="Suppression en cours..." isDisabled={isDeleting}>
-              Supprimer mon compte
+            <Button
+              colorScheme="red"
+              ml={3}
+              onClick={handleDeleteAccount}
+              isLoading={isDeleting}
+              loadingText="Suppression en cours..."
+              isDisabled={isDeleting}
+            >
+              {t('profile.account-delete')}
             </Button>
           </ModalFooter>
         </ModalContent>

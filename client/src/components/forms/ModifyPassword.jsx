@@ -10,9 +10,11 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import {useAuth} from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const ModifyPassword = ({ close }) => {
+  const { t } = useTranslation();
   const {
     handleSubmit,
     register,
@@ -26,7 +28,7 @@ const ModifyPassword = ({ close }) => {
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     setIsSubmitting(true);
     try {
       const response = await fetch(`${BASE_URL}/users/${user.id}`, {
@@ -66,10 +68,10 @@ const ModifyPassword = ({ close }) => {
   return (
     <VStack spacing={4} as="form" onSubmit={handleSubmit(onSubmit)}>
       <FormControl isInvalid={errors.newPassword} isRequired>
-        <FormLabel>Nouveau mot de passe</FormLabel>
+        <FormLabel>{t('auth.new-pwd')}</FormLabel>
         <Input
           type="password"
-          placeholder="Nouveau mot de passe"
+          placeholder={t('auth.new-pwd')}
           {...register('newPassword', {
             required: 'Ce champ est requis',
             minLength: {
@@ -77,7 +79,8 @@ const ModifyPassword = ({ close }) => {
               message: 'Le mot de passe doit contenir au moins 8 caractères',
             },
             pattern: {
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+              value:
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
               message:
                 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial',
             },
@@ -89,14 +92,14 @@ const ModifyPassword = ({ close }) => {
       </FormControl>
 
       <FormControl isInvalid={errors.confirmPassword} isRequired>
-        <FormLabel>Confirmer le nouveau mot de passe</FormLabel>
+        <FormLabel>{t('auth.confirm-pwd')}</FormLabel>
         <Input
           type="password"
           placeholder="Confirmer le nouveau mot de passe"
           {...register('confirmPassword', {
             required: 'Ce champ est requis',
-            validate: (value) =>
-              value === newPassword || "Les mots de passe ne correspondent pas",
+            validate: value =>
+              value === newPassword || 'Les mots de passe ne correspondent pas',
           })}
         />
         <FormErrorMessage>
@@ -111,7 +114,7 @@ const ModifyPassword = ({ close }) => {
         loadingText="En cours..."
         spinner={<Spinner size="sm" />}
       >
-        Modifier le mot de passe
+        {t('auth.pwd-edit')}
       </Button>
     </VStack>
   );

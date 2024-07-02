@@ -18,10 +18,9 @@ class AvailableSlotProvider implements ProviderInterface
     
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): Response
     {
-        $startDate = new \DateTime(); // Date du jour
-        $endDate = (clone $startDate)->modify('+1 month'); // Date du jour + 1 mois
+        $startDate = new \DateTime();
+        $endDate = (clone $startDate)->modify('+1 month');
     
-        // Récupérer le studio
         $studio = $this->entityManager->getRepository(Studio::class)->find($uriVariables['studioId']);
         if (!$studio) {
             return new Response('Studio not found', Response::HTTP_NOT_FOUND);

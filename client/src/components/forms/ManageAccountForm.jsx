@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Box, Button, FormControl, FormLabel, Input, FormErrorMessage, CircularProgress } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
+  CircularProgress,
+} from '@chakra-ui/react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 
 const ManageAccountForm = ({ close }) => {
+  const { t } = useTranslation();
   const { user, token, setUser } = useAuth();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false); // État local pour gérer le chargement
@@ -24,7 +34,7 @@ const ManageAccountForm = ({ close }) => {
 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     setIsLoading(true); // Activer le chargement au début de la soumission
 
     try {
@@ -84,33 +94,39 @@ const ManageAccountForm = ({ close }) => {
               },
             })}
           />
-          <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+          <FormErrorMessage>
+            {errors.email && errors.email.message}
+          </FormErrorMessage>
         </FormControl>
 
         <FormControl isInvalid={errors.firstname} mb={4}>
-          <FormLabel>First Name</FormLabel>
+          <FormLabel>{t('profile.firstname')}</FormLabel>
           <Input
             type="text"
             {...register('firstname', {
               required: 'First name is required',
             })}
           />
-          <FormErrorMessage>{errors.firstname && errors.firstname.message}</FormErrorMessage>
+          <FormErrorMessage>
+            {errors.firstname && errors.firstname.message}
+          </FormErrorMessage>
         </FormControl>
 
         <FormControl isInvalid={errors.lastname} mb={4}>
-          <FormLabel>Last Name</FormLabel>
+          <FormLabel>{t('profile.lastname')}</FormLabel>
           <Input
             type="text"
             {...register('lastname', {
               required: 'Last name is required',
             })}
           />
-          <FormErrorMessage>{errors.lastname && errors.lastname.message}</FormErrorMessage>
+          <FormErrorMessage>
+            {errors.lastname && errors.lastname.message}
+          </FormErrorMessage>
         </FormControl>
 
         <FormControl isInvalid={errors.phone} mb={4}>
-          <FormLabel>Phone Number</FormLabel>
+          <FormLabel>{t('profile.phone')}</FormLabel>
           <Input
             type="tel"
             {...register('phone', {
@@ -121,11 +137,19 @@ const ManageAccountForm = ({ close }) => {
               },
             })}
           />
-          <FormErrorMessage>{errors.phone && errors.phone.message}</FormErrorMessage>
+          <FormErrorMessage>
+            {errors.phone && errors.phone.message}
+          </FormErrorMessage>
         </FormControl>
 
-        <Button type="submit" colorScheme="blue" width="full" isLoading={isLoading} loadingText="Saving...">
-          Save
+        <Button
+          type="submit"
+          colorScheme="blue"
+          width="full"
+          isLoading={isLoading}
+          loadingText="Saving..."
+        >
+          {t('global.save')}
         </Button>
       </form>
     </Box>

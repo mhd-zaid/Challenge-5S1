@@ -27,8 +27,17 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
   }, [event, setValue, reset]);
 
   const studioOpeningTimes = studios?.find(studio => studio['@id'] === selectedStudio)?.studioOpeningTimes?.find(time => time.day === new Date(event?.start).getDay());
-  const hoursOpeningTime = studioOpeningTimes ? `Ouvert de ${studioOpeningTimes.startTime.split('T')[1].slice(0, 5)} à ${studioOpeningTimes.endTime.split('T')[1].slice(0, 5)}` : 'Studio fermé ce jour-là';
 
+  let hoursOpeningTime = 'Studio fermé ce jour-là';
+
+  if (studioOpeningTimes) {
+      const startTime = studioOpeningTimes.startTime.split('T')[1].slice(0, 5);
+      const endTime = studioOpeningTimes.endTime.split('T')[1].slice(0, 5);
+
+      if (startTime !== '00:00' || endTime !== '00:00') {
+          hoursOpeningTime = `Ouvert de ${startTime} à ${endTime}`;
+      }
+  }
   const onSubmit = async (data) => {
     setIsLoading(true);
     const startDay = event && event.startStr ? getValues('day') : event.start.split('T')[0] ;

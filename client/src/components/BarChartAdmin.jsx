@@ -10,6 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(
   CategoryScale,
@@ -17,15 +18,15 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
-const getStats = async (token) => {
+const getStats = async token => {
   const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/stats', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/ld+json',
-      'Authorization': 'Bearer ' + token,
+      Authorization: 'Bearer ' + token,
     },
   });
   const stats = await response.json();
@@ -33,6 +34,7 @@ const getStats = async (token) => {
 };
 
 const BarChartAdmin = () => {
+  const { t } = useTranslation();
   const [chartData, setChartData] = useState(null);
   const { token } = useAuth();
 
@@ -42,19 +44,19 @@ const BarChartAdmin = () => {
         const stats = await getStats(token);
 
         const allYearsSet = new Set();
-        stats['hydra:member'].forEach((company) => {
+        stats['hydra:member'].forEach(company => {
           const yearsData = company.years;
-          Object.keys(yearsData).forEach((year) => {
+          Object.keys(yearsData).forEach(year => {
             allYearsSet.add(year);
           });
         });
 
         const allYears = Array.from(allYearsSet).sort();
 
-        const datasets = stats['hydra:member'].map((company) => {
+        const datasets = stats['hydra:member'].map(company => {
           const companyName = company.name;
           const yearsData = company.years;
-          const data = allYears.map((year) => {
+          const data = allYears.map(year => {
             return yearsData[year] ? yearsData[year].totalCA : 0;
           });
 
@@ -89,7 +91,7 @@ const BarChartAdmin = () => {
       },
       title: {
         display: true,
-        text: 'Chiffre d\'affaires par année par entreprise',
+        text: t('profile.chart-admin'),
       },
     },
     scales: {

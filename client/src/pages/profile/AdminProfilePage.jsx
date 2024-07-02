@@ -1,28 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Heading,
-  Text,
-  Button,
-  Avatar,
-  Stack,
-  Flex,
-  useColorModeValue,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  FormControl,
-  FormLabel,
-  Input,
-} from '@chakra-ui/react';
+import { useState } from 'react';
+import { Box, Heading, Text, Avatar, Stack, Flex } from '@chakra-ui/react';
 import ManageAccount from '@/components/Modal/ManageAccount.jsx';
 import BarChartAdmin from '@/components/BarChartAdmin.jsx';
+import { useTranslation } from 'react-i18next';
 
-const AdminProfile = ({user}) => {
+const AdminProfile = ({ user }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleEditProfile = () => {
@@ -38,11 +21,13 @@ const AdminProfile = ({user}) => {
   };
 
   return (
-    <Box
-      pt="80px"
-      minH="100vh"
-    >
-      <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" mb={6}>
+    <Box pt="80px" minH="100vh">
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        align="center"
+        justify="space-between"
+        mb={6}
+      >
         <Box>
           <Avatar
             size="xl"
@@ -65,61 +50,38 @@ const AdminProfile = ({user}) => {
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Informations générales
+            {t('profile.general-info')}
           </Heading>
-          <Text>Nom: {user.firstname} {user.lastname}</Text>
+          <Text>
+            {t('profile.name')}: {user.firstname} {user.lastname}
+          </Text>
           <Text>Email: {user.email}</Text>
-          <Text>Téléphone: {user.phone}</Text>
+          <Text>
+            {t('profile.phone')}: {user.phone}
+          </Text>
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Rôles et permissions
+            {t('profile.roles')}
           </Heading>
-          <Text>Rôle: Administrateur</Text>
-          <Text>Permissions:
-            Gérer les établissements,
-            Gérer les studios,
-            Gérer les utilisateurs,
-            Voir les statistiques</Text>
+          <Text>{t('profile.role')}: Administrateur</Text>
+          <Text>
+            {t('profile.permissions')}: {t('profile.company-handle')},{' '}
+            {t('profile.studio-handle')}, {t('profile.user-handle')},{' '}
+            {t('profile.stats-view')}
+          </Text>
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Activité récente
+            {t('profile.recent-activity')}
           </Heading>
-          <Text>Dernière connexion: 21 juin 2024</Text>
-          <Text>Actions récentes: Modification des permissions d'un utilisateur, Validation d'un établissement</Text>
+          <Text>{t('profile.last-connection')}: 21 juin 2024</Text>
+          <Text>
+            {t('profile.recent-actions')}: {t('profile.user-edit')},{' '}
+            {t('profile.company-validation')}
+          </Text>
         </Box>
       </Stack>
-
-      {/* Modal de modification du profil */}
-      <Modal isOpen={isOpen} onClose={handleClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Modifier le profil</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <FormControl>
-              <FormLabel>Nom</FormLabel>
-              <Input type="text" placeholder="Nom" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Email</FormLabel>
-              <Input type="email" placeholder="Email" />
-            </FormControl>
-            <FormControl mt={4}>
-              <FormLabel>Téléphone</FormLabel>
-              <Input type="tel" placeholder="Téléphone" />
-            </FormControl>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleSaveChanges}>
-              Sauvegarder
-            </Button>
-            <Button onClick={handleClose}>Annuler</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Box>
   );
 };

@@ -64,13 +64,13 @@ class Service
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['service:read', 'service:write'])]
+    #[Groups(['service:read', 'service:write', 'studio:read'])]
     #[Assert\NotNull]
     #[Assert\GreaterThanOrEqual(0)]
     private ?int $cost = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    #[Groups(['service:read', 'service:write'])]
+    #[Groups(['service:read'])]
     #[Assert\NotNull]
     private ?\DateTimeInterface $duration = null;
 
@@ -86,6 +86,7 @@ class Service
 
     public function __construct()
     {
+        $this->duration = new \DateTime('1970-01-01T01:00:00');
         $this->reservations = new ArrayCollection();
     }
 
