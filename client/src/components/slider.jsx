@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, IconButton, Image, Card, CardBody, CardFooter, Stack,Heading,Button,Text} from '@chakra-ui/react';
+import { useState } from 'react';
+import { Box, IconButton, Image, Card, CardBody, CardFooter, Stack, Heading, Text} from '@chakra-ui/react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const Slider = ({ sliders }) => {

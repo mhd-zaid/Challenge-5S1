@@ -21,7 +21,6 @@ const FormUser = ({ user, onSubmitForm }) => {
     handleSubmit,
     register,
     formState: { errors, isSubmitting } ,
-    getValues
   } = useForm({
     defaultValues: {
       lastname: user?.lastname || '',
@@ -220,7 +219,6 @@ const FormUser = ({ user, onSubmitForm }) => {
               <FormControl isRequired>
                 <FormLabel>Entreprise</FormLabel>
                 <Select
-                  onChange={(e) => setCompanyId(e.target.value)}
                   {...register('company', {
                     required: 'Ce champ est requis',
                   })}

@@ -1,4 +1,11 @@
-import { Box, Heading, Text, Avatar, Stack, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Text,
+  Avatar,
+  Stack,
+  Flex,
+} from '@chakra-ui/react';
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
 import ManageAccount from '../../components/Modal/ManageAccount';

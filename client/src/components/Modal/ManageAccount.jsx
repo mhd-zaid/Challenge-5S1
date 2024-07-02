@@ -15,7 +15,6 @@ import {
   TabPanel,
   useToast,
 } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
 import ManageAccountForm from '../forms/ManageAccountForm';
 import { EditIcon } from '@chakra-ui/icons';
 import ModifyPassword from '../forms/ModifyPassword';

@@ -19,20 +19,20 @@ use App\Validator\AvailableSlot;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['reservation:read']],
-    denormalizationContext: ['groups' => ['reservation:create']],
     operations: [
         new GetCollection(security: 'is_granted("ROLE_CUSTOMER")'),
         new Post(
             security: "is_granted('ROLE_CUSTOMER')",
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
             securityPostDenormalizeMessage: "Only the customer can create a reservation.",
         ),
         new Patch(
             security: "object.getStatus() === 'RESERVED'",
             securityPostDenormalize: "is_granted('EDIT', object)",
         )
-    ]
+    ],
+    normalizationContext: ['groups' => ['reservation:read']],
+    denormalizationContext: ['groups' => ['reservation:create']]
     )]
     
 #[AvailableSlot]
@@ -55,7 +55,6 @@ class Reservation
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
-
     #[Groups(['reservation:read', 'reservation:update', 'feedback:read'])]
     private $status = 'RESERVED';
 

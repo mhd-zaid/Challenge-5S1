@@ -5,19 +5,19 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage, FormHelperText,
+  FormErrorMessage,
   FormLabel, Heading,
   Input,
-  InputGroup, InputLeftElement, List, ListItem,
-  Select, SimpleGrid,
-  Text, Textarea, useToast, VStack,
+  InputGroup, InputLeftElement,
+  Select,
+  Text, Textarea, useToast,
 } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 
 const FormService = ({service, onSubmitForm}) => {
-  const { token, isAdministrator } = useAuth();
+  const { token} = useAuth();
   const toast = useToast();
   const {
     handleSubmit,
@@ -26,7 +26,7 @@ const FormService = ({service, onSubmitForm}) => {
   } = useForm({});
   const [studioId, setStudioId] = useState(service ? service.studio.id : '');
   const [studios, setStudios] = useState([]);
-  const [serviceData, setStudioData] = useState(service);
+  const [serviceData, setServiceData] = useState(service);
   const [isEditable, setIsEditable] = useState(!service);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const FormService = ({service, onSubmitForm}) => {
       return;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         upsertService(values)
         resolve()

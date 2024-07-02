@@ -60,7 +60,6 @@ const AdminControlCenterPage = () => {
   const [studioOpeningTimes, setStudioOpeningTimes] = useState([]);
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   let groupedServices = null;
   const dayjs = useCustomDate();
   const [dataType, setDataType] = useState(
@@ -247,10 +246,6 @@ const AdminControlCenterPage = () => {
   const handleAdd = data => {
     setEditData(data);
     onOpen();
-  };
-
-  const handlePageChange = page => {
-    setCurrentPage(page);
   };
 
   const handleDelete = async (data, instance) => {

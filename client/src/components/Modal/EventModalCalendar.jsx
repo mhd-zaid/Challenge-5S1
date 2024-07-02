@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button,
   FormControl, FormLabel, Input, Select, Box, Text
@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import WorkHourService from '../../services/WorkHourService';
 import { useAuth } from '../../context/AuthContext';
 
-const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, studios, get_plannings, toast }) => {
+const EventModalCalendar = ({ isOpen, onClose, event, token, users, studios, get_plannings, toast }) => {
   const { register, handleSubmit, setValue, reset, getValues, watch, formState: { errors } } = useForm();
   const {user} = useAuth();
   const [isLoading, setIsLoading] = useState(false);

@@ -10,11 +10,13 @@ import {
   FormLabel,
   Heading,
   Input,
+  InputGroup, InputLeftElement,
+  Text, Textarea,
   InputGroup,
   InputLeftElement,
   Textarea,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -71,10 +73,9 @@ const FormCompanyRequest = ({onSubmitForm}) => {
     });
   }
 
-  const onSubmit = async values => {
-    return new Promise((resolve, reject) => {
+  const onSubmit = async (values) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
-        // console.log(JSON.stringify(values, null, 2))
         createCompany(values)
           .then((result) => {
 
@@ -112,22 +113,19 @@ const FormCompanyRequest = ({onSubmitForm}) => {
           <Text color='red.500'>{error}</Text>
           {step === 1 && (
             <Box>
-              <Heading as="h2" size="sm" textAlign="center" mb={10}>
-                {t('company.info')}
+              <Heading as='h2' size='sm' textAlign='center' mb={10}>
+                Informations sur l'entreprise
               </Heading>
               {/* Champ Nom de l'entreprise */}
               <FormControl isInvalid={errors.name} mt={4} isRequired>
-                <FormLabel htmlFor="name">{t('company.name')}</FormLabel>
+                <FormLabel htmlFor='name'>Nom de l'entreprise</FormLabel>
                 <Input
-                  id="name"
+                  id='name'
                   autoFocus={true}
-                  placeholder={t('company.name')}
+                  placeholder='Entrer le nom de votre entreprise'
                   {...register('name', {
                     required: 'Ce champ est requis',
-                    minLength: {
-                      value: 4,
-                      message: 'La longueur minimale est de 4 caractères',
-                    },
+                    minLength: { value: 4, message: 'La longueur minimale est de 4 caractères' },
                   })}
                 />
                 <FormErrorMessage>

@@ -1,19 +1,16 @@
 import { useForm } from 'react-hook-form';
-import { Icon } from '@iconify/react';
 import {
   Box,
   Button,
   Flex,
   FormControl,
-  FormErrorMessage, FormHelperText,
+  FormErrorMessage,
   FormLabel, Heading,
   Input,
-  InputGroup, InputLeftElement, List, ListItem,
-  Select, SimpleGrid,
-  Text, Textarea, useToast, VStack,
+  Text, useToast,
 } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useCustomDate from '@/hooks/useCustomDate.js';
 
 const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
