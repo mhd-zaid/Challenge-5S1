@@ -5,21 +5,25 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage, FormHelperText,
-  FormLabel, Heading,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Heading,
   Input,
-  InputGroup, InputLeftElement,
-  Select, SimpleGrid,
-  Text, Textarea, VStack,
+  InputGroup,
+  InputLeftElement,
+  Textarea,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const FormCompanyRequest = () => {
+  const { t } = useTranslation();
   const [listIxServices, setListIxServices] = useState([]);
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm({});
   const [step, setStep] = useState(1);
 
@@ -43,63 +47,70 @@ const FormCompanyRequest = () => {
     formData.append('ownerEmail', data.ownerEmail);
     formData.append('password', data.password);
 
-
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
-      method: 'POST',
-      // headers: {
-      //   'Content-Type': 'application/ld+json',
-      // },
-      body: formData,
-    });
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + '/companies',
+      {
+        method: 'POST',
+        // headers: {
+        //   'Content-Type': 'application/ld+json',
+        // },
+        body: formData,
+      },
+    );
 
     const result = await response.json();
     console.log('result', result);
 
     if (result.error) {
       console.error('error', result.error);
-    } else {
     }
   }
 
-  const onSubmit = async (values) => {
+  const onSubmit = async values => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         // console.log(JSON.stringify(values, null, 2))
-        createCompany(values)
-        resolve()
-      }, 2000)
+        createCompany(values);
+        resolve();
+      }, 2000);
     });
-  }
+  };
 
   const prevStep = () => {
     setStep(step - 1);
-  }
+  };
 
   const nextStep = () => {
     setStep(step + 1);
-  }
+  };
 
   return (
     <>
-      <Box
-      >
-        <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
-
+      <Box>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          aria-autocomplete={'both'}
+          autoComplete={'on'}
+          autoSave={'on'}
+        >
           {step === 1 && (
             <Box>
-              <Heading as='h2' size='sm' textAlign='center' mb={10}>
-                Informations sur l'entreprise
+              <Heading as="h2" size="sm" textAlign="center" mb={10}>
+                {t('company.info')}
               </Heading>
               {/* Champ Nom de l'entreprise */}
               <FormControl isInvalid={errors.name} mt={4} isRequired>
-                <FormLabel htmlFor='name'>Nom de l'entreprise</FormLabel>
+                <FormLabel htmlFor="name">{t('company.name')}</FormLabel>
                 <Input
-                  id='name'
+                  id="name"
                   autoFocus={true}
-                  placeholder='Entrer le nom de votre entreprise'
+                  placeholder={t('company.name')}
                   {...register('name', {
                     required: 'Ce champ est requis',
-                    minLength: { value: 4, message: 'La longueur minimale est de 4 caractères' },
+                    minLength: {
+                      value: 4,
+                      message: 'La longueur minimale est de 4 caractères',
+                    },
                   })}
                 />
                 <FormErrorMessage>
@@ -109,10 +120,12 @@ const FormCompanyRequest = () => {
 
               {/* Description de l'entreprise */}
               <FormControl isInvalid={errors.description} mt={4} isRequired>
-                <FormLabel htmlFor='description'>Description de l'entreprise</FormLabel>
+                <FormLabel htmlFor="description">
+                  {t('company.description')}
+                </FormLabel>
                 <Textarea
-                  id='description'
-                  placeholder="Entrer une description de l'entreprise"
+                  id="description"
+                  placeholder={t('company.description')}
                   {...register('description', {
                     required: 'Ce champ est requis',
                   })}
@@ -138,18 +151,21 @@ const FormCompanyRequest = () => {
               {/*</FormControl>*/}
 
               <Flex gap={8}>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Code Postal */}
                   <FormControl isInvalid={errors.zipCode} mt={4} isRequired>
-                    <FormLabel htmlFor='zipCode'>Code Postal</FormLabel>
+                    <FormLabel htmlFor="zipCode">
+                      {t('company.zipcode')}
+                    </FormLabel>
                     <Input
-                      id='zipCode'
-                      placeholder='XXXXX'
+                      id="zipCode"
+                      placeholder="XXXXX"
                       {...register('zipCode', {
                         required: 'Ce champ est requis',
                         pattern: {
                           value: /^[0-9]{5}$/,
-                          message: 'Code postal invalide, il doit contenir 5 chiffres',
+                          message:
+                            'Code postal invalide, il doit contenir 5 chiffres',
                         },
                       })}
                     />
@@ -158,13 +174,13 @@ const FormCompanyRequest = () => {
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
-                <Box w='50%'>
+                <Box w="50%">
                   {/*Ville*/}
                   <FormControl isInvalid={errors.city} mt={4} isRequired>
-                    <FormLabel htmlFor='city'>Ville</FormLabel>
+                    <FormLabel htmlFor="city">{t('company.city')}</FormLabel>
                     <Input
-                      id='city'
-                      placeholder='Entrer la ville'
+                      id="city"
+                      placeholder={t('company.city')}
                       {...register('city', {
                         required: 'Ce champ est requis',
                       })}
@@ -177,23 +193,24 @@ const FormCompanyRequest = () => {
               </Flex>
 
               <Flex gap={8}>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Champ Téléphone Portable */}
                   <FormControl isInvalid={errors.phone} mt={4} isRequired>
-                    <FormLabel htmlFor='phone'>Téléphone</FormLabel>
+                    <FormLabel htmlFor="phone">{t('company.phone')}</FormLabel>
                     <InputGroup>
                       <InputLeftElement>
                         <Icon icon="twemoji:flag-for-flag-france" />
                       </InputLeftElement>
                       <Input
-                        id='phone'
-                        placeholder='01XXXXXXXX'
-                        autoComplete={"tel"}
+                        id="phone"
+                        placeholder="01XXXXXXXX"
+                        autoComplete={'tel'}
                         {...register('phone', {
                           required: 'Ce champ est requis',
                           pattern: {
                             value: /^[0-9]{10}$/,
-                            message: 'Numéro de téléphone invalide, il doit contenir 10 chiffres',
+                            message:
+                              'Numéro de téléphone invalide, il doit contenir 10 chiffres',
                           },
                         })}
                       />
@@ -203,15 +220,15 @@ const FormCompanyRequest = () => {
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Champ Email */}
                   <FormControl isInvalid={errors.email} mt={4} isRequired>
-                    <FormLabel htmlFor='email'>Email</FormLabel>
+                    <FormLabel htmlFor="email">Email</FormLabel>
                     <Input
-                      id='email'
-                      type='email'
-                      placeholder='Email'
-                      autoComplete={"email"}
+                      id="email"
+                      type="email"
+                      placeholder="Email"
+                      autoComplete={'email'}
                       {...register('email', {
                         required: 'Ce champ est requis',
                         pattern: {
@@ -228,18 +245,19 @@ const FormCompanyRequest = () => {
               </Flex>
 
               <Flex gap={8}>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Numéro de siren */}
                   <FormControl isInvalid={errors.siren} mt={4} isRequired>
-                    <FormLabel htmlFor='siren'>Numéro de siren</FormLabel>
+                    <FormLabel htmlFor="siren">SIREN</FormLabel>
                     <Input
-                      id='siren'
-                      placeholder='Entrer votre numéro de siren'
+                      id="siren"
+                      placeholder="XXXXXXXXX"
                       {...register('siren', {
                         required: 'Ce champ est requis',
                         pattern: {
                           value: /^[0-9]{9}$/,
-                          message: 'Numéro de siren invalide, il doit contenir 14 chiffres',
+                          message:
+                            'Numéro de siren invalide, il doit contenir 14 chiffres',
                         },
                       })}
                     />
@@ -248,23 +266,23 @@ const FormCompanyRequest = () => {
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Fichier KBIS */}
                   <FormControl isInvalid={errors.kbis} mt={4} isRequired>
-                    <FormLabel htmlFor='kbis'>Fichier KBIS (.pdf)</FormLabel>
+                    <FormLabel htmlFor="kbis">KBIS (.pdf)</FormLabel>
                     <Input
-                      id='kbis'
-                      type='file'
-                      onChange={(e) => {
+                      id="kbis"
+                      type="file"
+                      onChange={e => {
                         console.log('e.target.files', e.target.files);
                       }}
                       {...register('kbis', {
                         required: 'Ce champ est requis',
                         validate: {
-                          isImage: (value) => {
+                          isImage: value => {
                             const validExtensions = ['pdf'];
                             const extension = value[0].name.split('.').pop();
-                            if(!validExtensions.includes(extension)) {
+                            if (!validExtensions.includes(extension)) {
                               return 'Le fichier doit être un PDF';
                             }
                           },
@@ -278,26 +296,31 @@ const FormCompanyRequest = () => {
                 </Box>
               </Flex>
 
-              <Button mt={10} bg="black" color='white' onClick={handleSubmit(nextStep)} mx={"auto"}>
-                Suivant
+              <Button
+                mt={10}
+                bg="black"
+                color="white"
+                onClick={handleSubmit(nextStep)}
+                mx={'auto'}
+              >
+                {t('global.next')}
               </Button>
-
             </Box>
           )}
 
           {step === 2 && (
             <Box>
-              <Heading as='h2' size='sm' textAlign='center' mb={10}>
-                Informations complémentaires
+              <Heading as="h2" size="sm" textAlign="center" mb={10}>
+                {t('global.complementary-info')}
               </Heading>
               {/* Champ Site web de l'entreprise */}
               <FormControl isInvalid={errors.website} mt={4}>
-                <FormLabel htmlFor='website'>Site web de l'entreprise</FormLabel>
+                <FormLabel htmlFor="website">{t('company.website')}</FormLabel>
                 <Input
-                  id='website'
-                  type='url'
-                  placeholder="Entrer le site web de l'entreprise"
-                  autoComplete={"url"}
+                  id="website"
+                  type="url"
+                  placeholder={t('company.website')}
+                  autoComplete={'url'}
                   {...register('website')}
                 />
                 <FormErrorMessage>
@@ -307,12 +330,14 @@ const FormCompanyRequest = () => {
 
               {/* Réseaux sociaux de l'entreprise */}
               <FormControl isInvalid={errors.socialMedia} mt={4}>
-                <FormLabel htmlFor='socialMedia'>Réseaux sociaux de l'entreprise</FormLabel>
+                <FormLabel htmlFor="socialMedia">
+                  {t('company.social-media')}
+                </FormLabel>
                 <Input
-                  id='socialMedia'
-                  type='url'
-                  placeholder="Entrer les réseaux sociaux de l'entreprise"
-                  autoComplete={"url"}
+                  id="socialMedia"
+                  type="url"
+                  placeholder={t('company.social-media')}
+                  autoComplete={'url'}
                   {...register('socialMedia')}
                 />
                 <FormErrorMessage>
@@ -321,11 +346,23 @@ const FormCompanyRequest = () => {
               </FormControl>
 
               <Flex>
-                <Button mt={10} bg="black" color='white' onClick={prevStep} mx={"auto"}>
-                  Précédent
+                <Button
+                  mt={10}
+                  bg="black"
+                  color="white"
+                  onClick={prevStep}
+                  mx={'auto'}
+                >
+                  {t('global.previous')}
                 </Button>
-                <Button mt={10} bg="black" color='white' onClick={nextStep} mx={"auto"}>
-                  Suivant
+                <Button
+                  mt={10}
+                  bg="black"
+                  color="white"
+                  onClick={nextStep}
+                  mx={'auto'}
+                >
+                  {t('global.next')}
                 </Button>
               </Flex>
             </Box>
@@ -333,22 +370,25 @@ const FormCompanyRequest = () => {
 
           {step === 3 && (
             <Box>
-              <Heading as='h2' size='sm' textAlign='center' mb={10}>
-                Informations personnelles
+              <Heading as="h2" size="sm" textAlign="center" mb={10}>
+                {t('profile.personal-info')}
               </Heading>
               <Flex gap={8}>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Champ Nom */}
                   <FormControl isInvalid={errors.ownerName} isRequired>
-                    <FormLabel htmlFor='nom'>Nom</FormLabel>
+                    <FormLabel htmlFor="nom">{t('profile.lastname')}</FormLabel>
                     <Input
-                      id='ownerName'
+                      id="ownerName"
                       autoFocus={true}
-                      autoComplete={"ownerName"}
-                      placeholder='Entrer votre nom'
+                      autoComplete={'ownerName'}
+                      placeholder={t('profile.lastname')}
                       {...register('ownerName', {
                         required: 'Ce champ est requis',
-                        minLength: { value: 2, message: 'La longueur minimale est de 2 caractères' },
+                        minLength: {
+                          value: 2,
+                          message: 'La longueur minimale est de 2 caractères',
+                        },
                       })}
                     />
                     <FormErrorMessage>
@@ -356,17 +396,22 @@ const FormCompanyRequest = () => {
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Champ Prénom */}
                   <FormControl isInvalid={errors.ownerFirstname} isRequired>
-                    <FormLabel htmlFor='ownerFirstname'>Prénom</FormLabel>
+                    <FormLabel htmlFor="ownerFirstname">
+                      {t('profile.firstname')}
+                    </FormLabel>
                     <Input
-                      id='ownerFirstname'
-                      placeholder='Entrer votre prénom'
-                      autoComplete={"given-name"}
+                      id="ownerFirstname"
+                      placeholder={t('profile.firstname')}
+                      autoComplete={'given-name'}
                       {...register('ownerFirstname', {
                         required: 'Ce champ est requis',
-                        minLength: { value: 4, message: 'La longueur minimale est de 4 caractères' },
+                        minLength: {
+                          value: 4,
+                          message: 'La longueur minimale est de 4 caractères',
+                        },
                       })}
                     />
                     <FormErrorMessage>
@@ -376,23 +421,26 @@ const FormCompanyRequest = () => {
                 </Box>
               </Flex>
               <Flex gap={8}>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Champ Téléphone Portable */}
                   <FormControl isInvalid={errors.ownerPhone} mt={4} isRequired>
-                    <FormLabel htmlFor='ownerPhone'>Téléphone Portable</FormLabel>
+                    <FormLabel htmlFor="ownerPhone">
+                      {t('profile.phone')}
+                    </FormLabel>
                     <InputGroup>
                       <InputLeftElement>
                         <Icon icon="twemoji:flag-for-flag-france" />
                       </InputLeftElement>
                       <Input
-                        id='ownerPhone'
-                        placeholder='06XXXXXXXX'
-                        autoComplete={"tel"}
+                        id="ownerPhone"
+                        placeholder="06XXXXXXXX"
+                        autoComplete={'tel'}
                         {...register('ownerPhone', {
                           required: 'Ce champ est requis',
                           pattern: {
                             value: /^[0-9]{10}$/,
-                            message: 'Numéro de téléphone invalide, il doit contenir 10 chiffres',
+                            message:
+                              'Numéro de téléphone invalide, il doit contenir 10 chiffres',
                           },
                         })}
                       />
@@ -402,17 +450,17 @@ const FormCompanyRequest = () => {
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
-                <Box w='50%'>
+                <Box w="50%">
                   {/* Champ Email */}
                   <FormControl isInvalid={errors.ownerEmail} mt={4} isRequired>
-                    <Flex alignContent={"center"}>
-                      <FormLabel htmlFor='ownerEmail'>Email</FormLabel>
+                    <Flex alignContent={'center'}>
+                      <FormLabel htmlFor="ownerEmail">Email</FormLabel>
                     </Flex>
                     <Input
-                      id='ownerEmail'
-                      type='ownerEmail'
-                      placeholder='Email'
-                      autoComplete={"email"}
+                      id="ownerEmail"
+                      type="ownerEmail"
+                      placeholder="Email"
+                      autoComplete={'email'}
                       {...register('ownerEmail', {
                         required: 'Ce champ est requis',
                         pattern: {
@@ -428,61 +476,84 @@ const FormCompanyRequest = () => {
                 </Box>
               </Flex>
               <Flex gap={8}>
-                <Box w={"50%"}>
+                <Box w={'50%'}>
                   {/* Champ Mot de passe */}
                   <FormControl isInvalid={errors.password} mt={4} isRequired>
-                    <FormLabel htmlFor='password'>Mot de passe</FormLabel>
+                    <FormLabel htmlFor="password">{t('auth.pwd')}</FormLabel>
                     <Input
-                      id='password'
-                      type='password'
-                      placeholder='Mot de passe'
-                      autoComplete={"new-password"}
+                      id="password"
+                      type="password"
+                      placeholder={t('auth.pwd')}
+                      autoComplete={'new-password'}
                       {...register('password', {
                         required: 'Ce champ est requis',
-                        minLength: { value: 8, message: 'La longueur minimale est de 8 caractères' },
+                        minLength: {
+                          value: 8,
+                          message: 'La longueur minimale est de 8 caractères',
+                        },
                       })}
                     />
                     <FormErrorMessage>
                       {errors.password && errors.password.message}
                     </FormErrorMessage>
-                    <FormHelperText>
-                      Votre mot de passe doit contenir au moins 8 caractères
-                    </FormHelperText>
+                    <FormHelperText>{t('auth.pwd-rules')}</FormHelperText>
                   </FormControl>
                 </Box>
-                <Box w={"50%"}>
+                <Box w={'50%'}>
                   {/* Champ Confirmation du mot de passe */}
-                  <FormControl isInvalid={errors.passwordConfirmation} mt={4} isRequired>
-                    <FormLabel htmlFor='passwordConfirmation'>Confirmation du mot de passe</FormLabel>
+                  <FormControl
+                    isInvalid={errors.passwordConfirmation}
+                    mt={4}
+                    isRequired
+                  >
+                    <FormLabel htmlFor="passwordConfirmation">
+                      {t('auth.confirm-pwd')}
+                    </FormLabel>
                     <Input
-                      id='passwordConfirmation'
-                      type='password'
-                      placeholder='Confirmation du mot de passe'
-                      autoComplete={"new-password"}
+                      id="passwordConfirmation"
+                      type="password"
+                      placeholder={t('auth.confirm-pwd')}
+                      autoComplete={'new-password'}
                       {...register('passwordConfirmation', {
                         required: 'Ce champ est requis',
-                        minLength: { value: 8, message: 'La longueur minimale est de 8 caractères' },
-                        validate: (value) =>
-                          value === document.getElementById('password').value || 'Les mots de passe ne correspondent pas',
+                        minLength: {
+                          value: 8,
+                          message: 'La longueur minimale est de 8 caractères',
+                        },
+                        validate: value =>
+                          value === document.getElementById('password').value ||
+                          'Les mots de passe ne correspondent pas',
                       })}
                     />
                     <FormErrorMessage>
-                      {errors.passwordConfirmation && errors.passwordConfirmation.message}
+                      {errors.passwordConfirmation &&
+                        errors.passwordConfirmation.message}
                     </FormErrorMessage>
                   </FormControl>
                 </Box>
               </Flex>
 
-
               <Flex>
-                <Button mt={10} bg="black" color='white' onClick={prevStep} mx={"auto"}>
-                  Précédent
+                <Button
+                  mt={10}
+                  bg="black"
+                  color="white"
+                  onClick={prevStep}
+                  mx={'auto'}
+                >
+                  {t('global.previous')}
                 </Button>
-                <Button mt={10} bg="black" color='white' isLoading={isSubmitting} type='submit' mx={"auto"}>
-                  Envoyer
+                <Button
+                  mt={10}
+                  bg="black"
+                  color="white"
+                  isLoading={isSubmitting}
+                  type="submit"
+                  mx={'auto'}
+                >
+                  {t('global.send')}
                 </Button>
               </Flex>
-
             </Box>
           )}
 
@@ -494,7 +565,7 @@ const FormCompanyRequest = () => {
         </form>
       </Box>
     </>
-  )
-}
+  );
+};
 
-export default FormCompanyRequest
+export default FormCompanyRequest;

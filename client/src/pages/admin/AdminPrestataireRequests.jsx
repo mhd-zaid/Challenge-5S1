@@ -35,8 +35,10 @@ import {
 import { Icon } from '@iconify/react';
 import dayjs from 'dayjs';
 import { useAuth } from '@/context/AuthContext.jsx';
+import { useTranslation } from 'react-i18next';
 
 const AdminPrestataireRequests = () => {
+  const { t } = useTranslation();
   const { token } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [requests, setRequests] = useState([]);
@@ -243,7 +245,7 @@ const AdminPrestataireRequests = () => {
 
   return (
     <Box pt={8} mx={'auto'} maxW={'80%'}>
-      <Heading mb={5}>Gestion des demandes de prestataires</Heading>
+      <Heading mb={5}>{t('admin.presta-requests-handle')}</Heading>
       <Tabs
         isLazy
         variant="soft-rounded"
@@ -251,10 +253,16 @@ const AdminPrestataireRequests = () => {
         onChange={index => setTabIndex(index)}
       >
         <TabList>
-          <Tab>Demandes</Tab>
-          <Tab>Demandes en attente</Tab>
-          <Tab>Demandes approuvées</Tab>
-          <Tab>Demandes refusées</Tab>
+          <Tab>{t('admin.request')}s</Tab>
+          <Tab>
+            {t('admin.request')}s{t('admin.waiting')}
+          </Tab>
+          <Tab>
+            {t('admin.request')}s{t('admin.approved')}s
+          </Tab>
+          <Tab>
+            {t('admin.request')}s{t('admin.refused')}s
+          </Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -275,7 +283,7 @@ const AdminPrestataireRequests = () => {
                     >
                       <Heading size="md">{request.name}</Heading>
                       <Text fontSize="sm" color="gray.400">
-                        Fait le : {request.createdAt}
+                        {t('admin.made-on')} : {request.createdAt}
                       </Text>
                     </Box>
                   </CardHeader>
@@ -283,7 +291,7 @@ const AdminPrestataireRequests = () => {
                     <List spacing={2}>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Adresse:{' '}
+                          {t('company.address')}:{' '}
                         </Text>
                         {request.address || 'N/A'}
                       </ListItem>
@@ -295,13 +303,13 @@ const AdminPrestataireRequests = () => {
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Téléphone:{' '}
+                          {t('company.phone')}:{' '}
                         </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Site web:{' '}
+                          {t('company.website')}:{' '}
                         </Text>
                         {request.website || 'N/A'}
                       </ListItem>
@@ -329,7 +337,7 @@ const AdminPrestataireRequests = () => {
                         colorScheme="green"
                         onClick={() => handleOpenModal(request)}
                       >
-                        Vérifier
+                        {t('admin.verify')}
                       </Button>
                     ) : request.status === 'accepted' ? (
                       <Flex justifyContent={'center'} alignItems={'center'}>
@@ -338,7 +346,8 @@ const AdminPrestataireRequests = () => {
                           style={{ color: 'green' }}
                         />
                         <Text ml={2} color="green.500">
-                          Demande approuvée.
+                          {t('admin.request')}
+                          {t('admin.approved')}.
                         </Text>
                       </Flex>
                     ) : (
@@ -348,7 +357,8 @@ const AdminPrestataireRequests = () => {
                           style={{ color: '#ff0000' }}
                         />
                         <Text ml={2} color="red.500">
-                          Demande refusée.
+                          {t('admin.request')}
+                          {t('admin.refused')}.
                         </Text>
                       </Flex>
                     )}
@@ -375,7 +385,7 @@ const AdminPrestataireRequests = () => {
                     >
                       <Heading size="md">{request.name}</Heading>
                       <Text fontSize="sm" color="gray.400">
-                        Fait le : {request.createdAt}
+                        {t('admin.made-on')} : {request.createdAt}
                       </Text>
                     </Box>
                   </CardHeader>
@@ -383,7 +393,7 @@ const AdminPrestataireRequests = () => {
                     <List spacing={2}>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Adresse:{' '}
+                          {t('company.address')}:{' '}
                         </Text>
                         {request.address || 'N/A'}
                       </ListItem>
@@ -395,13 +405,13 @@ const AdminPrestataireRequests = () => {
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Téléphone:{' '}
+                          {t('company.phone')}:{' '}
                         </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Site web:{' '}
+                          {t('company.website')}:{' '}
                         </Text>
                         {request.website || 'N/A'}
                       </ListItem>
@@ -428,7 +438,7 @@ const AdminPrestataireRequests = () => {
                       colorScheme="green"
                       onClick={() => handleOpenModal(request)}
                     >
-                      Vérifier
+                      {t('admin.verify')}
                     </Button>
                   </CardFooter>
                 </Card>
@@ -453,7 +463,7 @@ const AdminPrestataireRequests = () => {
                     >
                       <Heading size="md">{request.name}</Heading>
                       <Text fontSize="sm" color="gray.400">
-                        Fait le : {request.createdAt}
+                        {t('admin.made-on')} : {request.createdAt}
                       </Text>
                     </Box>
                   </CardHeader>
@@ -461,7 +471,7 @@ const AdminPrestataireRequests = () => {
                     <List spacing={2}>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Adresse:{' '}
+                          {t('company.address')}:{' '}
                         </Text>
                         {request.address || 'N/A'}
                       </ListItem>
@@ -473,13 +483,13 @@ const AdminPrestataireRequests = () => {
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Téléphone:{' '}
+                          {t('company.phone')}:{' '}
                         </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Site web:{' '}
+                          {t('company.website')}:{' '}
                         </Text>
                         {request.website || 'N/A'}
                       </ListItem>
@@ -522,7 +532,7 @@ const AdminPrestataireRequests = () => {
                     >
                       <Heading size="md">{request.name}</Heading>
                       <Text fontSize="sm" color="gray.400">
-                        Fait le : {request.createdAt}
+                        {t('admin.made-on')} : {request.createdAt}
                       </Text>
                     </Box>
                   </CardHeader>
@@ -530,7 +540,7 @@ const AdminPrestataireRequests = () => {
                     <List spacing={2}>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Adresse:{' '}
+                          {t('company.address')}:{' '}
                         </Text>
                         {request.address || 'N/A'}
                       </ListItem>
@@ -542,13 +552,13 @@ const AdminPrestataireRequests = () => {
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Téléphone:{' '}
+                          {t('company.phone')}:{' '}
                         </Text>
                         {request.phone}
                       </ListItem>
                       <ListItem>
                         <Text as="span" fontWeight="bold">
-                          Site web:{' '}
+                          {t('company.website')}:{' '}
                         </Text>
                         {request.website || 'N/A'}
                       </ListItem>
@@ -578,7 +588,7 @@ const AdminPrestataireRequests = () => {
       <Modal isOpen={isOpen} onClose={onClose} isCentered={true}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Informations sur l'entreprise</ModalHeader>
+          <ModalHeader>{t('company.info')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             {isLoading ? (
@@ -599,7 +609,7 @@ const AdminPrestataireRequests = () => {
                         icon="icon-park-solid:check-one"
                         style={{ color: 'green' }}
                       />
-                      <Text ml={2}>Les informations sont valides.</Text>
+                      <Text ml={2}>{t('admin.valid-info')}</Text>
                     </Box>
                     <FormControl id="siren" mt={4}>
                       <FormLabel>SIREN</FormLabel>
@@ -610,7 +620,7 @@ const AdminPrestataireRequests = () => {
                       )}
                     </FormControl>
                     <FormControl id="name" mt={4}>
-                      <FormLabel>Nom de l'entreprise</FormLabel>
+                      <FormLabel>{t('company.name')}</FormLabel>
                       {isEditable ? (
                         <Input
                           name="name"
@@ -625,7 +635,7 @@ const AdminPrestataireRequests = () => {
                       )}
                     </FormControl>
                     <FormControl id="creationDate" mt={4}>
-                      <FormLabel>Date de création</FormLabel>
+                      <FormLabel>{t('company.creation-date')}</FormLabel>
                       {isEditable ? (
                         <Input
                           name="creationDate"
@@ -643,9 +653,7 @@ const AdminPrestataireRequests = () => {
                       icon="mdi:alert-circle"
                       style={{ color: '#ff0000' }}
                     />
-                    <Text ml={2}>
-                      Les informations de l'entreprise sont invalides.
-                    </Text>
+                    <Text ml={2}>{t('admin.invalid-info')}</Text>
                   </Box>
                 )}
               </>
@@ -661,10 +669,10 @@ const AdminPrestataireRequests = () => {
                   onClick={handleSave}
                   isDisabled={isLoading}
                 >
-                  Sauvegarder
+                  {t('global.save')}
                 </Button>
                 <Button variant="outline" onClick={() => setIsEditable(false)}>
-                  Annuler
+                  {t('global.cancel')}
                 </Button>
               </>
             ) : isValid ? (
@@ -674,18 +682,18 @@ const AdminPrestataireRequests = () => {
                   mr={3}
                   onClick={() => setIsEditable(true)}
                 >
-                  Modifier
+                  {t('admin.modify')}
                 </Button>
                 <Button colorScheme="green" mr={3} onClick={handleValidate}>
-                  Approuver
+                  {t('admin.approve')}
                 </Button>
                 <Button variant="outline" mr={3} onClick={handleRefuse}>
-                  Refuser
+                  {t('admin.refuse')}
                 </Button>
               </>
             ) : isValid === false ? (
               <Button variant="outline" mr={3} onClick={handleRefuse}>
-                Refuser
+                {t('admin.refuse')}
               </Button>
             ) : null}
           </ModalFooter>

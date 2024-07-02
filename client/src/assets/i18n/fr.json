@@ -2,7 +2,14 @@
   "global": {
     "filters": "Filtres",
     "control-center": "Centre de contrôle",
-    "add-presta": "Ajouter votre établissement"
+    "add-presta": "Ajouter votre établissement",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "send": "Envoyer",
+    "delete": "Supprimer",
+    "complementary-info": "Informations complémentaires"
   },
   "homepage": {
     "main-title": "Réserver votre séance de shooting",
@@ -16,11 +23,16 @@
   "auth": {
     "connect": "Se connecter",
     "register": "Créer un compte",
+    "logout": "Se déconnecter",
     "pwd": "Mot de passe",
+    "pwd-rules": "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
     "forgot-pwd": "Mot de passe oublié ?",
     "no-account": "Pas encore de compte ?",
     "new-user": "Nouveau sur Instant Studio ?",
-    "already-account": "Vous avez déjà utilisé Instant Studio ?"
+    "already-account": "Vous avez déjà utilisé Instant Studio ?",
+    "new-pwd": "Nouveau mot de passe",
+    "confirm-pwd": "Confirmer le mot de passe",
+    "pwd-edit": "Modifier le mot de passe"
   },
   "studio-search": {
     "what-search": "Que recherchez-vous ?",
@@ -49,8 +61,17 @@
   },
   "profile": {
     "general-info": "Informations générales",
+    "my-info": "Mes informations",
+    "personal-info": "Informations personnelles",
+    "security": "Sécurité",
     "name": "Nom",
+    "firstname": "Prénom",
+    "lastname": "Nom",
     "phone": "Téléphone",
+    "account-edit": "Gestion de votre compte",
+    "account-delete": "Supprimer mon compte",
+    "account-delete-confirmation-title": "Confirmation de la suppression du compte",
+    "account-delete-confirmation-text": "Êtes-vous sûr de vouloir supprimer votre compte ?",
     "booking-history": "Historique des réservations",
     "no-reservations": "Vous n'avez pas encore de réservations",
     "reserved": "Réservé",
@@ -58,7 +79,26 @@
     "cancelled": "Annulé",
     "change-booking": "Modifier la réservation",
     "cancel-change": "Annuler la modification",
-    "reservation-updated": "Votre réservation a bien été modifiée"
+    "reservation-updated": "Votre réservation a bien été modifiée",
+    "roles": "Rôles et permissions",
+    "role": "Rôle",
+    "permissions": "Permissions",
+    "company-handle": "Gérer les établissements",
+    "studio-handle": "Gérer les studios",
+    "user-handle": "Gérer les utilisateurs",
+    "stats-view": "Voir les statistiques",
+    "user-edit": "Modifier les informations de l'utilisateur",
+    "company-validation": "Validation d'un établissements",
+    "recent-activity": "Activité récente",
+    "last-connection": "Dernière connexion",
+    "recent-actions": "Actions récentes",
+    "chart-admin": "Chiffre d'affaires par année par entreprise"
+  },
+  "header": {
+    "control-center": "Centre de contrôle",
+    "stats": "Statistiques",
+    "presta-demand": "Demandes de prestations",
+    "my-account": "Mon compte"
   },
   "footer": {
     "about": "À propos de Instant Studio",
@@ -72,5 +112,56 @@
     "cooking": "Culinaire",
     "birth": "Naissance",
     "popular-search": "Recherches fréquentes"
+  },
+  "admin": {
+    "presta-requests-handle": "Gestion des demandes de prestations",
+    "request": "Demande",
+    "waiting": " en attente",
+    "approved": " approuvée",
+    "refused": " refusée",
+    "deleted": " supprimée",
+    "made-on": "Fait le",
+    "verify": "Vérifier",
+    "modify": "Modifier",
+    "approve": "Approuver",
+    "refuse": "Refuser",
+    "valid-info": "Les informations sont valides.",
+    "invalid-info": "Les informations de l'entreprise sont invalides."
+  },
+  "control-center": {
+    "main-title": "Centre de contrôle administratif",
+    "company": "Compagnie",
+    "users": "Utilisateurs",
+    "schedules": "Horaires",
+    "prestations": "Prestations",
+    "add-company": "Ajouter une compagnie",
+    "company-info": "Voir les informations de la compagnie",
+    "add-studio": "Ajouter un studio",
+    "studio-info": "Voir les informations du studio",
+    "add-user": "Ajouter un utilisateur",
+    "edit-user": "Modifier  l'utilisateur",
+    "delete-user": "Supprimer l'utilisateur",
+    "select-schedules": "Sélectionner une plage horaire pour la modifier ou la supprimer.",
+    "edit-schedule": "Modifier l'horaire",
+    "add-schedule": "Ajouter un horaire",
+    "add-service": "Ajouter une prestation",
+    "name": "Nom",
+    "price": "Prix",
+    "duration": "Durée",
+    "service-info": "Voir les informations de la prestation"
+  },
+  "company": {
+    "request-text": "Vous êtes un professionnel de l'image et vous souhaitez rejoindre notre réseau de photographes et vidéastes ?",
+    "info": "Informations sur l'entreprise",
+    "name": "Nom de l'entreprise",
+    "description": "Description",
+    "address": "Adresse",
+    "zipcode": "Code postal",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "website": "Site web",
+    "creation-date": "Date de création",
+    "social-media": "Réseaux sociaux de l'entreprise",
+    "register-date": "Date d'inscription"
   }
 }

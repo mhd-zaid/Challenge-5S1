@@ -71,7 +71,7 @@ function Footer() {
           <Stack align={'flex-start'} gap="8">
             <Heading fontSize="x-large">{t('footer.find-presta')}</Heading>
             <Stack>
-              <Link href={' '}>{t('footer.wedding')}</Link>
+              <Link href={'#'}>{t('footer.wedding')}</Link>
               <Link href={'#'}>{t('footer.fashion')}</Link>
               <Link href={'#'}>{t('footer.event')}</Link>
               <Link href={'#'}>{t('footer.cooking')}</Link>
@@ -81,11 +81,11 @@ function Footer() {
           <Stack align={'flex-start'} gap="8">
             <Heading fontSize="x-large">{t('footer.popular-search')}</Heading>
             <Stack>
-              <Link href={'#'}>Studio à Paris</Link>
-              <Link href={'#'}>Studio à Bordeaux</Link>
-              <Link href={'#'}>Studio Lyon</Link>
-              <Link href={'#'}>Studio Marseille</Link>
-              <Link href={'#'}>Studio Monaco</Link>
+              <Link href={'/studios?city=Paris'}>Studio Paris</Link>
+              <Link href={'/studios?city=Bordeaux'}>Studio Bordeaux</Link>
+              <Link href={'/studios?city=Lyon'}>Studio Lyon</Link>
+              <Link href={'/studios?city=Marseille'}>Studio Marseille</Link>
+              <Link href={'/studios?city=Monaco'}>Studio Monaco</Link>
             </Stack>
           </Stack>
         </SimpleGrid>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -45,8 +45,11 @@ import FormStudioOpeningTime from '@/components/forms/FormStudioOpeningTime.jsx'
 import useCustomDate from '@/hooks/useCustomDate.js';
 import Pagination from '@/components/shared/Pagination';
 import FormService from '@/components/forms/FormService.jsx';
+import { useTranslation } from 'react-i18next';
 
 const AdminControlCenterPage = () => {
+  const { t } = useTranslation();
+
   const { user, token, isAdministrator, isPrestataire } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -63,15 +66,7 @@ const AdminControlCenterPage = () => {
   const [dataType, setDataType] = useState(
     isAdministrator ? 'companies' : 'studios',
   );
-  const days = [
-    'Dimanche',
-    'Lundi',
-    'Mardi',
-    'Mercredi',
-    'Jeudi',
-    'Vendredi',
-    'Samedi',
-  ];
+
   const roleNames = {
     ROLE_ADMIN: 'Administrateur',
     ROLE_PRESTA: 'Prestataire',
@@ -110,12 +105,16 @@ const AdminControlCenterPage = () => {
   });
 
   useEffect(() => {
-    if(isAdministrator) {
-      fetchData('companies', paginationCompany.page, paginationCompany.itemsPerPage);
+    if (isAdministrator) {
+      fetchData(
+        'companies',
+        paginationCompany.page,
+        paginationCompany.itemsPerPage,
+      );
     }
   }, [paginationCompany.itemsPerPage, paginationCompany.page]);
 
-  const handlePageChangeCompany = (page) => {
+  const handlePageChangeCompany = page => {
     setPaginationCompany({ ...paginationCompany, page });
   };
 
@@ -128,9 +127,13 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-      console.log("fetch services", isAdministrator)
-    if(!isAdministrator) {
-      fetchData('services', paginationService.page, paginationService.itemsPerPage);
+    console.log('fetch services', isAdministrator);
+    if (!isAdministrator) {
+      fetchData(
+        'services',
+        paginationService.page,
+        paginationService.itemsPerPage,
+      );
     }
   }, []);
 
@@ -138,7 +141,7 @@ const AdminControlCenterPage = () => {
     fetchData('users', paginationUser.page, paginationUser.itemsPerPage);
   }, [paginationUser.itemsPerPage, paginationUser.page]);
 
-  const handlePageChangeUser = (page) => {
+  const handlePageChangeUser = page => {
     setPaginationUser({ ...paginationUser, page });
   };
 
@@ -151,7 +154,11 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-    fetchData('studio_opening_times', paginationOpeningTime.page, paginationOpeningTime.itemsPerPage);
+    fetchData(
+      'studio_opening_times',
+      paginationOpeningTime.page,
+      paginationOpeningTime.itemsPerPage,
+    );
   }, []);
 
   useEffect(() => {
@@ -198,28 +205,32 @@ const AdminControlCenterPage = () => {
         totalItems: data['hydra:totalItems'],
       });
     } else if (type === 'studio_opening_times') {
-      setStudioOpeningTimes(transformData(data['hydra:member'].map(
-        (studioOpeningTime) => ({
-          ...studioOpeningTime,
-          startTime: dayjs.utc(studioOpeningTime.startTime),
-          endTime: dayjs.utc(studioOpeningTime.endTime),
-        })
-      )));
+      setStudioOpeningTimes(
+        transformData(
+          data['hydra:member'].map(studioOpeningTime => ({
+            ...studioOpeningTime,
+            startTime: dayjs.utc(studioOpeningTime.startTime),
+            endTime: dayjs.utc(studioOpeningTime.endTime),
+          })),
+        ),
+      );
       setPaginationOpeningTime({
         ...paginationOpeningTime,
         totalItems: data['hydra:totalItems'],
-      })
-    } else if(type === 'services') {
-      setServices(data['hydra:member'].map((service) => ({
-        ...service,
-        duration: dayjs.utc(service.duration).format('HH:mm'),
-      })));
+      });
+    } else if (type === 'services') {
+      setServices(
+        data['hydra:member'].map(service => ({
+          ...service,
+          duration: dayjs.utc(service.duration).format('HH:mm'),
+        })),
+      );
     }
   };
 
   const handleFormSubmit = async hasBeenSubmitted => {
     if (hasBeenSubmitted) {
-      console.log("SUBMITTED: ", dataType);
+      console.log('SUBMITTED: ', dataType);
       if (dataType === 'studio_opening_times') {
         console.log('add fetching studio opening times');
         await fetchData(dataType, 1, 1000).then(() => onClose());
@@ -247,18 +258,25 @@ const AdminControlCenterPage = () => {
   };
 
   const handleDelete = async (data, instance) => {
-    const confirmAction = confirm('Etes-vous sûr de vouloir supprimer cet élément ?');
+    const confirmAction = confirm(
+      'Etes-vous sûr de vouloir supprimer cet élément ?',
+    );
     if (!confirmAction) {
       return;
     }
 
     const type = instance ? instance : dataType;
-    await fetch(import.meta.env.VITE_BACKEND_URL + `/${type}/` + data['@id'].split('/')[3], {
-      method: 'DELETE',
-      headers: {
-        'Authorization': 'Bearer ' + token,
+    await fetch(
+      import.meta.env.VITE_BACKEND_URL +
+        `/${type}/` +
+        data['@id'].split('/')[3],
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: 'Bearer ' + token,
+        },
       },
-    }).then(() => {
+    ).then(() => {
       handleFormSubmit(true);
       toast({
         title: `${type} supprimé`,
@@ -310,7 +328,7 @@ const AdminControlCenterPage = () => {
 
   return (
     <Box p={4} maxW={'7xl'} mx={'auto'}>
-      <Heading mb={4}>Centre de contrôle administratif</Heading>
+      <Heading mb={4}>{t('control-center.main-title')}</Heading>
       <Tabs
         onChange={index =>
           setDataType(
@@ -321,11 +339,11 @@ const AdminControlCenterPage = () => {
         }
       >
         <TabList>
-          {isAdministrator && <Tab>Compagnies</Tab>}
+          {isAdministrator && <Tab>{t('control-center.company')}</Tab>}
           <Tab>Studios</Tab>
-          <Tab>Utilisateurs</Tab>
-          {isPrestataire && <Tab>Horaires</Tab>}
-          {isPrestataire && <Tab>Prestations</Tab>}
+          <Tab>{t('control-center.users')}</Tab>
+          {isPrestataire && <Tab>{t('control-center.schedules')}</Tab>}
+          {isPrestataire && <Tab>Services</Tab>}
         </TabList>
 
         <TabPanels>
@@ -333,52 +351,85 @@ const AdminControlCenterPage = () => {
           {isAdministrator && (
             <TabPanel>
               <Button mb={4} onClick={() => handleAdd()}>
-                Ajouter une compagnie
+                {t('control-center.add-company')}
               </Button>
               <Table variant="simple">
                 <Thead>
                   <Tr>
-                    <Th>Nom</Th>
+                    <Th>{t('company.name')}</Th>
                     <Th>Email</Th>
-                    <Th>Téléphone</Th>
+                    <Th>{t('company.phone')}</Th>
                     <Th>Status</Th>
-                    <Th>Date d'inscription</Th>
+                    <Th>{t('company.register-date')}</Th>
                     <Th></Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {companies && companies.map((company) => (
-                    <Tr key={company.id}>
-                      <Td>{company.name}</Td>
-                      <Td>{company.email}</Td>
-                      <Td>{company.phone}</Td>
-                      <Td>
-                        <Flex justifyContent={"center"}>
-                          {company.status === 'pending' ? (
-                            <Icon icon="ic:round-info" fontSize={30} style={{color: "orange"}} />
-                          ) : company.status === 'accepted' ? (
-                            <Icon icon="lets-icons:check-fill" fontSize={30} style={{color: "green"}} />
-                          ) : company.status === 'refused' ? (
-                            <Icon icon="gridicons:cross-circle" fontSize={30} style={{color: "red"}} />
-                          ) : company.status === 'deleted' ? (
-                            <Icon icon="circum:no-waiting-sign" fontSize={30} style={{color: "red"}} />
-                          ) : null}
-                        </Flex>
-                      </Td>
-                      <Td>{company.createdAt}</Td>
-                      <Td>
-                        <Menu>
-                          <MenuButton as={Flex} bg={"transparent"} cursor={"pointer"}>
-                            <Icon icon="system-uicons:menu-vertical" fontSize={30} style={{color: "black"}} />
-                          </MenuButton>
-                          <MenuList>
-                            <MenuItem onClick={() => handleView(company)}>Voir les informations de la compagnie</MenuItem>
-                            <MenuItem onClick={() => handleDelete(company.owner, 'users')}>Supprimer</MenuItem>
-                          </MenuList>
-                        </Menu>
-                      </Td>
-                    </Tr>
-                  ))}
+                  {companies &&
+                    companies.map(company => (
+                      <Tr key={company.id}>
+                        <Td>{company.name}</Td>
+                        <Td>{company.email}</Td>
+                        <Td>{company.phone}</Td>
+                        <Td>
+                          <Flex justifyContent={'center'}>
+                            {company.status === 'pending' ? (
+                              <Icon
+                                icon="ic:round-info"
+                                fontSize={30}
+                                style={{ color: 'orange' }}
+                              />
+                            ) : company.status === 'accepted' ? (
+                              <Icon
+                                icon="lets-icons:check-fill"
+                                fontSize={30}
+                                style={{ color: 'green' }}
+                              />
+                            ) : company.status === 'refused' ? (
+                              <Icon
+                                icon="gridicons:cross-circle"
+                                fontSize={30}
+                                style={{ color: 'red' }}
+                              />
+                            ) : company.status === 'deleted' ? (
+                              <Icon
+                                icon="circum:no-waiting-sign"
+                                fontSize={30}
+                                style={{ color: 'red' }}
+                              />
+                            ) : null}
+                          </Flex>
+                        </Td>
+                        <Td>{company.createdAt}</Td>
+                        <Td>
+                          <Menu>
+                            <MenuButton
+                              as={Flex}
+                              bg={'transparent'}
+                              cursor={'pointer'}
+                            >
+                              <Icon
+                                icon="system-uicons:menu-vertical"
+                                fontSize={30}
+                                style={{ color: 'black' }}
+                              />
+                            </MenuButton>
+                            <MenuList>
+                              <MenuItem onClick={() => handleView(company)}>
+                                {t('control-center.company-info')}
+                              </MenuItem>
+                              <MenuItem
+                                onClick={() =>
+                                  handleDelete(company.owner, 'users')
+                                }
+                              >
+                                {t('global.delete')}
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Td>
+                      </Tr>
+                    ))}
                 </Tbody>
               </Table>
               <Pagination
@@ -395,7 +446,10 @@ const AdminControlCenterPage = () => {
                     fontSize={30}
                     style={{ color: 'orange' }}
                   />
-                  <Text>Demande en attente</Text>
+                  <Text>
+                    {t('admin.request')}
+                    {t('admin.waiting')}
+                  </Text>
                 </Flex>
                 <Flex gap={4} alignItems={'center'}>
                   <Icon
@@ -403,7 +457,10 @@ const AdminControlCenterPage = () => {
                     fontSize={30}
                     style={{ color: 'green' }}
                   />
-                  <Text>Demande accepté</Text>
+                  <Text>
+                    {t('admin.request')}
+                    {t('admin.approved')}
+                  </Text>
                 </Flex>
                 <Flex gap={4} alignItems={'center'}>
                   <Icon
@@ -411,7 +468,10 @@ const AdminControlCenterPage = () => {
                     fontSize={30}
                     style={{ color: 'red' }}
                   />
-                  <Text>Demande rejetée</Text>
+                  <Text>
+                    {t('admin.request')}
+                    {t('admin.refused')}
+                  </Text>
                 </Flex>
                 <Flex gap={4} alignItems={'center'}>
                   <Icon
@@ -419,7 +479,10 @@ const AdminControlCenterPage = () => {
                     fontSize={30}
                     style={{ color: 'red' }}
                   />
-                  <Text>Entreprise supprimée</Text>
+                  <Text>
+                    {t('control-center.company')}
+                    {t('admin.deleted')}
+                  </Text>
                 </Flex>
               </Box>
             </TabPanel>
@@ -428,16 +491,16 @@ const AdminControlCenterPage = () => {
           {/*Gestion des studios*/}
           <TabPanel>
             <Button mb={4} onClick={() => handleAdd()}>
-              Ajouter un studio
+              {t('control-center.add-studio')}
             </Button>
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th>Entreprise</Th>
+                  <Th>{t('control-center.company')}</Th>
                   <Th>Studio</Th>
-                  <Th>Téléphone</Th>
-                  <Th>Ville</Th>
-                  <Th>Adresse</Th>
+                  <Th>{t('company.phone')}</Th>
+                  <Th>{t('company.city')}</Th>
+                  <Th>{t('company.address')}</Th>
                   <Th></Th>
                 </Tr>
               </Thead>
@@ -465,10 +528,10 @@ const AdminControlCenterPage = () => {
                           </MenuButton>
                           <MenuList>
                             <MenuItem onClick={() => handleView(studio)}>
-                              Voir les informations du studio
+                              {t('control-center.studio-info')}
                             </MenuItem>
                             <MenuItem onClick={() => handleDelete(studio)}>
-                              Supprimer
+                              {t('global.delete')}
                             </MenuItem>
                           </MenuList>
                         </Menu>
@@ -489,15 +552,15 @@ const AdminControlCenterPage = () => {
           {/*Gestion des utilisateurs*/}
           <TabPanel>
             <Button mb={4} onClick={() => handleAdd()}>
-              Ajouter un utilisateur
+              {t('control-center.add-user')}
             </Button>
             <Table variant="simple">
               <Thead>
                 <Tr>
-                  <Th>Entreprise</Th>
-                  <Th>Nom</Th>
+                  <Th>{t('control-center.company')}</Th>
+                  <Th>{t('company.name')}</Th>
                   <Th>Email</Th>
-                  <Th>Rôle</Th>
+                  <Th>{t('profile.role')}</Th>
                   <Th></Th>
                 </Tr>
               </Thead>
@@ -527,10 +590,10 @@ const AdminControlCenterPage = () => {
                           </MenuButton>
                           <MenuList>
                             <MenuItem onClick={() => handleView(person)}>
-                              Modifier l'utilisateur
+                              {t('control-center.edit-user')}
                             </MenuItem>
                             <MenuItem onClick={() => handleDelete(person)}>
-                              Supprimer l'utilisateur
+                              {t('control-center.delete-user')}
                             </MenuItem>
                           </MenuList>
                         </Menu>
@@ -551,20 +614,18 @@ const AdminControlCenterPage = () => {
           {/*Horaire d'ouverture*/}
           {isPrestataire && (
             <TabPanel>
-              <Text>
-                Sélectionner une plage horaire pour la modifier ou la supprimer.
-              </Text>
+              <Text>{t('control-center.select-schedules')}</Text>
               <Table variant="simple">
                 <Thead>
                   <Tr>
                     <Th>Studio</Th>
-                    <Th>Lundi</Th>
-                    <Th>Mardi</Th>
-                    <Th>Mercredi</Th>
-                    <Th>Jeudi</Th>
-                    <Th>Vendredi</Th>
-                    <Th>Samedi</Th>
-                    <Th>Dimanche</Th>
+                    <Th>{dayjs().weekday(0).format('dddd')}</Th>
+                    <Th>{dayjs().weekday(1).format('dddd')}</Th>
+                    <Th>{dayjs().weekday(2).format('dddd')}</Th>
+                    <Th>{dayjs().weekday(3).format('dddd')}</Th>
+                    <Th>{dayjs().weekday(4).format('dddd')}</Th>
+                    <Th>{dayjs().weekday(5).format('dddd')}</Th>
+                    <Th>{dayjs().weekday(6).format('dddd')}</Th>
                     <Th></Th>
                   </Tr>
                 </Thead>
@@ -596,9 +657,8 @@ const AdminControlCenterPage = () => {
                                       )
                                     }
                                   >
-                                    Modifier l'horaire
+                                    {t('control-center.edit-schedule')}
                                   </MenuItem>
-
                                 </>
                               ) : (
                                 <MenuItem
@@ -610,7 +670,7 @@ const AdminControlCenterPage = () => {
                                     )
                                   }
                                 >
-                                  Ajouter un horaire
+                                  {t('control-center.add-schedule')}
                                 </MenuItem>
                               )}
                             </MenuList>
@@ -628,7 +688,7 @@ const AdminControlCenterPage = () => {
           {isPrestataire && (
             <TabPanel>
               <Button mb={4} onClick={() => handleAdd()}>
-                Ajouter une prestation
+                {t('control-center.add-service')}
               </Button>
               <Accordion allowMultiple>
                 {Object.keys(groupedServices).map(studioName => (
@@ -643,9 +703,9 @@ const AdminControlCenterPage = () => {
                       <Table mt={4}>
                         <Thead>
                           <Tr>
-                            <Th>Nom</Th>
-                            <Th>Prix</Th>
-                            <Th>Durée</Th>
+                            <Th>{t('control-center.name')}</Th>
+                            <Th>{t('control-center.price')}</Th>
+                            <Th>{t('control-center.duration')}</Th>
                             <Th></Th>
                           </Tr>
                         </Thead>
@@ -672,12 +732,12 @@ const AdminControlCenterPage = () => {
                                     <MenuItem
                                       onClick={() => handleView(service)}
                                     >
-                                      Voir la prestation
+                                      {t('control-center.service-info')}
                                     </MenuItem>
                                     <MenuItem
                                       onClick={() => handleDelete(service)}
                                     >
-                                      Supprimer la prestation
+                                      {t('global.delete')}
                                     </MenuItem>
                                   </MenuList>
                                 </Menu>
