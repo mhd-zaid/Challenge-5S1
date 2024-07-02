@@ -11,7 +11,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
-use App\Operation\SoftDelete;
 use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
 use App\Validator\AvailableSlot;
@@ -57,7 +56,7 @@ class Reservation
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
 
-    #[Groups(['reservation:read', 'reservation:update'])]
+    #[Groups(['reservation:read', 'reservation:update', 'feedback:read'])]
     private $status = 'RESERVED';
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
@@ -80,7 +79,7 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:read', 'reservation:create'])]
+    #[Groups(['reservation:read', 'reservation:create', 'reservation:read'])]
     private ?Studio $studio = null;
 
     public function getId(): ?int
