@@ -47,7 +47,7 @@ const CalendarPage = () => {
           extendedProps: {
             employeeFullName: `${planning.employee.firstname} ${planning.employee.lastname}`,
             studioName: `${planning.studio.name}`,
-            studioAdress: `${planning.studio.address}`,
+            studioAdress: `${planning.studio.fullAddress}`,
             startTime: planning.start.split('T')[1].split('+')[0],
             endTime: planning.end.split('T')[1].split('+')[0],
             type: planning.type,

@@ -58,31 +58,31 @@ class Studio
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'studio:write', 'user:read:profile'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:10,max: 10)]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'user:read:profile'])]
+    #[Groups(['studio:read', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:2,max: 10)]
     private ?string $country = 'France';
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'studio:write', 'user:read:profile'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 5)]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'studio:write', 'user:read:profile'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:2,max: 255)]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'studio:write', 'user:read:profile'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company', 'planning:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $address = null;
@@ -99,7 +99,7 @@ class Studio
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: WorkHour::class)]
     private Collection $workHours;
 
-    #[Groups(['studio:read'])]
+    #[Groups(['studio:read', 'planning:read'])]
     private ?string $fullAddress = null;
 
     /**

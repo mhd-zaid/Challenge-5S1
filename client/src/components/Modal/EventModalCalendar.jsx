@@ -225,7 +225,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
             {isEmployee && (
               <>
                 <Box mb={4}>
-                  <Text>Date de début : {event?.start && new Date(event.start).toLocaleDateString()}</Text>
+                  <Text>Date : {event?.start && new Date(event.start).toLocaleDateString()}</Text>
                 </Box>
                 <Box mb={4}>
                   <Text>Heure de début : {event?.extendedProps.startTime}</Text>
