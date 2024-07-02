@@ -71,14 +71,6 @@ const Header = () => {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    navigate('/calendar');
-                  }}
-                  display={isPrestataire ? 'block' : 'none'}
-                >
-                  Plannings
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
                     navigate('/admin/prestataires-demandes');
                   }}
                   display={isAdministrator ? 'block' : 'none'}
