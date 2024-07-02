@@ -49,7 +49,7 @@ class Company
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read', 'company:write', 'user:read:profile'])]
+    #[Groups(['company:read', 'company:write', 'user:read:profile', 'studio:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 9, nullable: true)]
