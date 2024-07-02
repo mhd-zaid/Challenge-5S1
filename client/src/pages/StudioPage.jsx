@@ -105,7 +105,7 @@ const StudioPage = () => {
                 {i !== 0 && <Divider />}
                 <Flex
                   as={Link}
-                  href={`/studios/${id}/reservation/${service.id}`}
+                  href={`/studios/${id}/reservation/${service['@id'].split('/')[3]}`}
                   _hover={{ textDecor: 'none' }}
                   py={4}
                   justifyContent="space-between"

@@ -190,7 +190,7 @@ const CustomerProfile = ({ user }) => {
                       </Text>
                     </Td>
                     <Td>
-                      <Text>{reservation.employee.firstname}</Text>
+                      <Text>{reservation.employee.lastname} {reservation.employee.firstname}</Text>
                     </Td>
                     <Td>
                       <Text>{getStatusBadge(reservation.status)}</Text>
