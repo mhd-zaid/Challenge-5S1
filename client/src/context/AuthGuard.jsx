@@ -1,19 +1,20 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { Flex, Spinner } from '@chakra-ui/react';
+import NotFoundPage from '@/pages/NotFoundPage.jsx';
 
-const AuthGuard = () => {
-  const { user, authLoading } = useAuth();
+const AuthGuard = ({ children, roles }) => {
+  const { user } = useAuth();
 
-  if (authLoading) {
-    return (
-      <Flex justify="center" align="center" h="full">
-        <Spinner size="xl" />
-      </Flex>
-    );
+  if (!user) {
+    return <NotFoundPage />;
   }
 
-  return user ? <Outlet /> : <Navigate to="/auth/login" replace />;
+  if (!roles.includes(user.roles[0])) {
+    return <NotFoundPage />
+  }
+
+  return children;
 };
 
 export default AuthGuard;

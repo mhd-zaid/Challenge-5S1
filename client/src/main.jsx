@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -24,59 +25,59 @@ import CalendarPage from './pages/CalendarPage.jsx';
 import ProfilePage from '@/pages/profile/ProfilePage.jsx';
 import AdminControlCenterPage from '@/pages/admin/AdminControlCenterPage.jsx';
 import FeedbackPage from './pages/FeedbackPage.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 const theme = extendTheme(extend_theme);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<App />}>
-            <Route index element={<Home />} />
-            <Route path="auth">
-              <Route path="login" element={<LoginPage />} />
-              <Route path="register" element={<RegisterPage />} />
-              <Route path="forgetpassword" element={<ForgetPasswordPage />} />
-              <Route
-                path="resetpassword/:token"
-                element={<ResetPasswordPage />}
-              />
-              <Route path="verify/:token" element={<EmailVerifiedPage />} />
-            </Route>
-            <Route path="feedback/:id" element={<FeedbackPage />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<App />}>
+              <Route index element={<Home />} />
+              <Route path="feedback/:id" element={<FeedbackPage />} />
+              <Route path="info" element={<InfoPage />} />
 
-            <Route element={<AuthGuard />}>
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="calendar" element={<CalendarPage />} />
-              <Route path="my-absences" element={<Unavailability />} />
-              <Route path="admin">
-                <Route
-                  path="prestataires-demandes"
-                  element={<AdminPrestataireRequests />}
-                />
-                <Route
-                  path="control-center"
-                  element={<AdminControlCenterPage />}
-                />
+              <Route path="auth">
+                <Route path="login" element={<LoginPage />} />
+                <Route path="register" element={<RegisterPage />} />
+                <Route path="forgetpassword" element={<ForgetPasswordPage />} />
+                <Route path="resetpassword/:token" element={<ResetPasswordPage />}/>
+                <Route path="verify/:token" element={<EmailVerifiedPage />} />
               </Route>
+
+              <Route path="studios">
+                <Route index element={<StudioSearchPage />} />
+                <Route path=":id" element={<StudioPage />} />
+                <Route path=":id/reservation/:service_id" element={<ReservationPage />} />
+              </Route>
+
+              <Route path="profile" element={
+                <AuthGuard roles={['ROLE_ADMIN', 'ROLE_PRESTA', 'ROLE_EMPLOYEE', 'ROLE_CUSTOMER']}>
+                  <ProfilePage />
+                </AuthGuard>
+              } />
+
+              <Route path="admin">
+                <Route path="prestataires-demandes" element={
+                  <AuthGuard roles={['ROLE_ADMIN']}>
+                    <AdminPrestataireRequests />
+                  </AuthGuard>
+                } />
+                <Route path="control-center" element={
+                  <AuthGuard roles={['ROLE_ADMIN', 'ROLE_PRESTA']}>
+                    <AdminControlCenterPage />
+                  </AuthGuard>
+                } />
+              </Route>
+
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
-
-            <Route path="studios">
-              <Route index element={<StudioSearchPage />} />
-              <Route path=":id" element={<StudioPage />} />
-              <Route
-                path=":id/reservation/:service_id"
-                element={<ReservationPage />}
-              />
-            </Route>
-
-            <Route path="info" element={<InfoPage />} />
-
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </ChakraProvider>
   </React.StrictMode>,
 );
