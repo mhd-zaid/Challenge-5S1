@@ -1,8 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box, Spinner, useToast, IconButton, Table, Thead, Tbody, Tr, Th, Td, Button,
-  AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogContent, AlertDialogOverlay
+  Box,
+  Spinner,
+  useToast,
+  IconButton,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Button,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  Text,
 } from '@chakra-ui/react';
 import { RepeatIcon, CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import PlanningService from '../services/planningService';
