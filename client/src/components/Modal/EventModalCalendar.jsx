@@ -66,7 +66,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
     const openingStartTime = openingTime.startTime.split('T')[1].slice(0, 5);
     const openingEndTime = openingTime.endTime.split('T')[1].slice(0, 5);
 
-    if (data.startTime < openingStartTime || data.endTime > openingEndTime) {
+    if (data.startTime < `${openingStartTime}:00` || data.endTime > `${openingEndTime}:00`) {
       toast({
         title: `Les heures doivent être comprises entre ${openingStartTime} et ${openingEndTime}`,
         status: 'error',
