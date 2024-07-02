@@ -23,15 +23,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['service:write']],
     operations: [
         new Post(
+            security: 'is_granted("ROLE_PRESTA")',
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         ),
         new Patch(
+            security: 'is_granted("ROLE_PRESTA")',
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         ),
         new GetCollection(
             security: "is_granted('ROLE_PRESTA')",
         ),
         new SoftDelete(
+            security: 'is_granted("ROLE_PRESTA")',
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         ),
     ]
