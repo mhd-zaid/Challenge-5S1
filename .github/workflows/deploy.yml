@@ -21,7 +21,7 @@ jobs:
       INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
       INSEE_SIRET_API_URL: ${{ secrets.INSEE_SIRET_API_URL }}
       INSEE_SIREN_API_URL: ${{ secrets.INSEE_SIREN_API_URL }}
-      PWD_ADMIN_CREATION: "${{ secrets.PWD_ADMIN }}"
+      PWD_ADMIN_CREATION: "${{ secrets.PWD_ADMIN_CREATION }}"
 
     steps:
       - name: Checkout repository
