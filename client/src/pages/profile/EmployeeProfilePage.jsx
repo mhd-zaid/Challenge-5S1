@@ -1,24 +1,20 @@
-import {
-  Box,
-  Heading,
-  Text,
-  Avatar,
-  Stack,
-  Flex,
-  Modal,
-} from '@chakra-ui/react';
+import { Box, Heading, Text, Avatar, Stack, Flex } from '@chakra-ui/react';
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
 import ManageAccount from '../../components/Modal/ManageAccount';
 import LineChart from '../../components/LineChart';
+import { useTranslation } from 'react-i18next';
 
-const EmployeeProfile = ({user}) => {
+const EmployeeProfile = ({ user }) => {
+  const { t } = useTranslation();
   return (
-    <Box
-      pt="80px"
-      minH="100vh"
-    >
-      <Flex direction={{ base: 'column', md: 'row' }} align="center" justify="space-between" mb={6}>
+    <Box pt="80px" minH="100vh">
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        align="center"
+        justify="space-between"
+        mb={6}
+      >
         <Box>
           <Avatar
             size="xl"
@@ -36,30 +32,32 @@ const EmployeeProfile = ({user}) => {
         </Box>
       </Flex>
       <Stack spacing={4}>
-        <Box p={4} bg="white" shadow="md" borderRadius="md">
-          <LineChart />
-        </Box>
+        <LineChart />
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Informations générales
+            {t('profile.general-info')}
           </Heading>
-          <Text>Nom: {user.firstname} {user.lastname}</Text>
+          <Text>
+            {t('profile.name')}: {user.firstname} {user.lastname}
+          </Text>
           <Text>Email: {user.email}</Text>
-          <Text>Téléphone: {user.phone}</Text>
+          <Text>
+            {t('profile.phone')}: {user.phone}
+          </Text>
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
             Planning
           </Heading>
-          <Flex justifyContent={"center"}>
+          <Flex justifyContent={'center'}>
             <CalendarPage />
           </Flex>
         </Box>
         <Box p={4} bg="white" shadow="md" borderRadius="md">
           <Heading as="h2" size="md" mb={2}>
-            Indisponibilités
+            {t('profile.unavailabilities')}
           </Heading>
-          <Flex justifyContent={"center"}>
+          <Flex justifyContent={'center'}>
             <Unavailability />
           </Flex>
         </Box>
