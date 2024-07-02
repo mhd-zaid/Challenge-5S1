@@ -164,6 +164,7 @@ const FormService = ({service, onSubmitForm}) => {
                   defaultValue={serviceData?.description}
                   {...register('description', {
                     required: 'Ce champ est requis',
+                    minLength: { value: 20, message: 'La longueur minimale est de 20 caractères' },
                   })}
                 />
                 <FormErrorMessage>

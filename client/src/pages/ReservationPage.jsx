@@ -48,7 +48,9 @@ const ReservationPage = () => {
         return res.json();
       })
       .then(data => {
-        const service = data.services.find(s => s['@id'].split('/')[3] == service_id);
+        const service = data.services.find(
+          s => s['@id'].split('/')[3] == service_id,
+        );
         if (!service) return;
         setStudio(data);
         setService(service);
@@ -99,7 +101,7 @@ const ReservationPage = () => {
           description:
             service.name +
             ' - ' +
-            d(selectedDayHour.date).format('DD/MM HH:mm'),
+            d.utc(selectedDayHour.date).format('DD/MM HH:mm'),
           status: 'success',
           duration: 10000,
           isClosable: true,
