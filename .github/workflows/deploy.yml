@@ -90,6 +90,6 @@ jobs:
           echo "clear cache"
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && cd server && php bin/console cache:clear"
           echo "restore files directory"
-          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && cd server && cp -r /var/www/save/server/files ."
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && cd server && cp -r /var/www/save/server/files . && chown -R www-data:www-data files"
           echo "change owner var directory"
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "cd $REMOTE_PATH && chown -R www-data:www-data server/var"
