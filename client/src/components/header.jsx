@@ -9,6 +9,7 @@ import {
   MenuGroup,
   MenuItem,
   MenuDivider,
+  Flex,
 } from '@chakra-ui/react';
 import { Icon } from '@iconify/react';
 import { useAuth } from '@/context/AuthContext.jsx';
@@ -56,7 +57,10 @@ const Header = () => {
               />
             </MenuButton>
             <MenuList>
-              <MenuGroup title="Administration">
+              <MenuGroup
+                title="Administration"
+                hidden={!isAdministrator && !isPrestataire}
+              >
                 <MenuItem
                   onClick={() => {
                     navigate('/admin/control-center');
@@ -73,15 +77,7 @@ const Header = () => {
                 >
                   Plannings
                 </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    user.roles.includes('ROLE_ADMIN')
-                      ? navigate('/admin/control-center')
-                      : navigate('/info');
-                  }}
-                >
-                  {t('global.add-presta')}
-                </MenuItem>
+
                 <MenuItem display={isAdministrator ? 'block' : 'none'}>
                   {t('header.stats')}
                 </MenuItem>
@@ -94,7 +90,7 @@ const Header = () => {
                   {t('header.presta-demand')}
                 </MenuItem>
               </MenuGroup>
-              <MenuDivider />
+              <MenuDivider hidden={!isAdministrator && !isPrestataire} />
               <MenuGroup title="Profil">
                 <MenuItem
                   onClick={() => {
@@ -108,15 +104,26 @@ const Header = () => {
             </MenuList>
           </Menu>
         ) : (
-          <Button
-            as={RouterLink}
-            to="/auth/login"
-            bg="black"
-            color="white"
-            _hover={{ bg: '#333' }}
-          >
-            {t('auth.connect')}
-          </Button>
+          <Flex>
+            <Button
+              as={RouterLink}
+              to="/info"
+              variant={'outline'}
+              bgColor={'gray.200'}
+              mr={6}
+            >
+              {t('global.add-presta')}
+            </Button>
+            <Button
+              as={RouterLink}
+              to="/auth/login"
+              bg="black"
+              color="white"
+              _hover={{ bg: '#333' }}
+            >
+              {t('auth.connect')}
+            </Button>
+          </Flex>
         )}
       </Box>
     </Box>
