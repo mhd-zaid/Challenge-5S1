@@ -21,6 +21,7 @@ jobs:
       INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
       INSEE_SIRET_API_URL: ${{ secrets.INSEE_SIRET_API_URL }}
       INSEE_SIREN_API_URL: ${{ secrets.INSEE_SIREN_API_URL }}
+      PWD_ADMIN_CREATION: "${{ secrets.PWD_ADMIN }}"
 
     steps:
       - name: Checkout repository
@@ -57,6 +58,7 @@ jobs:
            echo "INSEE_API_KEY=$INSEE_API_KEY" >> server/.env.local
            echo "INSEE_SIRET_API_URL=$INSEE_SIRET_API_URL" >> server/.env.local
            echo "INSEE_SIREN_API_URL=$INSEE_SIREN_API_URL" >> server/.env.local
+           echo "PWD_ADMIN_CREATION=$PWD_ADMIN_CREATION" >> server/.env.local
 
       - name: prepare server
         run: |
