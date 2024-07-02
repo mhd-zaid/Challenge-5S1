@@ -19,19 +19,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiResource(
     operations:[
         new Get(
+            uriTemplate: '/stats/studio/{id}',
             security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESTA')",
-            provider: StatVisiteProvider::class,      
-            uriTemplate: '/stats/studio/{id}',                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+            provider: StatVisiteProvider::class,
         ),
         new Get(
+            uriTemplate: '/stats/reservation',
             security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_EMPLOYEE')",
             provider: StatReservationProvider::class,
-            uriTemplate: '/stats/reservation',
         ),
         new Get(
+            uriTemplate: '/stats',
             security: "is_granted('ROLE_ADMIN')",
             provider: StatProvider::class,
-            uriTemplate: '/stats',
         ),
         new Post()
     ],

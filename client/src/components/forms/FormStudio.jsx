@@ -5,12 +5,12 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage, FormHelperText,
+  FormErrorMessage,
   FormLabel, Heading,
   Input,
-  InputGroup, InputLeftElement, List, ListItem,
-  Select, SimpleGrid,
-  Text, Textarea, useToast, VStack,
+  InputGroup, InputLeftElement,
+  Select,
+  Text, Textarea, useToast,
 } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useEffect, useState } from 'react';
@@ -78,7 +78,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
       return;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         upsertStudio(values)
         resolve()
@@ -98,7 +98,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
 
         <Box>
-          {studioData && (
+          {studioData && isEditable && (
             <Heading as='h2' size='sm' textAlign='center' mb={10}>
               Entreprise - {studioData?.company?.name}
             </Heading>

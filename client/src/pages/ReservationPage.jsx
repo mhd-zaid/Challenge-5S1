@@ -104,7 +104,6 @@ const ReservationPage = () => {
           duration: 10000,
           isClosable: true,
         });
-        console.log(data);
         setSelectedDayHour();
         setSelectedEmployee();
         getAvailableHours();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button,
   FormControl, FormLabel, Input, Select, Box, Text
@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import WorkHourService from '../../services/WorkHourService';
 import { useAuth } from '../../context/AuthContext';
 
-const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, studios, get_plannings, toast }) => {
+const EventModalCalendar = ({ isOpen, onClose, event, token, users, studios, get_plannings, toast }) => {
   const { register, handleSubmit, setValue, reset, getValues, watch, formState: { errors } } = useForm();
   const {user} = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -66,7 +66,7 @@ const EventModalCalendar = ({ isOpen, onClose, event, setEvent, token, users, st
     const openingStartTime = openingTime.startTime.split('T')[1].slice(0, 5);
     const openingEndTime = openingTime.endTime.split('T')[1].slice(0, 5);
 
-    if (data.startTime < openingStartTime || data.endTime > openingEndTime) {
+    if (data.startTime < `${openingStartTime}:00` || data.endTime > `${openingEndTime}:00`) {
       toast({
         title: `Les heures doivent être comprises entre ${openingStartTime} et ${openingEndTime}`,
         status: 'error',

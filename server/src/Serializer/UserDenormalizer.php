@@ -16,19 +16,20 @@ class UserDenormalizer implements DenormalizerInterface
         protected Security $security
     )
     {}
-
+        
     public function denormalize($data, $class, $format = null, array $context = [])
     {
         $user = $this->normalizer->denormalize($data, $class, $format, $context);
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            $user->setPlainPassword('Motdepassee123!!');
-            $user->setRoles($data['roles']);
+            $user->setPlainPassword($_ENV['PWD_ADMIN_CREATION']);
+            $user->setRoles([$data['roles']]);
         } 
         else if($this->security->isGranted('ROLE_PRESTA')){
             $user->setRoles(['ROLE_EMPLOYEE']);
             $user->setCompany($this->security->getUser()->getCompany());
-            $user->setPlainPassword('Motdepassee123!');            
+            $password_employee = ucfirst($this->security->getUser()->getCompany()->getName()).'company2024!';
+            $user->setPlainPassword(trim($password_employee, ' '));
         }  
         return $user;
     }

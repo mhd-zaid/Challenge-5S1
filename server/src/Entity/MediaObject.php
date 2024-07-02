@@ -28,6 +28,7 @@ class MediaObject
     public ?File $file = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['company:read:admin'])]
     public ?string $filePath = null;
 
     public function getId(): ?int

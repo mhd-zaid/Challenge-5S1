@@ -1,5 +1,23 @@
 import { useState } from 'react';
-import { Box, Heading, Text, Avatar, Stack, Flex } from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Text,
+  Button,
+  Avatar,
+  Stack,
+  Flex,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Input,
+} from '@chakra-ui/react';
 import ManageAccount from '@/components/Modal/ManageAccount.jsx';
 import BarChartAdmin from '@/components/BarChartAdmin.jsx';
 import { useTranslation } from 'react-i18next';
@@ -8,9 +26,6 @@ const AdminProfile = ({ user }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleEditProfile = () => {
-    setIsOpen(true);
-  };
 
   const handleClose = () => {
     setIsOpen(false);

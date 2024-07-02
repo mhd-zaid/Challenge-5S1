@@ -33,7 +33,6 @@ const InfoPage = () => {
           <Text fontSize="xl" mb={10} textAlign={'center'}>
             {t('company.request-text')}
           </Text>
-          {/*<FormCompany />*/}
           <FormCompanyRequest />
         </Box>
       </Box>
@@ -119,7 +118,6 @@ const InfoPage = () => {
         alignItems="center"
         p={4}
       >
-        {/*<FormCompany />*/}
       </Box>
     </Flex>
   );

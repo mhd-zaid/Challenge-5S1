@@ -23,9 +23,12 @@ class CompanyPostStateProcessor implements ProcessorInterface
     {}
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
+        $max_size = 2 * 1024 * 1024;
         if($operation instanceof Post && $data instanceof Company) {
             $request = $context['request'];
-            if($request->files->has('file')) {
+            if($request->files->has('file')
+                && $request->files->get('file')->getMimeType() === 'application/pdf'
+                && $request->files->get('file')->getSize() < $max_size) {
                 $file = $request->files->get('file');
             }else{
                 return \InvalidArgumentException::class;

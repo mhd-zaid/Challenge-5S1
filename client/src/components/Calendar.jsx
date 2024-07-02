@@ -1,11 +1,10 @@
-import React from 'react';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
 import dayjs from 'dayjs';
 
-const Calendar = ({ user, plannings, setEvent, get_plannings }) => {
+const Calendar = ({ user, plannings, setEvent }) => {
   const handleEventClick = (clickInfo) => {
       setEvent(clickInfo.event);
   };

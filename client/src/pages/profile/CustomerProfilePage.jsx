@@ -93,7 +93,6 @@ const CustomerProfile = ({ user }) => {
         return res.json();
       })
       .then(data => {
-        console.log(data);
         getReservations();
         toast({
           title: t('profile.reservation-updated'),

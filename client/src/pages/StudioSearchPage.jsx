@@ -81,13 +81,13 @@ const StudioSearchPage = () => {
       const data = await response.json();
 
       if (data.length > 0) {
+        console.log("DATAS RETURN FROM API :  ", data)
         return [parseFloat(data[0]['lat']), parseFloat(data[0]['lon'])];
       } else {
-        return null;
+        return [0, 0];
       }
     } catch (error) {
-      console.error('Erreur lors de la récupération des coordonnées :', error);
-      return null;
+      return [0, 0];
     }
   };
 

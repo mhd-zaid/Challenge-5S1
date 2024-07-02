@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormControl, FormLabel, Select } from '@chakra-ui/react';
 
 const FilterCalendar = ({ studios, users, selectedFilterStudio, setSelectedFilterStudio, selectedFilterUser, setSelectedFilterUser }) => (

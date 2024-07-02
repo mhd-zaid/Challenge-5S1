@@ -16,12 +16,12 @@ use App\Validator\CompletedReservation;
 
 #[ORM\Entity(repositoryClass: FeedbackRepository::class)]
 #[ApiResource(
-    denormalizationContext: ['groups' => ['feedback:write']],
-    normalizationContext: ['groups' => ['feedback:read']],
-    operations:[
+    operations: [
         new Patch(processor: FeedbackStateProcessor::class),
         new Get(),
-    ]
+    ],
+    normalizationContext: ['groups' => ['feedback:read']],
+    denormalizationContext: ['groups' => ['feedback:write']]
 )]
 #[CompletedReservation]
 class Feedback
@@ -40,6 +40,7 @@ class Feedback
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['feedback:write', 'feedback:read'])]
+    #[Assert\Length(max: 255)]
     private ?string $message = null;
 
     #[ORM\OneToOne(inversedBy: 'feedback', cascade: ['persist', 'remove'])]

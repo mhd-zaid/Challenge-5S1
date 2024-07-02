@@ -15,13 +15,12 @@ import { useAuth } from '@/context/AuthContext.jsx';
 import { useEffect, useState } from 'react';
 
 const FormUser = ({ user, onSubmitForm }) => {
-  const { token, isAdministrator } = useAuth();
+  const { token, isAdministrator, isPrestataire } = useAuth();
   const toast = useToast();
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting } ,
-    getValues
   } = useForm({
     defaultValues: {
       lastname: user?.lastname || '',
@@ -98,9 +97,12 @@ const FormUser = ({ user, onSubmitForm }) => {
     <>
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
         <Box>
-          <Heading as='h2' size='sm' textAlign='center' mb={10}>
-            Entreprise - {user?.company?.name}
-          </Heading>
+        {user && isPrestataire && (
+            <Heading as='h2' size='sm' textAlign='center' mb={10}>
+              Entreprise - {user?.company?.name}
+            </Heading>
+          )}
+
           <Flex gap={8}>
             <Box w='50%'>
               {/* Champ Nom */}
@@ -217,7 +219,6 @@ const FormUser = ({ user, onSubmitForm }) => {
               <FormControl isRequired>
                 <FormLabel>Entreprise</FormLabel>
                 <Select
-                  onChange={(e) => setCompanyId(e.target.value)}
                   {...register('company', {
                     required: 'Ce champ est requis',
                   })}

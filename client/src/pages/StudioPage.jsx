@@ -101,7 +101,7 @@ const StudioPage = () => {
           </Heading>
           <Box bgColor={'white'} px={4} mr={6}>
             {studioServices.map((service, i) => (
-              <Fragment key={service.id}>
+              <Fragment key={service['@id']}>
                 {i !== 0 && <Divider />}
                 <Flex
                   as={Link}

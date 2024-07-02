@@ -184,7 +184,7 @@ const LoginPage = () => {
           {error.api ===
             "Votre email n'a pas encore été validé. Veuillez vérifier votre boîte de réception et valider votre compte." && (
             <Button
-              variant="link"
+              mt={3}
               onClick={handleResendEmail}
               disabled={isResendingEmail}
             >

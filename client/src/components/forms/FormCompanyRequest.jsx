@@ -10,14 +10,15 @@ import {
   FormLabel,
   Heading,
   Input,
-  InputGroup,
-  InputLeftElement,
-  Textarea,
+  InputGroup, InputLeftElement,
+  Text, Textarea, useToast,
 } from '@chakra-ui/react';
+import { useAuth } from '@/context/AuthContext.jsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const FormCompanyRequest = () => {
+const FormCompanyRequest = ({onSubmitForm}) => {
+  const { isAdministrator } = useAuth();
   const { t } = useTranslation();
   const [listIxServices, setListIxServices] = useState([]);
   const {
@@ -26,6 +27,8 @@ const FormCompanyRequest = () => {
     formState: { errors, isSubmitting },
   } = useForm({});
   const [step, setStep] = useState(1);
+  const [error, setError] = useState(null);
+  const toast = useToast();
 
   async function createCompany(data) {
     const formData = new FormData();
@@ -51,28 +54,47 @@ const FormCompanyRequest = () => {
       import.meta.env.VITE_BACKEND_URL + '/companies',
       {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/ld+json',
-        // },
         body: formData,
       },
     );
 
     const result = await response.json();
-    console.log('result', result);
 
     if (result.error) {
       console.error('error', result.error);
     }
+
+    return await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
+      method: 'POST',
+      body: formData,
+    });
   }
 
-  const onSubmit = async values => {
-    return new Promise((resolve, reject) => {
+  const onSubmit = async (values) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
-        // console.log(JSON.stringify(values, null, 2))
-        createCompany(values);
-        resolve();
-      }, 2000);
+        createCompany(values)
+          .then((result) => {
+
+            if (!result.ok) {
+              result.text().then((text) => {
+                toast({
+                  title: 'Erreur',
+                  description: 'Une erreur est survenue lors de l\'enregistrement de l\'entreprise',
+                  status: 'error',
+                  duration: 9000,
+                  isClosable: true,
+
+                });
+                console.error(text);
+              });
+            } else {
+              nextStep();
+              onSubmitForm(true);
+            }
+          })
+        resolve()
+      }, 2000)
     });
   };
 
@@ -86,31 +108,25 @@ const FormCompanyRequest = () => {
 
   return (
     <>
-      <Box>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          aria-autocomplete={'both'}
-          autoComplete={'on'}
-          autoSave={'on'}
-        >
+      <Box
+      >
+        <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
+
           {step === 1 && (
             <Box>
-              <Heading as="h2" size="sm" textAlign="center" mb={10}>
-                {t('company.info')}
+              <Heading as='h2' size='sm' textAlign='center' mb={10}>
+                Informations sur l'entreprise
               </Heading>
               {/* Champ Nom de l'entreprise */}
               <FormControl isInvalid={errors.name} mt={4} isRequired>
-                <FormLabel htmlFor="name">{t('company.name')}</FormLabel>
+                <FormLabel htmlFor='name'>Nom de l'entreprise</FormLabel>
                 <Input
-                  id="name"
+                  id='name'
                   autoFocus={true}
-                  placeholder={t('company.name')}
+                  placeholder='Entrer le nom de votre entreprise'
                   {...register('name', {
                     required: 'Ce champ est requis',
-                    minLength: {
-                      value: 4,
-                      message: 'La longueur minimale est de 4 caractères',
-                    },
+                    minLength: { value: 4, message: 'La longueur minimale est de 4 caractères' },
                   })}
                 />
                 <FormErrorMessage>
@@ -257,7 +273,7 @@ const FormCompanyRequest = () => {
                         pattern: {
                           value: /^[0-9]{9}$/,
                           message:
-                            'Numéro de siren invalide, il doit contenir 14 chiffres',
+                            'Numéro de siren invalide, il doit contenir 9 chiffres',
                         },
                       })}
                     />
@@ -557,11 +573,29 @@ const FormCompanyRequest = () => {
             </Box>
           )}
 
-          {/*<Flex>*/}
-          {/*  <Button mt={10} bg="black" color='white' isLoading={isSubmitting} type='submit' w={"50%"} mx={"auto"}>*/}
-          {/*    Découvrir gratuitement*/}
-          {/*  </Button>*/}
-          {/*</Flex>*/}
+          {step === 4 && (
+            <Box>
+              {!isAdministrator ? (
+                <>
+                  <Heading as='h2' size='sm' textAlign='center' mb={10}>
+                    Merci pour votre demande
+                  </Heading>
+                  <Text>
+                    Votre demande a bien été enregistrée, nous vous contacterons dans les plus brefs délais.
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Heading as='h2' size='sm' textAlign='center' mb={10}>
+                    L'enregistrement de l'entreprise a bien été effectué
+                  </Heading>
+                  <Text>
+                    L'entreprise est en attente de validation.
+                  </Text>
+                </>
+              )}
+            </Box>
+          )}
         </form>
       </Box>
     </>
