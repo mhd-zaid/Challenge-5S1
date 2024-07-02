@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Spinner, useToast, IconButton, Table, Thead, Tbody, Tr, Th, Td, Button,
-  Icon, AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogContent, AlertDialogOverlay
+  AlertDialog, AlertDialogBody, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogContent, AlertDialogOverlay, Text
 } from '@chakra-ui/react';
 import { RepeatIcon, CloseIcon, CheckIcon } from '@chakra-ui/icons';
 import PlanningService from '../services/planningService';
@@ -277,6 +277,8 @@ const CalendarPage = () => {
             setEvent={setEvent}
             get_plannings={get_plannings}
           />
+          <Box mt={4} fontSize="xl" fontWeight="bold">
+          <Text>Gestion des réservations en attentes</Text>
           <Table variant="simple" mt={4}>
             <Thead>
               <Tr>
@@ -329,6 +331,7 @@ const CalendarPage = () => {
               ))}
             </Tbody>
           </Table>
+          </Box>
         </>
       )}
       <EventModalCalendar
