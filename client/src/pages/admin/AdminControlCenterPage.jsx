@@ -60,7 +60,6 @@ const AdminControlCenterPage = () => {
   const [studioOpeningTimes, setStudioOpeningTimes] = useState([]);
   const [services, setServices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   let groupedServices = null;
   const dayjs = useCustomDate();
   const [dataType, setDataType] = useState(
@@ -127,13 +126,9 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-    console.log('fetch services', isAdministrator);
-    if (!isAdministrator) {
-      fetchData(
-        'services',
-        paginationService.page,
-        paginationService.itemsPerPage,
-      );
+    console.log("fetch services", isAdministrator)
+    if(!isAdministrator) {
+      fetchData('services', paginationService.page, paginationService.itemsPerPage);
     }
   }, []);
 
@@ -230,9 +225,7 @@ const AdminControlCenterPage = () => {
 
   const handleFormSubmit = async hasBeenSubmitted => {
     if (hasBeenSubmitted) {
-      console.log('SUBMITTED: ', dataType);
       if (dataType === 'studio_opening_times') {
-        console.log('add fetching studio opening times');
         await fetchData(dataType, 1, 1000).then(() => onClose());
       } else {
         await fetchData(dataType, currentPage).then(() => onClose());
@@ -248,13 +241,8 @@ const AdminControlCenterPage = () => {
   };
 
   const handleAdd = data => {
-    console.log('add', data);
     setEditData(data);
     onOpen();
-  };
-
-  const handlePageChange = page => {
-    setCurrentPage(page);
   };
 
   const handleDelete = async (data, instance) => {
@@ -642,13 +630,13 @@ const AdminControlCenterPage = () => {
                               cursor={'pointer'}
                             >
                               {studioOpeningTimes[studio][day].startTime &&
-                              studioOpeningTimes[studio][day].endTime
+                              studioOpeningTimes[studio][day].endTime && studioOpeningTimes[studio][day].startTime !== studioOpeningTimes[studio][day].endTime
                                 ? `${studioOpeningTimes[studio][day].startTime} - ${studioOpeningTimes[studio][day].endTime}`
                                 : `Fermé`}
                             </MenuButton>
                             <MenuList>
                               {studioOpeningTimes[studio][day].startTime &&
-                              studioOpeningTimes[studio][day].endTime ? (
+                              studioOpeningTimes[studio][day].endTime && studioOpeningTimes[studio][day].startTime !== studioOpeningTimes[studio][day].endTime ? (
                                 <>
                                   <MenuItem
                                     onClick={() =>
@@ -665,8 +653,8 @@ const AdminControlCenterPage = () => {
                                   onClick={() =>
                                     handleAdd(
                                       studioOpeningTimes[studio][
-                                        (index + 1) % 7
-                                      ],
+                                      (index + 1) % 7
+                                        ],
                                     )
                                   }
                                 >

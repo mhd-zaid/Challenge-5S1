@@ -5,6 +5,7 @@
     "add-presta": "Add your company",
     "save": "Save",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "next": "Next",
     "previous": "Previous",
     "send": "Send",
@@ -68,6 +69,7 @@
     "firstname": "First name",
     "lastname": "Last name",
     "phone": "Phone",
+    "unavailabilities": "Unavailabilities",
     "account-edit": "Manage your account",
     "account-delete": "Delete my account",
     "account-delete-confirmation-title": "Account deletion confirmation",
@@ -92,7 +94,10 @@
     "recent-activity": "Recent activity",
     "last-connection": "Last connection",
     "recent-actions": "Recent actions",
-    "chart-admin": "Annual revenue by company"
+    "chart-admin": "Annual revenue by company",
+    "customer-name": "Customer name",
+    "wating-booking-handle": "Manage pending reservations",
+    "no-waiting-booking": "No reservations pending."
   },
   "header": {
     "control-center": "Control center",

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Box, Button, Center, Heading, Text, Spinner } from '@chakra-ui/react';
+import { Box, Center, Heading, Text, Spinner } from '@chakra-ui/react';
 import AuthService from '@/services/AuthService';
 
 const EmailVerifiedPage = () => {

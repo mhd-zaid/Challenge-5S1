@@ -5,12 +5,11 @@ import {
   Button,
   Flex,
   FormControl,
-  FormErrorMessage, FormHelperText,
+  FormErrorMessage,
   FormLabel, Heading,
   Input,
   InputGroup, InputLeftElement,
-  Select, SimpleGrid,
-  Text, Textarea, useToast, VStack,
+  Text, Textarea, useToast,
 } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useState } from 'react';
@@ -53,7 +52,7 @@ const FormCompany = ({company, onSubmitForm}) => {
       return;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(() => {
         updateCompany(values)
         resolve()

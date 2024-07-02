@@ -5,6 +5,7 @@
     "add-presta": "Ajouter votre établissement",
     "save": "Enregistrer",
     "cancel": "Annuler",
+    "confirm": "Confirmer",
     "next": "Suivant",
     "previous": "Précédent",
     "send": "Envoyer",
@@ -68,6 +69,7 @@
     "firstname": "Prénom",
     "lastname": "Nom",
     "phone": "Téléphone",
+    "unavailabilities": "Indisponibilités",
     "account-edit": "Gestion de votre compte",
     "account-delete": "Supprimer mon compte",
     "account-delete-confirmation-title": "Confirmation de la suppression du compte",
@@ -92,7 +94,10 @@
     "recent-activity": "Activité récente",
     "last-connection": "Dernière connexion",
     "recent-actions": "Actions récentes",
-    "chart-admin": "Chiffre d'affaires par année par entreprise"
+    "chart-admin": "Chiffre d'affaires par année par entreprise",
+    "customer-name": "Nom du client",
+    "wating-booking-handle": "Gestion des réservations en attente",
+    "no-waiting-booking": "Aucune réservation en attente."
   },
   "header": {
     "control-center": "Centre de contrôle",

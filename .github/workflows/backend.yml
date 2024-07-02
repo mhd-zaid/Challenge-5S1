@@ -20,6 +20,7 @@ jobs:
       INSEE_SIREN_API_URL: ${{ secrets.INSEE_SIREN_API_URL }}
       MAILER_DSN: "${{ secrets.MAILER_DSN }}"
       FRONTEND_URL: "${{ vars.FRONTEND_URL }}"
+      PWD_ADMIN_CREATION: "${{ secrets.PWD_ADMIN_CREATION }}"
 
     runs-on: ubuntu-latest
     steps:
@@ -49,6 +50,7 @@ jobs:
           echo INSEE_SIREN_API_URL=$INSEE_SIREN_API_URL
           echo MAILER_DSN=$MAILER_DSN
           echo FRONTEND_URL=$FRONTEND_URL >> ./server/.env.local
+          echo PWD_ADMIN_CREATION=$PWD_ADMIN_CREATION >> ./server/.env.local
 
       - name: copy .env.local to .env.test.local & .env
         run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env
@@ -93,6 +95,7 @@ jobs:
       INSEE_SIREN_API_URL: ${{ secrets.INSEE_SIREN_API_URL }}
       MAILER_DSN: "${{ secrets.MAILER_DSN }}"
       FRONTEND_URL: "${{ vars.FRONTEND_URL }}"
+      PWD_ADMIN_CREATION: "${{ secrets.PWD_ADMIN_CREATION }}"
 
     needs: install-back-dependencies
     runs-on: ubuntu-latest
@@ -131,6 +134,7 @@ jobs:
           echo INSEE_SIREN_API_URL=$INSEE_SIREN_API_URL
           echo MAILER_DSN=$MAILER_DSN
           echo FRONTEND_URL=$FRONTEND_URL >> ./server/.env.local
+          echo PWD_ADMIN_CREATION=$PWD_ADMIN_CREATION >> ./server/.env.local
 
       - name: copy .env.local to .env.test.local & .env
         run: cp ./server/.env.local ./server/.env.test.local && cp ./server/.env.local ./server/.env

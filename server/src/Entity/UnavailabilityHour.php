@@ -17,8 +17,6 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 
 #[ORM\Entity(repositoryClass: UnavailabilityHourRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['unavailabilityHour:read']],
-    denormalizationContext: ['groups' => ['unavailabilityHour:write']],
     operations: [
         new GetCollection(security: "is_granted('ROLE_EMPLOYEE') or is_granted('ROLE_PRESTA')"),
         new Post(
@@ -32,8 +30,10 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
         new SoftDelete(
             security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_EMPLOYEE')",
             securityPostDenormalize: "is_granted('AUTHORIZE', object)"
-        )    
+        )
     ],
+    normalizationContext: ['groups' => ['unavailabilityHour:read']],
+    denormalizationContext: ['groups' => ['unavailabilityHour:write']],
 )]
 class UnavailabilityHour
 {
