@@ -99,19 +99,21 @@ class Company
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['company:read:presta', 'company:read:admin', 'company:write'])]
+    #[Assert\Length(min: 20, max: 255, exactMessage: 'La description doit contenir au moins 20 caractères')]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
+    #[Assert\Url()]
     private ?string $website = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
+    #[Assert\Url()]
     private ?string $socialMedia = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['company:read:admin', 'company:write:admin'])]
-
     #[Assert\Choice(choices: [
         'pending',
         'accepted',
