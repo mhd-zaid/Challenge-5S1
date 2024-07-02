@@ -29,10 +29,14 @@ final class UserContextBuilder implements SerializerContextBuilderInterface
                 $context['groups'][] = 'user:input:admin';
             } 
 
+            if ($this->authorizationChecker->isGranted('ROLE_ADMIN') && $context['operation']->getMethod() === 'GET') {
+                $context['groups'][] = 'user:read:company';
+            } 
+
             if ($this->authorizationChecker->isGranted('ROLE_PRESTA')) {
-                $context['groups'][] = 'user:read:profile';
+                $context['groups'][] = 'user:read:company';
             } else if ($this->authorizationChecker->isGranted('ROLE_EMPLOYEE')) {
-                $context['groups'][] = 'user:read:profile';
+                $context['groups'][] = 'user:read:company';
             }
         }
         return $context;

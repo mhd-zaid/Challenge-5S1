@@ -49,7 +49,7 @@ class Company
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read', 'company:write', 'user:read:profile', 'studio:read'])]
+    #[Groups(['company:read', 'company:write', 'user:read:company', 'studio:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 9, nullable: true)]
@@ -61,13 +61,13 @@ class Company
     #[ORM\Column(length: 255)]
     #[Assert\Email()]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'L\'email doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:profile'])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 10)]
     #[Assert\Length(min: 10, max: 10, exactMessage: 'Le numéro de téléphone doit contenir 10 chiffres')]
     #[Assert\Regex(pattern: '/^[0-9]{10}$/', message: 'Le numéro de téléphone doit contenir 10 chiffres')]
-    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:profile'])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $phone = null;
     #[ORM\Column(length: 5)]
     #[Assert\Length(min: 5, max: 5)]
@@ -77,7 +77,7 @@ class Company
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'La ville doit contenir au moins 2 caractères')]
-    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:profile'])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $city = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
@@ -85,7 +85,7 @@ class Company
     private Collection $users;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Studio::class)]
-    #[Groups(['user:read:profile', 'company:read:presta'])]
+    #[Groups(['user:read:company', 'company:read:presta'])]
     private Collection $studios;
 
     #[ORM\ManyToOne(targetEntity: MediaObject::class)]
@@ -102,11 +102,11 @@ class Company
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:profile'])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $website = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:profile'])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $socialMedia = null;
 
     #[ORM\Column(length: 255)]

@@ -104,7 +104,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
             </Heading>
           )}
 
-          {!studioData && (
+          {!studioData && isAdministrator &&  (
             <FormControl isRequired={isEditable}>
               <FormLabel>Entreprise</FormLabel>
               <Select
