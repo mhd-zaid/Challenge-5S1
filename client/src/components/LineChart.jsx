@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -19,17 +19,20 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
-const getReservationStats = async (token) => {
-  const response = await fetch(import.meta.env.VITE_BACKEND_URL + '/stats/reservation', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/ld+json',
-      'Authorization': 'Bearer ' + token,
+const getReservationStats = async token => {
+  const response = await fetch(
+    import.meta.env.VITE_BACKEND_URL + '/stats/reservation',
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/ld+json',
+        Authorization: 'Bearer ' + token,
+      },
     },
-  });
+  );
   const stats = await response.json();
   return stats;
 };
@@ -43,19 +46,23 @@ const LineChart = () => {
       try {
         const stats = await getReservationStats(token);
         const dataByYear = {};
-  
+
         stats['hydra:member'].forEach(item => {
           const year = item.year;
           const sampleMonths = item.months;
-          const totalCA = Object.values(sampleMonths).map(month => month.totalCA);
-  
+          const totalCA = Object.values(sampleMonths).map(
+            month => month.totalCA,
+          );
+
           if (!dataByYear[year]) {
             dataByYear[year] = {
-              labels: Object.keys(sampleMonths).map(month => month.substring(0, 3)),
+              labels: Object.keys(sampleMonths).map(month =>
+                month.substring(0, 3),
+              ),
               datasets: [],
             };
           }
-  
+
           dataByYear[year].datasets.push({
             label: `CA des Réservations ${year}`,
             data: totalCA,
@@ -65,21 +72,25 @@ const LineChart = () => {
             tension: 0.1,
           });
         });
-  
-        const labels = Object.keys(dataByYear[Object.keys(dataByYear)[0]].labels);
-        const datasets = Object.values(dataByYear).flatMap(yearData => yearData.datasets);
-  
+
+        const labels = Object.keys(
+          dataByYear[Object.keys(dataByYear)[0]].labels,
+        );
+        const datasets = Object.values(dataByYear).flatMap(
+          yearData => yearData.datasets,
+        );
+
         const finalChartData = {
           labels,
           datasets,
         };
-  
+
         setChartData(finalChartData);
       } catch (error) {
-        console.error('Erreur lors de la récupération des données:', error);
+        console.info('Erreur lors de la récupération des données:', error);
       }
     };
-  
+
     if (token) {
       fetchData();
     }
@@ -93,7 +104,7 @@ const LineChart = () => {
       },
       title: {
         display: true,
-        text: 'Chiffre d\'Affaires des Réservations par Mois',
+        text: "Chiffre d'Affaires des Réservations par Mois",
       },
     },
     scales: {
@@ -103,15 +114,7 @@ const LineChart = () => {
     },
   };
 
-  if (!chartData) {
-    return <div>Loading...</div>;
-  }
-
-  return (
-    <>
-        <Line data={chartData} options={options} />
-    </>
-  );
+  return <>{chartData && <Line data={chartData} options={options} />}</>;
 };
 
 const getRandomColor = () => {

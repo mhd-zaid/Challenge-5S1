@@ -17,9 +17,6 @@ use App\Validator\WorkHourInStudioOpeningHours;
 
 #[ORM\Entity(repositoryClass: WorkHourRepository::class)]
 #[ApiResource (
-    security: "is_granted('ROLE_PRESTA')",
-    normalizationContext: ['groups' => ['workHour:read']],
-    denormalizationContext: ['groups' => ['workHour:write']],
     operations: [
         new Post(
             denormalizationContext: ['groups' => ['workHour:write']],
@@ -33,7 +30,10 @@ use App\Validator\WorkHourInStudioOpeningHours;
             denormalizationContext: ['groups' => ['workHour:delete']],
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         )
-    ]
+    ],
+    normalizationContext: ['groups' => ['workHour:read']],
+    denormalizationContext: ['groups' => ['workHour:write']],
+    security: "is_granted('ROLE_PRESTA')"
 )]
 #[WorkHourInStudioOpeningHours]
 #[UniqueWorkHour]

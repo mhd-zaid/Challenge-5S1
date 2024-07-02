@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FormControl, FormLabel, Input, Button, Select, Spinner, Box, FormErrorMessage } from '@chakra-ui/react';
+import { FormControl, FormLabel, Input, Button, Select, Spinner, FormErrorMessage } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 
 const NewUnavailabilityHourForm = ({ onSubmit, users, user }) => {

@@ -52,7 +52,7 @@ const AdminPrestataireRequests = () => {
   const [isValid, setIsValid] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const toast = useToast();
-  const [tabIndex, setTabIndex] = useState(0); // Etat pour gérer l'onglet actif
+  const [tabIndex, setTabIndex] = useState(0);
 
   const fetchCompaniesRequest = async () => {
     const response = await fetch(
@@ -77,12 +77,19 @@ const AdminPrestataireRequests = () => {
     fetchCompaniesRequest();
   }, [token]);
 
-  const downloadKbis = url => {
-    window.open(
-      import.meta.env.VITE_BACKEND_URL + url,
-      '_blank',
-      'location=yes,height=570,width=520,scrollbars=yes,status=yes',
-    );
+
+  const downloadKbis = async (url) => {
+    await  fetch(import.meta.env.VITE_BACKEND_URL + '/get-kbis/' + url.split(".")[0], {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(async response => {
+      const file = await response.blob();
+      const fileURL = URL.createObjectURL(file);
+      window.open(fileURL,
+        '_blank',
+        'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+    })
   };
 
   useEffect(() => {
@@ -196,11 +203,12 @@ const AdminPrestataireRequests = () => {
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/companies/${selectedRequest.id}`,
           {
-            method: 'DELETE',
+            method: 'PATCH',
             headers: {
-              'Content-Type': 'application/ld+json',
+              'Content-Type': 'application/merge-patch+json',
               Authorization: `Bearer ${token}`,
             },
+            body: JSON.stringify({ status: 'refused' }),
           },
         );
         if (response.ok) {
@@ -217,7 +225,7 @@ const AdminPrestataireRequests = () => {
         } else {
           toast({
             title: 'Erreur',
-            description: 'Une erreur est survenue lors du refus.',
+            description: "Une erreur est survenue lors du refus.",
             status: 'error',
             duration: 5000,
             isClosable: true,
@@ -226,14 +234,14 @@ const AdminPrestataireRequests = () => {
       } catch (error) {
         toast({
           title: 'Erreur',
-          description: 'Une erreur est survenue lors du refus.',
+          description: "Une erreur est survenue lors du refus.",
           status: 'error',
           duration: 5000,
           isClosable: true,
         });
       } finally {
-        fetchCompaniesRequest();
         onClose();
+        fetchCompaniesRequest();
       }
     }
   };
@@ -322,7 +330,7 @@ const AdminPrestataireRequests = () => {
                           as="span"
                           textDecoration="underline"
                           color="teal.300"
-                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                          onClick={() => downloadKbis(request.kbis.filePath)}
                         >
                           ici
                         </Link>

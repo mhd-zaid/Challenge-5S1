@@ -5,9 +5,8 @@ import {
   Avatar,
   Stack,
   Flex,
-  useColorModeValue,
 } from '@chakra-ui/react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import CalendarPage from '@/pages/CalendarPage.jsx';
 import Unavailability from '@/pages/Unavailability.jsx';
 import BarChart from '@/components/BarChart.jsx';

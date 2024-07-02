@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Heading,
   Tabs,
   TabList,
   TabPanels,
@@ -30,7 +29,6 @@ const Unavailability = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [currentAction, setCurrentAction] = useState(null);
-  const [currentRequestId, setCurrentRequestId] = useState(null);
   const cancelRef = React.useRef();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -141,7 +139,6 @@ const Unavailability = () => {
       reject: rejectUnavaibility,
     };
     setCurrentAction(() => () => actions[action](requestId));
-    setCurrentRequestId(requestId);
     onOpen();
   };
 
