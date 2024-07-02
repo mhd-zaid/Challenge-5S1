@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
@@ -25,13 +24,10 @@ use App\Operation\SoftDelete;
 #[ApiResource(
     operations: [
         new Get(),
-        new Post(),
-        new Patch(),
-        new SoftDelete(),
-        new GetCollection(
-            paginationItemsPerPage: 10,
-            security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESTA')",
-        ),
+        new Post(securityPostDenormalize: "is_granted('CAN_CREATE', object)"),
+        new Patch(securityPostDenormalize:"is_granted('CAN_EDIT', object)"),
+        new SoftDelete(securityPostDenormalize:"is_granted('CAN_EDIT', object)"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN') or is_granted('ROLE_PRESTA')"),
         new Get(
             uriTemplate: '/me',
             name: 'me',
@@ -62,7 +58,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]  
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read', 'workHour:read'])]
+    #[Groups(['user:read', 'user:input', 'company:read:presta', 'planning:read', 'unavailabilityHour:read', 'reservation:read'])]
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
@@ -72,13 +68,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
         message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
     )]
-    #[Groups(['user:read', 'user:input', 'company:read', 'planning:read', 'company:write', 'company:read:common', 'reservation:read', 'unavailabilityHour:read', 'workHour:read'])]
+    #[Groups(['user:read', 'user:input', 'company:read:presta', 'planning:read', 'unavailabilityHour:read', 'reservation:read'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[Groups(['user:read', 'user:input', 'company:write'])]
+    #[Groups(['user:read', 'user:input'])]
     private ?string $email = null;
 
     /**
@@ -107,7 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    #[Groups(['user:read', 'user:input'])]
+    #[Groups(['user:input:admin', 'user:read:company'])]
     private ?Company $company = null;
 
     #[ORM\OneToMany(mappedBy: 'employee', targetEntity: WorkHour::class)]
@@ -167,9 +163,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_CUSTOMER
-        $roles[] = 'ROLE_CUSTOMER';
-
         return array_unique($roles);
     }
 

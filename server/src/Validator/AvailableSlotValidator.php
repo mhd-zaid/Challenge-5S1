@@ -10,9 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class AvailableSlotValidator extends ConstraintValidator
 {
-    public function __construct(private EntityManagerInterface $entityManager, private SlotService $slotService)
-    {
-    }
+    public function __construct(private EntityManagerInterface $entityManager, private SlotService $slotService){}
 
     public function validate($value, Constraint $constraint)
     {

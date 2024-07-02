@@ -17,17 +17,17 @@ use App\Validator\WorkHourInStudioOpeningHours;
 
 #[ORM\Entity(repositoryClass: WorkHourRepository::class)]
 #[ApiResource (
-    security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
+    security: "is_granted('ROLE_PRESTA')",
     normalizationContext: ['groups' => ['workHour:read']],
     denormalizationContext: ['groups' => ['workHour:write']],
     operations: [
         new Post(
             denormalizationContext: ['groups' => ['workHour:write']],
-            securityPostDenormalize: "is_granted('CREATE', object)"
+            securityPostDenormalize: "is_granted('UPSERT', object)"
         ),
         new Patch(
             denormalizationContext: ['groups' => ['workHour:write']],
-            securityPostDenormalize: "is_granted('EDIT', object)",
+            securityPostDenormalize: "is_granted('UPSERT', object)",
         ),
         new SoftDelete(
             denormalizationContext: ['groups' => ['workHour:delete']],
@@ -51,10 +51,13 @@ class WorkHour
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
+    #[Assert\Type("\DateTime", message: "Le champ 'startTime' doit être une date valide.")]
     #[Groups(['workHour:read', 'workHour:write'])]
     private ?\DateTimeInterface $startTime = null;
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank]
+    #[Assert\Type("\DateTime", message: "Le champ 'endTime' doit être une date valide.")]
+    #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
     #[Groups(['workHour:read', 'workHour:write'])]
     private ?\DateTimeInterface $endTime = null;
 

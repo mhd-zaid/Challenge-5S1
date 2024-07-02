@@ -54,6 +54,9 @@ class ReservationVoter extends Voter
 
     private function canEdit(Reservation $reservation, UserInterface $user): bool
     {
+        if($reservation->getStatus() == 'COMPLETED' && in_array('ROLE_CUSTOMER', $user->getRoles())){
+            return false;
+        }
         return(($reservation->getCustomer() === $user 
         || $reservation->getEmployee() === $user 
         || $reservation->getEmployee()->getCompany()->getOwner() === $user));

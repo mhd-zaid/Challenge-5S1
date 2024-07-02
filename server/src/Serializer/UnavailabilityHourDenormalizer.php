@@ -24,13 +24,12 @@ class UnavailabilityHourDenormalizer implements DenormalizerInterface
         if($this->security->isGranted('ROLE_PRESTA')) {
             $unavailability_hour->setStatus('Accepted');
         } else {
+            $unavailability_hour->setEmployee($this->security->getUser());
             $unavailability_hour->setStatus('Pending');
         }
 
         $dateStart = (new \DateTime($data['startTime']))->setTime(0, 0, 0);
         $dateEnd = (new \DateTime($data['endTime']))->setTime(23, 59, 59);
-
-
         $unavailability_hour->setStartTime($dateStart);
         $unavailability_hour->setEndTime($dateEnd);
 
@@ -39,6 +38,6 @@ class UnavailabilityHourDenormalizer implements DenormalizerInterface
 
     public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
-        return UnavailabilityHour::class === $type && isset($data['startTime']) && isset($data['endTime']);
+        return UnavailabilityHour::class === $type&& strtoupper($context['operation']->getMethod()) === 'POST' && "/api/unavailability_hours" === $context['request_uri'];
     }
 }

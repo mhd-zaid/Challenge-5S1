@@ -20,18 +20,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: StudioRepository::class)]
 #[ApiResource(
     operations: [
-        new GetCollection(
-            paginationItemsPerPage: 10,
-//            security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')",
-        ),
         new GetCollection(),
         new Get(),
-        new Post(),
-        new Patch(),
-        new SoftDelete()
+        new Post(security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_ADMIN')"),
+        new Patch(security : "(is_granted('ROLE_PRESTA') and object.getCompany().getOwner() === user) or is_granted('ROLE_ADMIN')"),
+        new SoftDelete(security : "(is_granted('ROLE_PRESTA') and object.getCompany().getOwner() === user) or is_granted('ROLE_ADMIN')")
     ],
     stateless: false,
-    normalizationContext: ['groups' => ['studio:read']]
+    normalizationContext: ['groups' => ['studio:read']],
+    denormalizationContext: ['groups' => ['studio:write']]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'services.id' => 'exact',
@@ -46,63 +43,63 @@ class Studio
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['stat:studio:read', 'studio:read'])]
+    #[Groups(['studio:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'company:read', 'planning:read', 'user:read:presta', 'reservation:read', 'company:read:presta', 'workHour:read', 'studioOpeningTime:read', 'service:read'])]
+    #[Groups(['studio:read', 'studio:write', 'company:read:presta', 'planning:read', 'studioOpeningTime:read', 'reservation:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['studio:read'])]
+    #[Groups(['studio:read', 'studio:write'])]
     #[Assert\Length(min:20,max: 255)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'user:read:presta'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:10,max: 10)]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'user:read:presta'])]
+    #[Groups(['studio:read', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:2,max: 10)]
     private ?string $country = 'France';
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'user:read:presta'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 5)]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'user:read:presta'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:2,max: 255)]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['studio:read', 'user:read:presta', 'reservation:read', 'planning:read', 'company:read:common'])]
+    #[Groups(['studio:read', 'studio:write', 'user:read:company', 'planning:read'])]
     #[Assert\NotBlank]
     #[Assert\Length(min:5,max: 255)]
     private ?string $address = null;
 
     #[ORM\ManyToOne(inversedBy: 'studios')]
-    #[Groups(['studio:read'])]
     #[Assert\NotNull]
+    #[Groups(['studio:read', 'studio:write:admin'])]
     private ?Company $company = null;
-    #[Groups(['company:read', 'company:read:presta', 'studio:read', 'company:read:common'])]
-
+    
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: StudioOpeningTime::class)]
+    #[Groups(['studio:read', 'company:read:presta'])]
     private Collection $studioOpeningTimes;
 
     #[ORM\OneToMany(mappedBy: 'studio', targetEntity: WorkHour::class)]
     private Collection $workHours;
 
-    #[Groups(['studio:read'])]
+    #[Groups(['studio:read', 'planning:read'])]
     private ?string $fullAddress = null;
 
     /**

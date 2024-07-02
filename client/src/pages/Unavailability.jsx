@@ -24,7 +24,7 @@ import NewUnavailabilityHourForm from '../components/forms/NewUnavailabilityHour
 import ConfirmationDialog from '../components/Modal/ConfirmationDialog';
 
 const Unavailability = () => {
-  const { token, user } = useAuth();
+  const { token, user, isPrestataire } = useAuth();
   const [pendingRequests, setPendingRequests] = useState([]);
   const [historyRequests, setHistoryRequests] = useState([]);
   const [users, setUsers] = useState([]);
@@ -105,10 +105,10 @@ const Unavailability = () => {
   const getCompanyDetail = async () => {
     const response = await CompanyService.get_company_detail(
       token,
-      user.company.id,
+      user.company['@id'].split('/')[3],
     );
     const data = await response.json();
-    setUsers(data.users['hydra:member']);
+    setUsers(data.users);
   };
 
   const handleSubmit = async formData => {
@@ -240,13 +240,16 @@ const Unavailability = () => {
         </Flex>
       ) : (
         <Box p={4} w={"100%"}>
+           { isPrestataire && (
             <Select placeholder="Tous" value={selectedUser} onChange={handleUserChange}>
-            {users?.map((user) => (
-              <option key={user['@id']} value={user['@id']}>
-                {user.firstname} {user.lastname}
-              </option>
-            ))}
-          </Select>
+              {users?.map((user) => (
+                <option key={user['@id']} value={user['@id']}>
+                  {user.firstname} {user.lastname}
+                </option>
+              ))}
+            </Select>
+           )
+           } 
           <Tabs>
             <TabList>
               <Tab>Nouvelle demande</Tab>
