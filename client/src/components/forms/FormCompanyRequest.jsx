@@ -14,10 +14,13 @@ import {
   InputLeftElement,
   Textarea,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext.jsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const FormCompanyRequest = () => {
+const FormCompanyRequest = ({onSubmitForm}) => {
+  const { isAdministrator } = useAuth();
   const { t } = useTranslation();
   const [listIxServices, setListIxServices] = useState([]);
   const {
@@ -26,6 +29,7 @@ const FormCompanyRequest = () => {
     formState: { errors, isSubmitting },
   } = useForm({});
   const [step, setStep] = useState(1);
+  const [error, setError] = useState(null);
 
   async function createCompany(data) {
     const formData = new FormData();
@@ -60,14 +64,34 @@ const FormCompanyRequest = () => {
     if (result.error) {
       console.error('error', result.error);
     }
+
+    return await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
+      method: 'POST',
+      body: formData,
+    });
   }
 
   const onSubmit = async values => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        createCompany(values);
-        resolve();
-      }, 2000);
+        // console.log(JSON.stringify(values, null, 2))
+        createCompany(values)
+          .then((result) => {
+
+            if (!result.ok) {
+              result.text().then((text) => {
+                setError(text);
+                console.error(text);
+              });
+            } else {
+              nextStep();
+              if (onSubmitForm) {
+                onSubmitForm(true);
+              }
+            }
+          })
+        resolve()
+      }, 2000)
     });
   };
 
@@ -81,13 +105,11 @@ const FormCompanyRequest = () => {
 
   return (
     <>
-      <Box>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          aria-autocomplete={'both'}
-          autoComplete={'on'}
-          autoSave={'on'}
-        >
+      <Box
+      >
+        <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
+
+          <Text color='red.500'>{error}</Text>
           {step === 1 && (
             <Box>
               <Heading as="h2" size="sm" textAlign="center" mb={10}>
@@ -552,11 +574,29 @@ const FormCompanyRequest = () => {
             </Box>
           )}
 
-          {/*<Flex>*/}
-          {/*  <Button mt={10} bg="black" color='white' isLoading={isSubmitting} type='submit' w={"50%"} mx={"auto"}>*/}
-          {/*    Découvrir gratuitement*/}
-          {/*  </Button>*/}
-          {/*</Flex>*/}
+          {step === 4 && (
+            <Box>
+              {!isAdministrator ? (
+                <>
+                  <Heading as='h2' size='sm' textAlign='center' mb={10}>
+                    Merci pour votre demande
+                  </Heading>
+                  <Text>
+                    Votre demande a bien été enregistrée, nous vous contacterons dans les plus brefs délais.
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Heading as='h2' size='sm' textAlign='center' mb={10}>
+                    L'enregistrement de l'entreprise a bien été effectué
+                  </Heading>
+                  <Text>
+                    L'entreprise est en attente de validation.
+                  </Text>
+                </>
+              )}
+            </Box>
+          )}
         </form>
       </Box>
     </>

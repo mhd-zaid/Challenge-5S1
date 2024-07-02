@@ -24,6 +24,7 @@ const FormCompany = ({company, onSubmitForm}) => {
     formState: { errors, isSubmitting }
   } = useForm({});
   const [isEditable, setIsEditable] = useState(!company);
+  const [error, setError] = useState(null);
   const [companyData, setCompanyData] = useState(company);
 
   async function updateCompany(data) {
