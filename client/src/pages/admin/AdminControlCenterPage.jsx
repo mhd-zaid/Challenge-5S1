@@ -127,7 +127,6 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-    console.log('fetch services', isAdministrator);
     if (!isAdministrator) {
       fetchData(
         'services',
@@ -230,9 +229,7 @@ const AdminControlCenterPage = () => {
 
   const handleFormSubmit = async hasBeenSubmitted => {
     if (hasBeenSubmitted) {
-      console.log('SUBMITTED: ', dataType);
       if (dataType === 'studio_opening_times') {
-        console.log('add fetching studio opening times');
         await fetchData(dataType, 1, 1000).then(() => onClose());
       } else {
         await fetchData(dataType, currentPage).then(() => onClose());
@@ -248,7 +245,6 @@ const AdminControlCenterPage = () => {
   };
 
   const handleAdd = data => {
-    console.log('add', data);
     setEditData(data);
     onOpen();
   };

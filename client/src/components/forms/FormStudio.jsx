@@ -98,7 +98,7 @@ const FormStudio = ({studio, onSubmitForm}) => {
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
 
         <Box>
-          {studioData && (
+          {studioData && isEditable && (
             <Heading as='h2' size='sm' textAlign='center' mb={10}>
               Entreprise - {studioData?.company?.name}
             </Heading>

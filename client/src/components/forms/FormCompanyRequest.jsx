@@ -51,15 +51,11 @@ const FormCompanyRequest = () => {
       import.meta.env.VITE_BACKEND_URL + '/companies',
       {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/ld+json',
-        // },
         body: formData,
       },
     );
 
     const result = await response.json();
-    console.log('result', result);
 
     if (result.error) {
       console.error('error', result.error);
@@ -69,7 +65,6 @@ const FormCompanyRequest = () => {
   const onSubmit = async values => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        // console.log(JSON.stringify(values, null, 2))
         createCompany(values);
         resolve();
       }, 2000);

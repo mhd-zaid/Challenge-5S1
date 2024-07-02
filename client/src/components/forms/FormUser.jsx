@@ -15,7 +15,7 @@ import { useAuth } from '@/context/AuthContext.jsx';
 import { useEffect, useState } from 'react';
 
 const FormUser = ({ user, onSubmitForm }) => {
-  const { token, isAdministrator } = useAuth();
+  const { token, isAdministrator, isPrestataire } = useAuth();
   const toast = useToast();
   const {
     handleSubmit,
@@ -98,9 +98,12 @@ const FormUser = ({ user, onSubmitForm }) => {
     <>
       <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
         <Box>
-          <Heading as='h2' size='sm' textAlign='center' mb={10}>
-            Entreprise - {user?.company?.name}
-          </Heading>
+        {user && isPrestataire && (
+            <Heading as='h2' size='sm' textAlign='center' mb={10}>
+              Entreprise - {user?.company?.name}
+            </Heading>
+          )}
+
           <Flex gap={8}>
             <Box w='50%'>
               {/* Champ Nom */}
