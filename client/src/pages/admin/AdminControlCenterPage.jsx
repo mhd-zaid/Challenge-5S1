@@ -126,12 +126,9 @@ const AdminControlCenterPage = () => {
   };
 
   useEffect(() => {
-    if (!isAdministrator) {
-      fetchData(
-        'services',
-        paginationService.page,
-        paginationService.itemsPerPage,
-      );
+    console.log("fetch services", isAdministrator)
+    if(!isAdministrator) {
+      fetchData('services', paginationService.page, paginationService.itemsPerPage);
     }
   }, []);
 
@@ -633,13 +630,13 @@ const AdminControlCenterPage = () => {
                               cursor={'pointer'}
                             >
                               {studioOpeningTimes[studio][day].startTime &&
-                              studioOpeningTimes[studio][day].endTime
+                              studioOpeningTimes[studio][day].endTime && studioOpeningTimes[studio][day].startTime !== studioOpeningTimes[studio][day].endTime
                                 ? `${studioOpeningTimes[studio][day].startTime} - ${studioOpeningTimes[studio][day].endTime}`
                                 : `Fermé`}
                             </MenuButton>
                             <MenuList>
                               {studioOpeningTimes[studio][day].startTime &&
-                              studioOpeningTimes[studio][day].endTime ? (
+                              studioOpeningTimes[studio][day].endTime && studioOpeningTimes[studio][day].startTime !== studioOpeningTimes[studio][day].endTime ? (
                                 <>
                                   <MenuItem
                                     onClick={() =>
@@ -656,8 +653,8 @@ const AdminControlCenterPage = () => {
                                   onClick={() =>
                                     handleAdd(
                                       studioOpeningTimes[studio][
-                                        (index + 1) % 7
-                                      ],
+                                      (index + 1) % 7
+                                        ],
                                     )
                                   }
                                 >
