@@ -28,6 +28,7 @@ const CalendarPage = () => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [actionType, setActionType] = useState('');
   const [selectedReservationId, setSelectedReservationId] = useState(null);
+  const [selectedReservation, setSelectedReservation] = useState(null); // New state for selected reservation
   const toast = useToast();
 
   const dayjs = useCustomDate();
@@ -99,6 +100,12 @@ const CalendarPage = () => {
     setIsConfirmOpen(true);
   };
 
+  const confirmReplaceReservation = (reservation) => {
+    setSelectedReservation(reservation);
+    setActionType('replace');
+    setIsConfirmOpen(true);
+  };
+
   const handleCancelReservation = async () => {
     setIsProcessing(true);
     try {
@@ -151,81 +158,84 @@ const CalendarPage = () => {
     }
   };
 
-  const replaceReservation = async (reservation) => {
+  const handleReplaceReservation = async () => {
+    setIsProcessing(true);
+    const reservation = selectedReservation;
     const reservationDate = dayjs.utc(reservation.date).format('YYYY-MM-DD');
     const reservationTime = dayjs.utc(reservation.date).format('HH:mm');
     try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/available_slots/${reservation.studio['@id'].split('/')[3]}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/ld+json',
-                'Authorization': 'Bearer ' + token
-            }
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/available_slots/${reservation.studio['@id'].split('/')[3]}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/ld+json',
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch available slots');
+      }
+
+      const data = await response.json();
+      const availableSlots = data[reservationDate];
+
+      const slotsAtTime = availableSlots?.filter(slot => slot.start === reservationTime);
+
+      if (slotsAtTime?.length > 0) {
+        const usersAvailable = slotsAtTime.reduce((acc, slot) => {
+          slot.users.forEach(user => {
+            acc.add({
+              id: user.id,
+              name: `${user.fullname}`
+            });
+          });
+          return acc;
+        }, new Set());
+
+        const updateReservation = await ReservationService.replace_reservation(token, {
+          id: reservation.id,
+          employee: Array.from(usersAvailable)[0].id,
         });
-        if (!response.ok) {
-            throw new Error('Failed to fetch available slots');
-        }
 
-        const data = await response.json();
-        const availableSlots = data[reservationDate];
-
-        const slotsAtTime = availableSlots.filter(slot => slot.start === reservationTime);
-
-        if (slotsAtTime.length > 0) {
-            const usersAvailable = slotsAtTime.reduce((acc, slot) => {
-                slot.users.forEach(user => {
-                    acc.add({
-                        id: user.id,
-                        name: `${user.fullname}`
-                    });
-                });
-                return acc;
-            }, new Set());
-
-            console.log('Utilisateurs disponibles :', Array.from(usersAvailable));
-
-            const updateReservation = await ReservationService.replace_reservation(token, {
-                id: reservation.id,
-                employee: Array.from(usersAvailable)[0].id,
-            });
-
-            if (updateReservation.ok) {
-                toast({
-                    title: 'Réservation remplacée',
-                    description: 'La réservation a été remplacée avec succès',
-                    status: 'success',
-                    duration: 5000,
-                    isClosable: true,
-                });
-                get_plannings();
-            } else {
-                toast({
-                    title: 'Erreur',
-                    description: 'Impossible de remplacer la réservation',
-                    status: 'error',
-                    duration: 5000,
-                    isClosable: true,
-                });
-            }
+        if (updateReservation.ok) {
+          toast({
+            title: 'Réservation remplacée',
+            description: 'La réservation a été remplacée avec succès',
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+          });
+          get_plannings();
         } else {
-            toast({
-                title: 'Aucun créneau disponible',
-                description: 'Aucun créneau n\'est disponible pour remplacer cette réservation',
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-        }
-
-    } catch (error) {
-      console.error('An error occurred during replacing a reservation:', error);
-        toast({
+          toast({
             title: 'Erreur',
             description: 'Impossible de remplacer la réservation',
             status: 'error',
             duration: 5000,
             isClosable: true,
+          });
+        }
+      } else {
+        toast({
+          title: 'Aucun créneau disponible',
+          description: 'Aucun créneau n\'est disponible pour remplacer cette réservation',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
         });
+      }
+
+    } catch (error) {
+      console.error('An error occurred during replacing a reservation:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de remplacer la réservation',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsProcessing(false);
+      setIsConfirmOpen(false);
     }
   };
 
@@ -244,81 +254,81 @@ const CalendarPage = () => {
       {isLoading ? (
         <Spinner size="xl" />
       ) : (
-    <>
-    {user.roles.includes('ROLE_PRESTA') && (
-      <FilterCalendar
-        studios={studios}
-        users={users}
-        selectedFilterStudio={selectedFilterStudio}
-        setSelectedFilterStudio={setSelectedFilterStudio}
-        selectedFilterUser={selectedFilterUser}
-        setSelectedFilterUser={setSelectedFilterUser}
-      />
-    )}
-    <IconButton
-      onClick={get_plannings}
-      icon={<RepeatIcon />}
-      aria-label="Recharger le planning"
-      mb={4}
-    />
-    <Calendar
-      user={user}
-      plannings={filteredPlannings}
-      setEvent={setEvent}
-      get_plannings={get_plannings}
-    />
-    <Table variant="simple" mt={4}>
-      <Thead>
-        <Tr>
-          <Th>Nom du client</Th>
-          <Th>Nom de l'employé</Th>
-          <Th>Studio</Th>
-          <Th>Date</Th>
-          <Th>Healthy</Th>
-          <Th>Actions</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {reservations.map(reservation => (
-          <Tr key={reservation.id}>
-            <Td>{`${reservation.customer.firstname} ${reservation.customer.lastname}`}</Td>
-            <Td>{`${reservation.employee.firstname} ${reservation.employee.lastname}`}</Td>
-            <Td>{`${reservation.studio.name}`}</Td>
-            <Td>{dayjs.utc(reservation.date).format('YYYY-MM-DD HH:mm:ss')}</Td>
-            <Td>
-              {reservation.healthy ? (
-                <CheckIcon color="green.500" />
-              ) : (
-                <CloseIcon color="red.500" />
-              )}
-            </Td>
-            <Td>
-            <Box display="flex" alignItems="center">
-            <IconButton
-              aria-label="Annuler"
-              icon={<CloseIcon />}
-              onClick={() => confirmAction('cancel', reservation.id)}
-              mr={4} 
+        <>
+          {user.roles.includes('ROLE_PRESTA') && (
+            <FilterCalendar
+              studios={studios}
+              users={users}
+              selectedFilterStudio={selectedFilterStudio}
+              setSelectedFilterStudio={setSelectedFilterStudio}
+              selectedFilterUser={selectedFilterUser}
+              setSelectedFilterUser={setSelectedFilterUser}
             />
-            <IconButton
-              aria-label="Compléter"
-              icon={<CheckIcon />}
-              onClick={() => confirmAction('complete', reservation.id)}
-              mr={4}
-            />
-            {!reservation.healthy && (
-                <IconButton
-                  onClick={() => replaceReservation(reservation)}
-                  icon={<RepeatIcon />}
-                  aria-label="Essayer de remplacer la réservation"
-                />
-            )}
-          </Box>
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+          )}
+          <IconButton
+            onClick={get_plannings}
+            icon={<RepeatIcon />}
+            aria-label="Recharger le planning"
+            mb={4}
+          />
+          <Calendar
+            user={user}
+            plannings={filteredPlannings}
+            setEvent={setEvent}
+            get_plannings={get_plannings}
+          />
+          <Table variant="simple" mt={4}>
+            <Thead>
+              <Tr>
+                <Th>Nom du client</Th>
+                <Th>Nom de l'employé</Th>
+                <Th>Studio</Th>
+                <Th>Date</Th>
+                <Th>Healthy</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {reservations.map(reservation => (
+                <Tr key={reservation.id}>
+                  <Td>{`${reservation.customer.firstname} ${reservation.customer.lastname}`}</Td>
+                  <Td>{`${reservation.employee.firstname} ${reservation.employee.lastname}`}</Td>
+                  <Td>{`${reservation.studio.name}`}</Td>
+                  <Td>{dayjs.utc(reservation.date).format('YYYY-MM-DD HH:mm:ss')}</Td>
+                  <Td>
+                    {reservation.healthy ? (
+                      <CheckIcon color="green.500" />
+                    ) : (
+                      <CloseIcon color="red.500" />
+                    )}
+                  </Td>
+                  <Td>
+                    <Box display="flex" alignItems="center">
+                      <IconButton
+                        aria-label="Annuler"
+                        icon={<CloseIcon />}
+                        onClick={() => confirmAction('cancel', reservation.id)}
+                        mr={4}
+                      />
+                      <IconButton
+                        aria-label="Compléter"
+                        icon={<CheckIcon />}
+                        onClick={() => confirmAction('complete', reservation.id)}
+                        mr={4}
+                      />
+                      {!reservation.healthy && (
+                        <IconButton
+                          onClick={() => confirmReplaceReservation(reservation)}
+                          icon={<RepeatIcon />}
+                          aria-label="Essayer de remplacer la réservation"
+                        />
+                      )}
+                    </Box>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
         </>
       )}
       <EventModalCalendar
@@ -340,18 +350,22 @@ const CalendarPage = () => {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              {actionType === 'cancel' ? 'Annuler la réservation' : 'Compléter la réservation'}
+              {actionType === 'cancel' ? 'Annuler la réservation' : actionType === 'complete' ? 'Compléter la réservation' : 'Remplacer la réservation'}
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Êtes-vous sûr de vouloir {actionType === 'cancel' ? 'annuler' : 'compléter'} cette réservation ?
+              Êtes-vous sûr de vouloir {actionType === 'cancel' ? 'annuler' : actionType === 'complete' ? 'compléter' : 'remplacer'} cette réservation ?
             </AlertDialogBody>
 
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={() => setIsConfirmOpen(false)}>
                 Annuler
               </Button>
-              <Button colorScheme="red" onClick={actionType === 'cancel' ? handleCancelReservation : handleCompleteReservation} ml={3} isLoading={isProcessing}>
+              <Button colorScheme="red" onClick={
+                actionType === 'cancel' ? handleCancelReservation :
+                actionType === 'complete' ? handleCompleteReservation :
+                handleReplaceReservation
+              } ml={3} isLoading={isProcessing}>
                 Confirmer
               </Button>
             </AlertDialogFooter>
