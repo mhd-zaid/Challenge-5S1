@@ -48,8 +48,8 @@ const FormService = ({service, onSubmitForm}) => {
     fetchStudios();
   }, []);
 
-  async function upsertStudio(data) {
-    const url = service ? import.meta.env.VITE_BACKEND_BASE_URL + service['@id'] : `${import.meta.env.VITE_BACKEND_URL}/services`;
+  async function upsertService(data) {
+    const url = service ? import.meta.env.VITE_BACKEND_URL + '/services/' + service['@id'].split('/')[3] : `${import.meta.env.VITE_BACKEND_URL}/services`;
     const method = service ? 'PATCH' : 'POST';
     const contentType = service ? 'application/merge-patch+json' : 'application/ld+json';
 
@@ -85,7 +85,7 @@ const FormService = ({service, onSubmitForm}) => {
 
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        upsertStudio(values)
+        upsertService(values)
         resolve()
       }, 1000)
     }).then(() => {

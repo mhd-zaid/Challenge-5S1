@@ -48,7 +48,7 @@ const ReservationPage = () => {
         return res.json();
       })
       .then(data => {
-        const service = data.services.find(s => s.id == service_id);
+        const service = data.services.find(s => s['@id'].split('/')[3] == service_id);
         if (!service) return;
         setStudio(data);
         setService(service);

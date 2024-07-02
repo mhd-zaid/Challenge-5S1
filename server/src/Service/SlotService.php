@@ -127,7 +127,6 @@ class SlotService {
 
     public function isReservationPossible(Reservation $currentReservation): bool
     {
-
         $employee = $currentReservation->getEmployee();
 
         $time = $currentReservation->getDate();

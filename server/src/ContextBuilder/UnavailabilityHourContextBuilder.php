@@ -16,8 +16,13 @@ final class UnavailabilityHourContextBuilder implements SerializerContextBuilder
         $context = $this->decorated->createFromRequest($request, $normalization, $extractedAttributes);
         $resourceClass = $context['resource_class'] ?? null;
 
-        if ($resourceClass === UnavailabilityHour::class && isset($context['groups']) && $this->authorizationChecker->isGranted('ROLE_PRESTA') && false === $normalization) {
-            $context['groups'][] = 'unavailabilityHour:presta:write';
+        if ($resourceClass === UnavailabilityHour::class && isset($context['groups']) && $this->authorizationChecker->isGranted('ROLE_PRESTA')) {
+            
+            if($context['operation']->getMethod() === 'POST') $context['groups'][] = 'unavailabilityHour:write:presta';
+
+            if($context['operation']->getMethod() === 'PATCH') {
+                $context['groups'] = ['unavailabilityHour:write:presta:update'];
+            }
         }
 
         return $context;

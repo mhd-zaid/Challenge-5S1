@@ -20,7 +20,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
     operations: [
         new GetCollection(),
-        new Patch(),
+        new Patch(
+            security: "is_granted('ROLE_PRESTA') and object.getStudio().getCompany().getOwner() == user",
+        ),
     ],
     stateless: false,
     normalizationContext: ['groups' => ['studioOpeningTime:read']],
@@ -42,32 +44,30 @@ class StudioOpeningTime
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read', 'company:read:presta', 'studio:read', 'company:read:common', 'studioOpeningTime:write'])]
+    #[Assert\Type("\DateTime", message: "Le champ 'startTime' doit être une date valide.")]
+    #[Groups(['studioOpeningTime:read','studioOpeningTime:write', 'company:read:presta', 'studio:read'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read', 'company:read:presta', 'studio:read', 'company:read:common', 'studioOpeningTime:write'])]
+    #[Assert\Type("\DateTime", message: "Le champ 'endTime' doit être une date valide.")]
+    #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
+    #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write', 'company:read:presta', 'studio:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read', 'studio:read', 'company:read:presta', 'company:read:common', 'studioOpeningTime:write'])]
+    #[Groups(['studioOpeningTime:read', 'company:read:presta', 'studio:read'])]
     #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 
     #[ORM\ManyToOne(inversedBy: 'studioOpeningTimes')]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write'])]
-    private ?Studio $studio = null;
-
-    #[ORM\OneToMany(mappedBy: 'studioOpeningTime', targetEntity: UnavailabilityHour::class)]
     #[Groups(['studioOpeningTime:read'])]
-    private Collection $unavailabilityHours;
+    private ?Studio $studio = null;
 
     public function __construct()
     {
-        $this->unavailabilityHours = new ArrayCollection();
     }
 
     public function getId(): ?int

@@ -7,12 +7,10 @@ use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use App\Service\MailService;
-use Psr\Log\LoggerInterface;
 
 class CompanySubscriber implements EventSubscriberInterface
 {
@@ -30,7 +28,7 @@ class CompanySubscriber implements EventSubscriberInterface
         return [
             Events::postPersist,
             Events::preUpdate,
-            Events::postFlush,
+            // Events::postFlush,
         ];
     }
 
@@ -61,25 +59,20 @@ class CompanySubscriber implements EventSubscriberInterface
         $object = $args->getObject();
 
         if ($object instanceof Company) {
-            $this->updatedCompany = $object;
+            // $this->updatedCompany = $object;
 
-            if ($args->hasChangedField('status')) {
-                $this->status = $args->getNewValue('status');
-            }
-            if($args->hasChangedField('deletedAt')) {
-                $this->deletedAt = $args->getNewValue('deletedAt');
-            }
-        }
-    }
+            // if ($args->hasChangedField('status')) {
+            //     $this->status = $args->getNewValue('status');
+            // }
+            // if($args->hasChangedField('deletedAt')) {
+            //     $this->deletedAt = $args->getNewValue('deletedAt');
+            // }
 
-    public function postFlush(PostFlushEventArgs $args): void
-    {
-        if ($this->updatedCompany) {
             $frontendUrl = $_ENV['FRONTEND_URL'];
 
-            if($this->status != null) {
+            if($args->getNewValue('status') != null) {
                 if ($this->status === 'accepted') {
-                    $this->emailService->sendEmail($this->updatedCompany->getOwner()
+                    $this->emailService->sendEmail($object->getOwner()
                         , 'Votre compte a été vérifié'
                         , 'company_verified.html.twig'
                         , [
@@ -88,7 +81,7 @@ class CompanySubscriber implements EventSubscriberInterface
                         ]
                     );
                 } else if ($this->status === 'refused') {
-                    $this->emailService->sendEmail($this->updatedCompany->getOwner()
+                    $this->emailService->sendEmail($object->getOwner()
                         , 'Votre compte a été refusé'
                         , 'company_unverified.html.twig'
                         , [
@@ -97,24 +90,53 @@ class CompanySubscriber implements EventSubscriberInterface
                         ]
                     );
                 } else if ($this->status === 'deleted') {
-                    $this->emailService->sendEmail($this->updatedCompany->getOwner(),
+                    $this->emailService->sendEmail($object->getOwner(),
                         'Votre compte a été supprimé',
                         'company_deleted.html.twig',
                         []
                     );
                 }
             }
-            if($this->deletedAt != null) {
-//                $presta = $this->updatedCompany->getOwner();
-//                $presta->setDeletedAt($this->deletedAt);
-//                $this->em->persist($presta);
-//                $this->em->flush();
-//                dd($this->deletedAt, $presta->getDeletedAt(), $presta);
-            }
 
 
-            $this->updatedCompany = null;
-            $this->status = null;
+
         }
     }
+
+    // public function postFlush(PostFlushEventArgs $args): void
+    // {
+    //     if ($this->updatedCompany) {
+    //         $frontendUrl = $_ENV['FRONTEND_URL'];
+
+    //         if($this->status != null) {
+    //             if ($this->status === 'accepted') {
+    //                 $this->emailService->sendEmail($this->updatedCompany->getOwner()
+    //                     , 'Votre compte a été vérifié'
+    //                     , 'company_verified.html.twig'
+    //                     , [
+    //                         'company' => $this->updatedCompany
+    //                         , 'loginUrl' => $frontendUrl . '/auth/login'
+    //                     ]
+    //                 );
+    //             } else if ($this->status === 'refused') {
+    //                 $this->emailService->sendEmail($this->updatedCompany->getOwner()
+    //                     , 'Votre compte a été refusé'
+    //                     , 'company_unverified.html.twig'
+    //                     , [
+    //                         'company' => $this->updatedCompany
+    //                         , 'loginUrl' => $frontendUrl . '/auth/login'
+    //                     ]
+    //                 );
+    //             } else if ($this->status === 'deleted') {
+    //                 $this->emailService->sendEmail($this->updatedCompany->getOwner(),
+    //                     'Votre compte a été supprimé',
+    //                     'company_deleted.html.twig',
+    //                     []
+    //                 );
+    //             }
+    //         }
+    //         // $this->updatedCompany = null;
+    //         // $this->status = null;
+    //     }
+    // }
 }

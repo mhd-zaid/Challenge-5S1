@@ -47,7 +47,7 @@ const CalendarPage = () => {
           extendedProps: {
             employeeFullName: `${planning.employee.firstname} ${planning.employee.lastname}`,
             studioName: `${planning.studio.name}`,
-            studioAdress: `${planning.studio.address}`,
+            studioAdress: `${planning.studio.fullAddress}`,
             startTime: planning.start.split('T')[1].split('+')[0],
             endTime: planning.end.split('T')[1].split('+')[0],
             type: planning.type,
@@ -76,10 +76,10 @@ const CalendarPage = () => {
   const get_company_detail = async () => {
     setIsLoading(true);
     try {
-      const response = await CompanyService.get_company_detail(token, user.company.id);
+      const response = await CompanyService.get_company_detail(token, user.company['@id'].split('/')[3]);
       const data = await response.json();
-      setUsers(data.users['hydra:member']);
-      setStudios(data.studios['hydra:member']);
+      setUsers(data.users);
+      setStudios(data.studios);
     } catch (error) {
       toast({
         title: 'Erreur de chargement',
@@ -188,8 +188,6 @@ const CalendarPage = () => {
                 id: reservation.id,
                 employee: Array.from(usersAvailable)[0].id,
             });
-
-            console.log("ICI")
 
             if (updateReservation.ok) {
                 toast({
