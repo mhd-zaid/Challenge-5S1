@@ -26,37 +26,12 @@ class UnavailabilityHourRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('uh')
             ->where('uh.employee = :employee')
-            ->andWhere('uh.startTime BETWEEN :start AND :end')
+            ->andWhere(':start BETWEEN uh.startTime AND uh.endTime')
             ->andWhere('uh.status = :status')
             ->setParameter('employee', $employee)
-            ->setParameter('start', $startDate->format('Y-m-d 00:00:00'))
-            ->setParameter('end', $endDate->format('Y-m-d 23:59:59'))
+            ->setParameter('start', $startDate)
             ->setParameter('status', 'Accepted')
             ->getQuery()
             ->getResult();
     }
-    //    /**
-    //     * @return UnavailabilityHour[] Returns an array of UnavailabilityHour objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?UnavailabilityHour
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

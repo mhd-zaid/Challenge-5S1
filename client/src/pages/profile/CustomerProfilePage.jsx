@@ -223,6 +223,8 @@ const CustomerProfile = ({ user }) => {
                           >
                             Réserver à nouveau
                           </MenuItem>
+                          {
+                          reservation.status == 'RESERVED' && (
                           <MenuItem
                             icon={<MdCancel size={16} />}
                             color="red"
@@ -236,6 +238,8 @@ const CustomerProfile = ({ user }) => {
                           >
                             Annuler
                           </MenuItem>
+                          )
+                          }
                           <Text
                             mt={2}
                             textAlign={'center'}

@@ -5,7 +5,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use App\State\AvailableSlotProvider;
 use ApiPlatform\Metadata\ApiProperty;
-use DateTime;
 
 #[ApiResource(
     operations: [

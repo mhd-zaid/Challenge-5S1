@@ -3,7 +3,6 @@ const url = import.meta.env.VITE_BACKEND_URL;
 
 const ReservationService = {
     replace_reservation: async (token, reservation) => {
-        console.log("RESERVARTION : ", reservation)
         try {
             const response = await fetch(`${url}/reservations/${reservation.id}`, {
                 method: 'PATCH',
