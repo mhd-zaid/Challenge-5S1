@@ -64,7 +64,7 @@ class Service
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['service:read', 'service:write'])]
+    #[Groups(['service:read', 'service:write', 'studio:read'])]
     #[Assert\NotNull]
     #[Assert\GreaterThanOrEqual(0)]
     private ?int $cost = null;

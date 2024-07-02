@@ -65,8 +65,13 @@ class SlotService {
     
     private function getUserAvailabilityForPeriod(User $user, \DateTime $startDate, \DateTime $endDate, Studio $studio): array {
         $workHours = $this->workHourRepo->findByEmployeeAndDateRange($user, $startDate, $endDate, $studio);
-        $unavailabilityHours = $this->unavailabilityHourRepo->findByEmployeeAndDateRange($user, $startDate, $endDate);
         $reservations = $this->reservationRepo->findByEmployeeAndDateRange($user, $startDate, $endDate);
+
+        $unavailabilityHours = [];
+
+        foreach ($workHours as $workHour) {
+            $unavailabilityHours = array_merge($unavailabilityHours, $this->unavailabilityHourRepo->findByEmployeeAndDateRange($user, $workHour->getStartTime(), $workHour->getEndTime()));
+        }
     
         $availabilities = [];
     
@@ -77,8 +82,7 @@ class SlotService {
                 $availabilities[$currentDate->format('Y-m-d')] = $dailySlots;
             }
             $currentDate->modify('+1 day');
-        }
-    
+        }    
         return $availabilities;
     }
     
@@ -86,10 +90,6 @@ class SlotService {
     private function getDailyAvailability(array $workHours, array $unavailabilityHours, array $reservations, \DateTime $date): array {
         $dailyWorkHours = array_filter($workHours, function($wh) use ($date) {
             return $wh->getStartTime()->format('Y-m-d') == $date->format('Y-m-d');
-        });
-    
-        $dailyUnavailability = array_filter($unavailabilityHours, function($uh) use ($date) {
-            return $uh->getStartTime()->format('Y-m-d') == $date->format('Y-m-d');
         });
     
         $dailyReservations = array_filter($reservations, function($res) use ($date) {
@@ -110,7 +110,7 @@ class SlotService {
             }
         }
     
-        foreach ($dailyUnavailability as $unavailability) {
+        foreach ($unavailabilityHours as $unavailability) {
             $availableSlots = array_filter($availableSlots, function ($slot) use ($unavailability) {
                 return !($slot['start'] >= $unavailability->getStartTime() && $slot['end'] <= $unavailability->getEndTime());
             });
@@ -120,8 +120,7 @@ class SlotService {
             $availableSlots = array_filter($availableSlots, function ($slot) use ($reservation) {
                 return !($slot['start'] >= $reservation->getDate() && $slot['end'] <= (clone $reservation->getDate())->modify('+1 hour'));
             });
-        }
-    
+        }    
         return $availableSlots;
     }
 
