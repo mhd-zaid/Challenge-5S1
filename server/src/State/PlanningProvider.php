@@ -77,10 +77,15 @@ class PlanningProvider implements ProviderInterface
             }
         }
 
-        $reservations = $this->em->getRepository(Reservation::class)->findBy([
-            'status' => 'RESERVED',
-        ]);
-
+        $reservations = new ArrayCollection();
+        foreach($studios as $studio) {
+            foreach ($studio->getReservations() as $reservation) {
+                if ($reservation->getStatus() === 'RESERVED') {
+                    $reservations->add($reservation);
+                }
+            }
+        }
+        
         return $this->createPlanning($workHours, $unavailabilityHours, $reservations);
     }
 
