@@ -29,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
         ),
         new GetCollection(
-            security: "is_granted(ROLE_PRESTA)",
+            security: "is_granted('ROLE_PRESTA')",
         ),
         new SoftDelete(
             securityPostDenormalize: "is_granted('AUTHORIZE', object)",
