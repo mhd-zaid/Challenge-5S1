@@ -45,19 +45,19 @@ class StudioOpeningTime
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
     #[Assert\Type("\DateTime", message: "Le champ 'startTime' doit être une date valide.")]
-    #[Groups(['studioOpeningTime:read','studioOpeningTime:write', 'company:read:presta'])]
+    #[Groups(['studioOpeningTime:read','studioOpeningTime:write', 'company:read:presta', 'studio:read'])]
     private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
     #[Assert\Type("\DateTime", message: "Le champ 'endTime' doit être une date valide.")]
     #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
-    #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write', 'company:read:presta'])]
+    #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write', 'company:read:presta', 'studio:read'])]
     private ?\DateTimeInterface $endTime = null;
 
     #[ORM\Column]
     #[Assert\NotBlank]
-    #[Groups(['studioOpeningTime:read', 'company:read:presta'])]
+    #[Groups(['studioOpeningTime:read', 'company:read:presta', 'studio:read'])]
     #[Assert\Choice(choices: [1, 2, 3, 4, 5, 6, 0])]
     private ?int $day = null;
 
