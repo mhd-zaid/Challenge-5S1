@@ -51,7 +51,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <Route path="studios">
                 <Route index element={<StudioSearchPage />} />
                 <Route path=":id" element={<StudioPage />} />
-                <Route path=":id/reservation/:service_id" element={<ReservationPage />} />
+                <Route path=":id/reservation/:service_id" element={
+                  <AuthGuard roles={['ROLE_CUSTOMER']} hasPublicAccess={true}>
+                    <ReservationPage />
+                  </AuthGuard>
+                } />
               </Route>
 
               <Route path="profile" element={

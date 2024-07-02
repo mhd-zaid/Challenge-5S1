@@ -3,10 +3,13 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import NotFoundPage from '@/pages/NotFoundPage.jsx';
 
-const AuthGuard = ({ children, roles }) => {
+const AuthGuard = ({ children, roles, hasPublicAccess = false }) => {
   const { user } = useAuth();
 
   if (!user) {
+    if(hasPublicAccess) {
+      return children;
+    }
     return <NotFoundPage />;
   }
 
