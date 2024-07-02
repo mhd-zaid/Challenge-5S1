@@ -8,7 +8,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Operation\SoftDelete;
 use App\Repository\CompanyRepository;
 use App\State\CompanyPostStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,26 +21,18 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[Vich\Uploadable()]
 #[ApiResource(
     operations: [
-        new Get(
-            security: "is_granted('ROLE_ADMIN') or object.getOwner() === user or object.getUsers().contains(user)"
-        ),
-        new GetCollection(
-            paginationItemsPerPage: 10,
-            security: "is_granted('ROLE_ADMIN')",
-        ),
+        new Get(security: "is_granted('ROLE_ADMIN') or object.getOwner() === user or object.getUsers().contains(user)"),
+        new GetCollection(security: "is_granted('ROLE_ADMIN')"),
         new Post(
             uriTemplate: '/companies',
-            denormalizationContext: ['groups' => ['company:create:admin']],
             processor: CompanyPostStateProcessor::class,
         ),
         new Patch(
-            normalizationContext: ['groups' => ['company:read:admin', 'company:read:presta']],
-            denormalizationContext: ['groups' => ['company:update:admin', 'company:update:presta']],
-//            securityPostDenormalize: 'is_granted(UPDATE, object)',
+            security: "is_granted('ROLE_ADMIN') or object.getOwner() === user"
         ),
     ],
-    normalizationContext: ['groups' => ['company:read:common']],
     denormalizationContext: ['groups' => ['company:write']],
+    normalizationContext: ['groups' => ['company:read']],
 )]
 class Company
 {
@@ -53,132 +44,74 @@ class Company
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[ApiProperty(identifier: true)]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin', 'user:read'
-    ])]
+    #[Groups(['company:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'Le nom doit contenir entre 2 et 255 caractères')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta',
-        'studio:read'
-    ])]
+    #[Groups(['company:read', 'company:write', 'user:read:company', 'studio:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 9, nullable: true)]
     #[Assert\Length(min: 9, max: 9)]
     #[Assert\Regex(pattern: '/^[0-9]{9}$/', message: 'Le SIREN doit contenir 9 chiffres')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write'])]
     private ?string $siren = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\Email()]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'L\'email doit contenir entre 2 et 255 caractères')]
-    #[Groups([
-        'company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-        , 'company:read'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 10)]
     #[Assert\Length(min: 10, max: 10, exactMessage: 'Le numéro de téléphone doit contenir 10 chiffres')]
     #[Assert\Regex(pattern: '/^[0-9]{10}$/', message: 'Le numéro de téléphone doit contenir 10 chiffres')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $phone = null;
     #[ORM\Column(length: 5)]
     #[Assert\Length(min: 5, max: 5)]
     #[Assert\Regex(pattern: '/^[0-9]{5}$/', message: 'Le code postal doit contenir 5 chiffres')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write'])]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(min: 2, max: 255, exactMessage: 'La ville doit contenir au moins 2 caractères')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $city = null;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin', 'company:read'
-    ])]
+    #[Groups(['company:read:presta'])]
     private Collection $users;
 
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Studio::class)]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin', 'company:read'
-        , 'user:read:presta', 'company:read:common'
-    ])]
+    #[Groups(['user:read:company', 'company:read:presta'])]
     private Collection $studios;
 
     #[ORM\ManyToOne(targetEntity: MediaObject::class)]
     #[ORM\JoinColumn(nullable: true)]
     #[ApiProperty(types: ['https://schema.org/image'])]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write'])]
     public ?MediaObject $kbis = null;
 
-    private ?string $fullAddress = null;
-
     #[ORM\ManyToOne(inversedBy: 'company')]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin'
-        , 'company:create:admin', 'company:read', 'company:write'
-    ])]
     private ?User $owner = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $website = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['company:read:admin', 'company:read:presta', 'company:read:employee', 'company:read:common'
-        , 'company:update:admin', 'company:update:presta'
-        , 'company:create:admin'
-        , 'user:read:presta'
-    ])]
+    #[Groups(['company:read:presta', 'company:read:admin', 'company:write', 'user:read:company'])]
     private ?string $socialMedia = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company:read:admin', 'company:read:presta'
-        , 'company:update:admin'
-        , 'company:create:admin'
-    ])]
+    #[Groups(['company:read:admin', 'company:write:admin'])]
+
     #[Assert\Choice(choices: [
         'pending',
         'accepted',

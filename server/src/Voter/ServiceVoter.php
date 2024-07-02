@@ -2,22 +2,22 @@
 
 namespace App\Voter;
 
-use App\Entity\UnavailabilityHour;
+use App\Entity\Service;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class UnavailabilityHourVoter extends Voter
+class ServiceVoter extends Voter
 {
     const AUTHORIZE = 'AUTHORIZE';
 
      protected function supports(string $attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::AUTHORIZE])) {
+        if (!in_array($attribute, [self::AUTHORIZE ])) {
             return false;
         }
 
-        if (!$subject instanceof UnavailabilityHour) {
+        if (!$subject instanceof Service) {
             return false;
         }
 
@@ -32,18 +32,19 @@ class UnavailabilityHourVoter extends Voter
             return false;
         }
 
-        $unavailabilityHour = $subject;
+        $service = $subject;
 
         switch ($attribute) {
             case self::AUTHORIZE:
-                return $this->canAuthorize($unavailabilityHour, $user);
+                return $this->canAuthorize($service, $user);
         }
 
         return false;
     }
 
-    private function canAuthorize(UnavailabilityHour $unavailabilityHour, UserInterface $user): bool
+    private function canAuthorize(Service $service, UserInterface $user): bool
     {
-        return $user === $unavailabilityHour->getEmployee() || $user === $unavailabilityHour->getEmployee()->getCompany()->getOwner();
+        return($service->getStudio()->getCompany()->getOwner() === $user);
     }
+
 }

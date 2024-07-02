@@ -11,7 +11,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\GetCollection;
-use App\Operation\SoftDelete;
 use App\Validator\StudioHasService;
 use App\Validator\EmployeeBelongsToStudio;
 use App\Validator\AvailableSlot;
@@ -21,21 +20,22 @@ use App\Validator\AvailableSlot;
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 #[ApiResource(
     normalizationContext: ['groups' => ['reservation:read']],
+    denormalizationContext: ['groups' => ['reservation:create']],
     operations: [
+        new GetCollection(security: 'is_granted("ROLE_CUSTOMER")'),
         new Post(
+            security: "is_granted('ROLE_CUSTOMER')",
             securityPostDenormalize: "is_granted('AUTHORIZE', object)", 
             securityPostDenormalizeMessage: "Only the customer can create a reservation.",
-            denormalizationContext: ['reservation:create']
         ),
-        new Patch(securityPostDenormalize: "is_granted('EDIT', object)",
-        denormalizationContext: ['groups' => ['reservation:update']],    
-        ),
-        new SoftDelete(security: "is_granted('EDIT', object)"),
-        new GetCollection(normalizationContext: ['groups' => ['reservation:read']]),
+        new Patch(
+            security: "object.getStatus() === 'RESERVED'",
+            securityPostDenormalize: "is_granted('EDIT', object)",
+        )
     ]
     )]
     
-#[AvailableSlot(groups: ['reservation:create'])]
+#[AvailableSlot]
 #[StudioHasService]
 #[EmployeeBelongsToStudio]
 class Reservation
@@ -50,24 +50,23 @@ class Reservation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Groups(['reservation:create', 'reservation:update', 'reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['RESERVED', 'COMPLETED', 'CANCELED'])]
 
     #[Groups(['reservation:read', 'reservation:update', 'feedback:read'])]
-
     private $status = 'RESERVED';
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create'])]
+    #[Groups(['reservation:read'])]
     private ?User $customer = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read', 'reservation:update'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?User $employee = null;
 
     #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
@@ -75,12 +74,12 @@ class Reservation
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create'])]
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['reservation:create', 'reservation:read'])]
+    #[Groups(['reservation:read', 'reservation:create', 'reservation:read'])]
     private ?Studio $studio = null;
 
     public function getId(): ?int

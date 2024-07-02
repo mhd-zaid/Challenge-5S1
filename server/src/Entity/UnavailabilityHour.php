@@ -21,10 +21,13 @@ use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
     denormalizationContext: ['groups' => ['unavailabilityHour:write']],
     operations: [
         new GetCollection(security: "is_granted('ROLE_EMPLOYEE') or is_granted('ROLE_PRESTA')"),
-        new Post(securityPostDenormalize: "is_granted('AUTHORIZE', object)"),
+        new Post(
+            security: "is_granted('ROLE_EMPLOYEE') or is_granted('ROLE_PRESTA')",
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
+        ),
         new Patch(
-            securityPostDenormalize: "is_granted('AUTHORIZE', object)",
-            security: "object.getStatus() !== 'Rejected'"
+            security: "object.getStatus() !== 'Rejected' and is_granted('ROLE_PRESTA') or is_granted('ROLE_EMPLOYEE')",
+            securityPostDenormalize: "is_granted('AUTHORIZE', object)"
         ),
         new SoftDelete(
             security: "is_granted('ROLE_PRESTA') or is_granted('ROLE_EMPLOYEE')",
@@ -58,13 +61,13 @@ class UnavailabilityHour
 
     #[ORM\ManyToOne(inversedBy: 'unavailabilityHours')]
     #[Assert\NotNull(message: "Le champ 'employee' ne peut pas être nul.")]
-    #[Groups(['unavailabilityHour:write', 'unavailabilityHour:read'])]
+    #[Groups(['unavailabilityHour:write:presta', 'unavailabilityHour:read'])]
     #[ApiFilter(SearchFilter::class, properties: ['employee' => 'exact'])]
     private ?User $employee = null;
 
     #[ORM\Column]
     #[Assert\Choice(choices: ['Pending', 'Accepted', 'Rejected'], message: "Le champ 'status' doit être 'Pending', 'Accepted' ou 'Rejected'.")]
-    #[Groups(['unavailabilityHour:presta:write', 'unavailabilityHour:read'])]
+    #[Groups(['unavailabilityHour:write:presta:update', 'unavailabilityHour:read'])]
     #[ApiFilter(SearchFilter::class, properties: ['status' => 'exact'])]
     private string $status = 'Pending';
     public function getId(): ?int

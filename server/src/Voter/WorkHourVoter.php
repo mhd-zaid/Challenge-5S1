@@ -10,13 +10,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class WorkHourVoter extends Voter
 {
     const AUTHORIZE = 'AUTHORIZE';
-    const CREATE = 'CREATE';
-
-    const EDIT = 'EDIT';
+    
+    const UPSERT = 'UPSERT';
 
      protected function supports(string $attribute, $subject): bool
     {
-        if (!in_array($attribute, [self::AUTHORIZE, self::CREATE, self::EDIT])) {
+        if (!in_array($attribute, [self::AUTHORIZE, self::UPSERT])) {
             return false;
         }
 
@@ -40,10 +39,8 @@ class WorkHourVoter extends Voter
         switch ($attribute) {
             case self::AUTHORIZE:
                 return $this->canAuthorize($workHour, $user);
-            case self::CREATE:
-                return $this->canCreate($workHour, $user);
-            case self::EDIT:
-                return $this->canEdit($workHour, $user);
+            case self::UPSERT:
+                return $this->canUpsert($workHour, $user);
         }
 
         return false;
@@ -51,15 +48,10 @@ class WorkHourVoter extends Voter
 
     private function canAuthorize(WorkHour $workHour, UserInterface $user): bool
     {
-        return (in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner()) || in_array('ROLE_ADMIN', $user->getRoles());
+        return (in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner());
     }
 
-    private function canCreate(WorkHour $workHour, UserInterface $user): bool
-    {
-        return in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner() &&  $workHour->getEmployee()->getCompany()->getStudios()->contains($workHour->getStudio());
-    }
-
-    private function canEdit(WorkHour $workHour, UserInterface $user): bool
+    private function canUpsert(WorkHour $workHour, UserInterface $user): bool
     {
         return in_array('ROLE_PRESTA',$user->getRoles()) && $user === $workHour->getEmployee()->getCompany()->getOwner() &&  $workHour->getEmployee()->getCompany()->getStudios()->contains($workHour->getStudio());
     }
