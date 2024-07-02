@@ -79,6 +79,7 @@ const AdminPrestataireRequests = () => {
 
 
   const downloadKbis = async (url) => {
+    console.log(url);
     await  fetch(import.meta.env.VITE_BACKEND_URL + '/get-kbis/' + url.split(".")[0], {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -432,7 +433,7 @@ const AdminPrestataireRequests = () => {
                           as="span"
                           textDecoration="underline"
                           color="teal.300"
-                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                          onClick={() => downloadKbis(request.kbis.filePath)}
                         >
                           ici
                         </Link>
@@ -510,7 +511,7 @@ const AdminPrestataireRequests = () => {
                           as="span"
                           textDecoration="underline"
                           color="teal.300"
-                          onClick={() => downloadKbis(request.kbis.contentUrl)}
+                          onClick={() => downloadKbis(request.kbis.filePath)}
                         >
                           ici
                         </Link>
