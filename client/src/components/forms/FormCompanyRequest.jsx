@@ -63,11 +63,7 @@ const FormCompanyRequest = ({onSubmitForm}) => {
     if (result.error) {
       console.error('error', result.error);
     }
-
-    return await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
-      method: 'POST',
-      body: formData,
-    });
+    
   }
 
   const onSubmit = async (values) => {
