@@ -12,11 +12,7 @@ import {
   Input,
   InputGroup, InputLeftElement,
   Text, Textarea,
-  InputGroup,
-  InputLeftElement,
-  Textarea,
 } from '@chakra-ui/react';
-import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

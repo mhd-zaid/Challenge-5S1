@@ -77,10 +77,6 @@ const Header = () => {
                 >
                   Plannings
                 </MenuItem>
-
-                <MenuItem display={isAdministrator ? 'block' : 'none'}>
-                  {t('header.stats')}
-                </MenuItem>
                 <MenuItem
                   onClick={() => {
                     navigate('/admin/prestataires-demandes');
