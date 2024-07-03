@@ -11,7 +11,7 @@ import {
   Heading,
   Input,
   InputGroup, InputLeftElement,
-  Text, Textarea,
+  Text, Textarea, useToast,
 } from '@chakra-ui/react';
 import { useAuth } from '@/context/AuthContext.jsx';
 import { useState } from 'react';
@@ -28,6 +28,7 @@ const FormCompanyRequest = ({onSubmitForm}) => {
   } = useForm({});
   const [step, setStep] = useState(1);
   const [error, setError] = useState(null);
+  const toast = useToast();
 
   async function createCompany(data) {
     const formData = new FormData();
@@ -61,6 +62,9 @@ const FormCompanyRequest = ({onSubmitForm}) => {
 
     if (result.error) {
       console.error('error', result.error);
+    }else{
+      nextStep();
+      onSubmitForm(true);
     }
 
     return await fetch(import.meta.env.VITE_BACKEND_URL + '/companies', {
@@ -77,14 +81,19 @@ const FormCompanyRequest = ({onSubmitForm}) => {
 
             if (!result.ok) {
               result.text().then((text) => {
-                setError(text);
+                toast({
+                  title: 'Erreur',
+                  description: 'Une erreur est survenue lors de l\'enregistrement de l\'entreprise',
+                  status: 'error',
+                  duration: 9000,
+                  isClosable: true,
+
+                });
                 console.error(text);
               });
             } else {
               nextStep();
-              if (onSubmitForm) {
-                onSubmitForm(true);
-              }
+              onSubmitForm(true);
             }
           })
         resolve()
@@ -106,7 +115,6 @@ const FormCompanyRequest = ({onSubmitForm}) => {
       >
         <form onSubmit={handleSubmit(onSubmit)} aria-autocomplete={"both"} autoComplete={"on"} autoSave={"on"}>
 
-          <Text color='red.500'>{error}</Text>
           {step === 1 && (
             <Box>
               <Heading as='h2' size='sm' textAlign='center' mb={10}>
@@ -268,7 +276,7 @@ const FormCompanyRequest = ({onSubmitForm}) => {
                         pattern: {
                           value: /^[0-9]{9}$/,
                           message:
-                            'Numéro de siren invalide, il doit contenir 14 chiffres',
+                            'Numéro de siren invalide, il doit contenir 9 chiffres',
                         },
                       })}
                     />

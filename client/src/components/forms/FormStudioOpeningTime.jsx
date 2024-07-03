@@ -121,6 +121,25 @@ const FormStudioOpeningTime = ({studioOpeningTime, onSubmitForm}) => {
           </FormControl>
 
           <Flex p={4} gap={4} justifyContent={"end"}>
+            <Button bg="black" color='white' isLoading={isSubmitting} onClick={() => {
+              const data = {
+                ...studioOpeningTimesData,
+                day: studioOpeningTimesData.day,
+                startTime:`00:00:00+00:00`,
+                endTime: `00:00:00+00:00`
+              };
+              updateStudioOpeningTimes(data).then(() => {
+                onSubmitForm(true);
+                toast({
+                  title: 'Jour fermé',
+                  status: 'success',
+                  duration: 3000,
+                  isClosable: true,
+                });
+              })
+            }}>
+              Fermer ce jour
+            </Button>
             <Button bg="black" color='white' isLoading={isSubmitting} type='submit'>
               Enregistrer
             </Button>

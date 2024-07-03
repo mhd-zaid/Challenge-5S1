@@ -51,7 +51,7 @@ class StudioOpeningTime
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     #[Assert\NotBlank]
     #[Assert\Type("\DateTime", message: "Le champ 'endTime' doit être une date valide.")]
-    #[Assert\GreaterThan(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
+    #[Assert\GreaterThanOrEqual(propertyPath: "startTime", message: "Le champ 'endTime' doit être postérieur à 'startTime'.")]
     #[Groups(['studioOpeningTime:read', 'studioOpeningTime:write', 'company:read:presta', 'studio:read'])]
     private ?\DateTimeInterface $endTime = null;
 

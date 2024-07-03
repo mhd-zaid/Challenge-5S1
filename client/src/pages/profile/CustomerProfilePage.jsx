@@ -189,7 +189,10 @@ const CustomerProfile = ({ user }) => {
                       </Text>
                     </Td>
                     <Td>
-                      <Text>{reservation.employee.lastname} {reservation.employee.firstname}</Text>
+                      <Text>
+                        {reservation.employee.lastname}{' '}
+                        {reservation.employee.firstname}
+                      </Text>
                     </Td>
                     <Td>
                       <Text>{getStatusBadge(reservation.status)}</Text>
@@ -218,27 +221,25 @@ const CustomerProfile = ({ user }) => {
                           <MenuItem
                             as={Link}
                             icon={<CgRedo size={16} />}
-                            href={`/studios/${reservation.studio['@id'].split('/').slice(-1)}/reservation/${reservation['@id'].split('/').slice(-1)}`}
+                            href={`/studios/${reservation.studio['@id'].split('/').slice(-1)}/reservation/${reservation.service['@id'].split('/').slice(-1)}`}
                           >
                             Réserver à nouveau
                           </MenuItem>
-                          {
-                          reservation.status == 'RESERVED' && (
-                          <MenuItem
-                            icon={<MdCancel size={16} />}
-                            color="red"
-                            onClick={() => {
-                              updateReservation(
-                                reservation['@id'].split('/').slice(-1),
-                                { status: 'CANCELED' },
-                              );
-                            }}
-                            hidden={reservation.status === 'CANCELED'}
-                          >
-                            Annuler
-                          </MenuItem>
-                          )
-                          }
+                          {reservation.status == 'RESERVED' && (
+                            <MenuItem
+                              icon={<MdCancel size={16} />}
+                              color="red"
+                              onClick={() => {
+                                updateReservation(
+                                  reservation['@id'].split('/').slice(-1),
+                                  { status: 'CANCELED' },
+                                );
+                              }}
+                              hidden={reservation.status === 'CANCELED'}
+                            >
+                              Annuler
+                            </MenuItem>
+                          )}
                           <Text
                             mt={2}
                             textAlign={'center'}
@@ -273,9 +274,9 @@ const CustomerProfile = ({ user }) => {
           <Heading size={'sm'}>
             Modifier votre date de réservation -&nbsp;
             {reservations.find(r => r['@id'] === editing).service.name} -&nbsp;
-            {d(reservations.find(r => r['@id'] === editing).date).format(
-              'DD/MM/YYYY HH:mm',
-            )}
+            {d
+              .utc(reservations.find(r => r['@id'] === editing).date)
+              .format('DD/MM/YYYY HH:mm')}
           </Heading>
           <WeeksPlanning
             availableHours={availableHours}

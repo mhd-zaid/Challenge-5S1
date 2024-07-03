@@ -61,7 +61,7 @@ const FormService = ({service, onSubmitForm}) => {
       },
       body: JSON.stringify({
         ...data,
-        duration:dayjs.utc(`1970-01-01T${data.duration}`),
+        duration:dayjs.utc(`1970-01-01T01:00:00+00:00`),
         cost: parseInt(data.cost),
       }),
     });
@@ -164,6 +164,7 @@ const FormService = ({service, onSubmitForm}) => {
                   defaultValue={serviceData?.description}
                   {...register('description', {
                     required: 'Ce champ est requis',
+                    minLength: { value: 20, message: 'La longueur minimale est de 20 caractères' },
                   })}
                 />
                 <FormErrorMessage>
@@ -213,7 +214,7 @@ const FormService = ({service, onSubmitForm}) => {
           <Flex gap={8}>
             <Box w='50%'>
               {/* Durée */}
-              <FormControl isInvalid={errors.duration} mt={4} isRequired={isEditable}>
+              <FormControl isInvalid={errors.duration} mt={4}>
                 <FormLabel htmlFor='duration'>Durée</FormLabel>
                 {isEditable ? (
                   <>
@@ -221,13 +222,9 @@ const FormService = ({service, onSubmitForm}) => {
                   id={'duration'}
                   type="time"
                   placeholder='08:00'
-                  defaultValue={serviceData?.duration}
+                  disabled={true}
+                  defaultValue={"01:00"}
                   {...register('duration', {
-                    required: 'Ce champ est requis',
-                    pattern: {
-                      value: /^[0-9]{2}:[0-9]{2}$/,
-                      message: 'Horaire invalide, il doit être au format HH:MM',
-                    },
                   })}
                 />
                 <FormErrorMessage>
