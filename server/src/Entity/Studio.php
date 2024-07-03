@@ -32,7 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'services.id' => 'exact',
-    'city' => 'partial'
+    'city' => 'ipartial'
 ])]
 class Studio
 {
